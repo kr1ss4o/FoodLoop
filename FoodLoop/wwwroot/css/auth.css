@@ -1,95 +1,185 @@
-﻿/* Background gradient */
+﻿/* ============================
+   GLOBAL PAGE BACKGROUND
+============================ */
 .auth-body {
-    background: linear-gradient(180deg, #3a7b3f, #003b55);
+    background: #ECFDF5;
     min-height: 100vh;
-    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding: 0;
+    margin: 0;
 }
 
+/* ============================
+   WRAPPER (centers layout)
+============================ */
 .auth-wrapper {
+    width: 90%;
+    max-width: 1400px;
+    height: 85vh;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 40px;
+    background: white;
+    border-radius: 30px;
+    overflow: hidden;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.12);
 }
 
-/* Title "Welcome to FoodLoop" */
-.auth-title {
+/* ============================
+   LEFT SIDE (IMAGE PANEL)
+============================ */
+.auth-image-side {
+    flex: 1.2;
+    background-image: url('/images/auth-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.auth-image-overlay {
+    position: absolute;
+    bottom: 60px;
+    left: 60px;
     color: white;
-    font-size: 32px;
-    margin-bottom: 25px;
 }
 
-/* White container */
-.auth-container {
-    background: #f1f1f1;
-    width: 450px;
-    padding: 50px;
-    border-radius: 25px;
-    box-shadow: 0px 4px 15px rgba(0,0,0,0.15);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.brand-title {
+    font-size: 48px;
+    font-weight: 800;
 }
 
-/* Subtitle inside the box */
-.auth-subtitle {
+.brand-sub {
     font-size: 20px;
-    margin-bottom: 25px;
-    color: #003b55;
+    opacity: 0.9;
 }
 
-/* Form structure */
-.auth-form {
-    width: 100%;
+/* ============================
+   RIGHT SIDE (FORM PANEL)
+============================ */
+.auth-form-side {
+    flex: 1;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
 }
 
-    .auth-form label {
-        margin-bottom: 6px;
-        margin-top: 10px;
-        color: #003b55;
+/* FORM CARD */
+.auth-card {
+    width: 90%;
+    max-width: 420px;
+    background: #ffffff;
+    padding: 45px 50px;
+    border-radius: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.10);
+}
+
+/* HEADINGS */
+.auth-heading {
+    font-size: 32px;
+    font-weight: 700;
+    color: #003B33;
+    margin-bottom: 6px;
+}
+
+.auth-desc {
+    font-size: 15px;
+    opacity: 0.7;
+    margin-bottom: 28px;
+}
+
+/* ============================
+   INPUT GROUPS
+============================ */
+.input-group {
+    margin-bottom: 20px;
+}
+
+    .input-group label {
         font-weight: 600;
+        color: #003B33;
     }
 
-.auth-input {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #003b55;
-    border-radius: 10px;
-    outline: none;
+    .input-group input {
+        width: 100%;
+        padding: 13px 15px;
+        border-radius: 12px;
+        border: 2px solid #7AE582;
+        background: #F9FFFC;
+        outline: none;
+        transition: 0.2s;
+    }
+
+        .input-group input:focus {
+            border-color: #008B5A;
+        }
+
+/* VALIDATION ERRORS */
+.val {
+    display: block;
+    font-size: 13px;
+    color: #FF4F4F;
+    margin-top: 4px;
 }
 
-    .auth-input:focus {
-        border-color: #005f7f;
-    }
-
-/* Button */
-.auth-btn {
+/* ============================
+   BUTTON
+============================ */
+.btn-primary {
     width: 100%;
-    margin-top: 25px;
-    background-color: #003b55;
+    background: #008B5A;
     border: none;
     padding: 14px;
+    margin-top: 5px;
     color: white;
-    border-radius: 10px;
-    font-weight: bold;
+    font-weight: 700;
+    border-radius: 12px;
+    transition: 0.2s;
     cursor: pointer;
+    font-size: 16px;
 }
 
-    .auth-btn:hover {
-        background-color: #005f7f;
+    .btn-primary:hover {
+        background: #006b45;
     }
 
-/* Links below login */
+/* ============================
+   LINKS
+============================ */
 .auth-links {
     margin-top: 18px;
-    font-size: 13px;
+    text-align: center;
 }
 
     .auth-links a {
-        color: #003b55;
-        margin: 0 10px;
+        color: #003B33;
         text-decoration: underline;
+        font-size: 14px;
+        margin: 0 8px;
     }
+
+/* ============================
+   RESPONSIVE
+============================ */
+@media (max-width: 980px) {
+    .auth-wrapper {
+        flex-direction: column;
+        height: auto;
+        max-width: 500px;
+    }
+
+    .auth-image-side {
+        height: 220px;
+        flex: unset;
+        width: 100%;
+    }
+
+    .auth-form-side {
+        padding: 30px;
+    }
+
+    .auth-card {
+        box-shadow: none;
+        padding: 30px;
+    }
+}

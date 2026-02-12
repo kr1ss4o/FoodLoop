@@ -1,43 +1,63 @@
 ﻿@model FoodLoop.Models.ViewModels.RegisterViewModel
 @{
-    ViewData["Title"] = "Create Account";
+    ViewData["Title"] = "Register";
     ViewData["BodyClass"] = "auth-body";
 }
 
+<link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+
 <div class="auth-wrapper">
-    <h1 class="auth-title">Welcome to FoodLoop</h1>
 
-    <div class="auth-container">
-
-        <h2 class="auth-subtitle">Create an account</h2>
-
-        <form asp-action="Register" method="post" class="auth-form">
-
-            <label>Full Name:</label>
-            <input asp-for="FullName" class="auth-input" />
-            <span asp-validation-for="FullName" class="text-danger"></span>
-
-            <label>E-mail:</label>
-            <input asp-for="Email" class="auth-input" />
-            <span asp-validation-for="Email" class="text-danger"></span>
-
-            <label>Phone number:</label>
-            <input asp-for="Phone" class="auth-input" />
-            <span asp-validation-for="Phone" class="text-danger"></span>
-
-            <label>Password:</label>
-            <input asp-for="Password" type="password" class="auth-input" />
-            <span asp-validation-for="Password" class="text-danger"></span>
-
-            <label>Confirm password:</label>
-            <input asp-for="ConfirmPassword" type="password" class="auth-input" />
-            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-
-            <button type="submit" class="auth-btn">Create my account</button>
-
-        </form>
-
+    <div class="auth-image-side">
+        <div class="auth-image-overlay">
+            <h1 class="brand-title">Join FoodLoop</h1>
+            <p class="brand-sub">Save food. Save money.</p>
+        </div>
     </div>
+
+    <div class="auth-form-side">
+        <div class="auth-card">
+
+            <h2 class="auth-heading">Create an account</h2>
+
+            <form asp-action="Register" method="post">
+
+                <div class="input-group">
+                    <label>Full name</label>
+                    <input asp-for="FullName" />
+                    <span asp-validation-for="FullName" class="val"></span>
+                </div>
+
+                <div class="input-group">
+                    <label>Email</label>
+                    <input asp-for="Email" />
+                    <span asp-validation-for="Email" class="val"></span>
+                </div>
+
+                <div class="input-group">
+                    <label>Phone number</label>
+                    <input asp-for="Phone" />
+                    <span asp-validation-for="Phone" class="val"></span>
+                </div>
+
+                <div class="input-group">
+                    <label>Password</label>
+                    <input asp-for="Password" type="password" />
+                    <span asp-validation-for="Password" class="val"></span>
+                </div>
+
+                <div class="input-group">
+                    <label>Confirm password</label>
+                    <input asp-for="ConfirmPassword" type="password" />
+                    <span asp-validation-for="ConfirmPassword" class="val"></span>
+                </div>
+
+                <button type="submit" class="btn-primary">Create account</button>
+
+            </form>
+        </div>
+    </div>
+
 </div>
 
 @section Scripts {

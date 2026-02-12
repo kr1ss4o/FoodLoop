@@ -37,6 +37,7 @@ wwwroot\images\profile\c5aea70b-0034-41dd-8f78-7aeb0aea8bd4.jpg
 wwwroot\images\profile\c6d13b41-bb15-468f-81ea-04e46001c2d9.jpg
 wwwroot\images\profile\c9882f9d-3b19-46a8-8780-98078d1eef5f.gif
 wwwroot\images\profile\de41b26d-2217-4499-8fec-fb9930c76aa0.gif
+wwwroot\images\profile\eccd02d4-fc9c-4136-9713-ad0aaf0571f7.png
 wwwroot\images\profile\efdc5b29-2d3b-4a37-ae34-e7f95b133805.png
 wwwroot\images\profile\f8f90517-6f3d-4588-860f-4703b7cdf3f0.gif
 wwwroot\images\profile\fec01323-e18f-4335-a72d-cb17f081f5b7.png

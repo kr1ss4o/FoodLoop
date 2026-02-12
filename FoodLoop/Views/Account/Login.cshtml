@@ -1,37 +1,55 @@
 ﻿@model FoodLoop.Models.ViewModels.LoginViewModel
 @{
-    ViewData["Title"] = "Log In";
+    ViewData["Title"] = "Login";
     ViewData["BodyClass"] = "auth-body";
 }
 
+<link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+
 <div class="auth-wrapper">
-    <h1 class="auth-title">Welcome to FoodLoop</h1>
 
-    <div class="auth-container">
-
-        <h2 class="auth-subtitle">Log In to your profile</h2>
-
-        <form asp-action="Login" method="post" class="auth-form">
-            @Html.AntiForgeryToken()
-
-            <label>Email:</label>
-            <input asp-for="Email" class="auth-input" />
-            <span asp-validation-for="Email" class="text-danger"></span>
-
-            <label>Password:</label>
-            <input asp-for="Password" type="password" class="auth-input" />
-            <span asp-validation-for="Password" class="text-danger"></span>
-
-            <button type="submit" class="auth-btn">Log In</button>
-
-        </form>
-
-        <div class="auth-links">
-            <a href="#">Forgotten password?</a>
-            <a href="/Account/Register">Create an account now.</a>
+    <!-- LEFT IMAGE PANEL -->
+    <div class="auth-image-side">
+        <div class="auth-image-overlay">
+            <h1 class="brand-title">FoodLoop</h1>
+            <p class="brand-sub">Fresh food. Smart savings.</p>
         </div>
-
     </div>
+
+    <!-- RIGHT FORM PANEL -->
+    <div class="auth-form-side">
+        <div class="auth-card">
+
+            <h2 class="auth-heading">Welcome back</h2>
+            <p class="auth-desc">Log into your account</p>
+
+            <form asp-action="Login" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="input-group">
+                    <label>Email</label>
+                    <input asp-for="Email" />
+                    <span asp-validation-for="Email" class="val"></span>
+                </div>
+
+                <div class="input-group">
+                    <label>Password</label>
+                    <input asp-for="Password" type="password" />
+                    <span asp-validation-for="Password" class="val"></span>
+                </div>
+
+                <button type="submit" class="btn-primary">Sign in</button>
+
+                <div class="auth-links">
+                    <a href="#">Forgot password?</a>
+                    <a href="/Account/Register">Create account</a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
 </div>
 
 @section Scripts {
