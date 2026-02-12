@@ -1,0 +1,124 @@
+﻿.profile-body {
+    background-color: #f3f3f3;
+}
+
+.profile-wrapper {
+    width: 100%;
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: #00394f;
+}
+
+.profile-box {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.profile-info p {
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.profile-photo {
+    width: 200px;
+    height: 200px;
+}
+
+.profile-photo img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #ddd;
+}
+
+.section-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #00394f;
+}
+
+.insights-box {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.insight div {
+    margin-top: 5px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* ============================================================
+   EDIT BUTTON
+   ============================================================ */
+
+.edit-btn {
+    padding: 10px 24px;
+    background: #00394f;
+    color: white;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+    display: inline-block;
+}
+
+.edit-btn:hover {
+    background: #005a73;
+}
+
+
+/* ============================================================
+   BUTTONS (Logout / Delete)
+   ============================================================ */
+
+.logout-btn,
+.delete-btn {
+    width: 100%;
+    padding: 16px;
+    font-size: 18px;
+    border-radius: 14px;
+    font-weight: 700;
+    border: none;
+    margin-bottom: 15px;
+    cursor: pointer;
+}
+
+.logout-btn {
+    background: #ffecec;
+    color: #cc2b2b;
+}
+
+.delete-btn {
+    background: #ff8c8c;
+    color: white;
+}
+
+    .delete-btn:hover {
+        background: #ff6d6d;
+    }
+
+.logout-btn:hover {
+    background: #ffd6d6;
+}

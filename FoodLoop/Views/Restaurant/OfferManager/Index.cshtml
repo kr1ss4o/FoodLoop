@@ -1,0 +1,62 @@
+﻿@model List<FoodLoop.Models.Entities.Offer>
+@{
+    ViewData["Title"] = "Manage Offers";
+    ViewData["BodyClass"] = "profile-body";
+}
+
+<link rel="stylesheet" href="~/css/offers-manage.css" />
+
+<h2 class="page-title">Offers Manager</h2>
+
+<div class="top-buttons">
+    <a class="create-btn" href="/OfferManager/Create">Create new offer</a>
+</div>
+
+@if (!Model.Any())
+{
+    <p class="empty-text">You have no offers yet.</p>
+}
+else
+{
+    <div class="offer-grid">
+        @foreach (var offer in Model)
+        {
+            <div class="offer-card">
+                <img src="@offer.ImageUrl" class="offer-img" />
+
+                <h3 class="offer-title">@offer.Title</h3>
+
+                <div class="pricing">
+                    <span class="new-price">@offer.DiscountedPrice EUR</span>
+                    <span class="old-price">@offer.OriginalPrice EUR</span>
+                </div>
+
+                <p class="small-info">Quantity: @offer.QuantityAvailable</p>
+                <p class="small-info">Ends: @offer.EndsAt.ToShortDateString()</p>
+
+                <div class="actions">
+                    <a href="/OfferManager/Edit/@offer.Id" class="edit-btn">Edit</a>
+
+                    <form method="post" action="/OfferManager/Delete/@offer.Id"
+                          onsubmit="return confirm('Delete this offer?');">
+                        <button class="delete-btn">Delete</button>
+                    </form>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@section Scripts {
+    <script>
+        @if (TempData["Success"] != null)
+        {
+                    <text>showToast("@TempData["Success"]", "success");</text>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+                    <text>showToast("@TempData["Error"]", "error");</text>
+        }
+    </script>
+}

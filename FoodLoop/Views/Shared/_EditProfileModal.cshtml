@@ -1,0 +1,38 @@
+﻿<div id="editProfileModal" class="epm-overlay">
+    <div class="epm-modal epm-animate">
+
+        <h2>Edit Profile</h2>
+
+        <form asp-action="EditProfile" asp-controller="Profile" method="post" enctype="multipart/form-data">
+
+            <label>Full Name:</label>
+            <input type="text" name="FullName" id="epm-fullname" required />
+
+            <label>Phone number:</label>
+            <input type="text" name="PhoneNumber" id="epm-phone" required />
+            <small class="epm-warning" id="epm-phone-warning"></small>
+
+            <label>New profile photo:</label>
+            <div id="epm-dropzone" class="epm-dropzone">
+                <p id="epm-text">Drag & drop image here<br>or click to upload</p>
+                <img id="epm-preview" class="epm-preview" src="" style="display:none;" />
+            </div>
+
+            <!-- SINGLE FILE INPUT -->
+            <input type="file" id="epm-file" name="ProfileImage" accept="image/*" hidden />
+
+            <label>Current password (required):</label>
+            <input type="password" name="CurrentPassword" required />
+
+            <label>New password:</label>
+            <input type="password" name="NewPassword" id="epm-pass" />
+            <small class="epm-warning" id="epm-pass-warning"></small>
+
+            <div class="epm-btn-row">
+                <button type="submit" id="epm-save" class="epm-save">Save changes</button>
+                <button type="button" id="epm-reset" class="epm-reset">Reset</button>
+                <button type="button" id="epm-close" class="epm-cancel">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>

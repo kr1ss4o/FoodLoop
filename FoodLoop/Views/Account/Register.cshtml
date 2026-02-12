@@ -1,0 +1,45 @@
+﻿@model FoodLoop.Models.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Create Account";
+    ViewData["BodyClass"] = "auth-body";
+}
+
+<div class="auth-wrapper">
+    <h1 class="auth-title">Welcome to FoodLoop</h1>
+
+    <div class="auth-container">
+
+        <h2 class="auth-subtitle">Create an account</h2>
+
+        <form asp-action="Register" method="post" class="auth-form">
+
+            <label>Full Name:</label>
+            <input asp-for="FullName" class="auth-input" />
+            <span asp-validation-for="FullName" class="text-danger"></span>
+
+            <label>E-mail:</label>
+            <input asp-for="Email" class="auth-input" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+
+            <label>Phone number:</label>
+            <input asp-for="Phone" class="auth-input" />
+            <span asp-validation-for="Phone" class="text-danger"></span>
+
+            <label>Password:</label>
+            <input asp-for="Password" type="password" class="auth-input" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+
+            <label>Confirm password:</label>
+            <input asp-for="ConfirmPassword" type="password" class="auth-input" />
+            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+
+            <button type="submit" class="auth-btn">Create my account</button>
+
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

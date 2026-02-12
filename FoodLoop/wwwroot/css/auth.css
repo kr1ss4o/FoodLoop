@@ -1,0 +1,95 @@
+﻿/* Background gradient */
+.auth-body {
+    background: linear-gradient(180deg, #3a7b3f, #003b55);
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+.auth-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 40px;
+}
+
+/* Title "Welcome to FoodLoop" */
+.auth-title {
+    color: white;
+    font-size: 32px;
+    margin-bottom: 25px;
+}
+
+/* White container */
+.auth-container {
+    background: #f1f1f1;
+    width: 450px;
+    padding: 50px;
+    border-radius: 25px;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Subtitle inside the box */
+.auth-subtitle {
+    font-size: 20px;
+    margin-bottom: 25px;
+    color: #003b55;
+}
+
+/* Form structure */
+.auth-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+    .auth-form label {
+        margin-bottom: 6px;
+        margin-top: 10px;
+        color: #003b55;
+        font-weight: 600;
+    }
+
+.auth-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #003b55;
+    border-radius: 10px;
+    outline: none;
+}
+
+    .auth-input:focus {
+        border-color: #005f7f;
+    }
+
+/* Button */
+.auth-btn {
+    width: 100%;
+    margin-top: 25px;
+    background-color: #003b55;
+    border: none;
+    padding: 14px;
+    color: white;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+    .auth-btn:hover {
+        background-color: #005f7f;
+    }
+
+/* Links below login */
+.auth-links {
+    margin-top: 18px;
+    font-size: 13px;
+}
+
+    .auth-links a {
+        color: #003b55;
+        margin: 0 10px;
+        text-decoration: underline;
+    }

@@ -1,0 +1,69 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using FoodLoop.Models.Entities
+
+@inject UserManager<User> UserManager
+
+@{
+    var user = UserManager.GetUserAsync(User).Result;
+
+    string currentPath = Context.Request.Path.Value?.ToLower() ?? "";
+
+    string role = user != null
+        ? (UserManager.GetRolesAsync(user).Result.FirstOrDefault() ?? "Client")
+        : "None";
+
+    bool isBusiness = role == "Restaurant";
+
+    // Active detection
+    bool isProfileActive =
+        currentPath.Contains("/profile") ||
+        currentPath.Contains("/businessprofile");
+
+    bool isCartActive = currentPath.Contains("/cart");
+
+    bool isOrderManagerActive = currentPath.Contains("/ordermanager");
+    bool isOfferManagerActive = currentPath.Contains("/offermanager");
+}
+
+<nav class="cart-navbar">
+
+    <!-- BACK BUTTON -->
+    <a href="javascript:history.back()" class="icon-btn">
+        <img class="nav-icon" src="/images/icons/nav-back.png" />
+    </a>
+
+    <div class="right-icons">
+
+        @if (!isBusiness)
+        {
+            <!-- CLIENT → CART -->
+            <a href="/Cart/Index" class="icon-btn @(isCartActive ? "active" : "")">
+                <img class="nav-icon" src="/images/icons/nav-cart.png" />
+
+                @if (ViewBag.CartCount > 0)
+                {
+                    <span class="cart-bubble">@ViewBag.CartCount</span>
+                }
+            </a>
+        }
+        else
+        {
+            <!-- BUSINESS → ORDER MANAGER -->
+            <a href="/OrderManager" class="icon-btn @(isOrderManagerActive ? "active" : "")">
+                <img class="nav-icon" src="/images/icons/nav-orders.png" />
+            </a>
+
+            <!-- BUSINESS → OFFER MANAGER -->
+            <a href="/OfferManager" class="icon-btn @(isOfferManagerActive ? "active" : "")">
+                <img class="nav-icon" src="/images/icons/nav-offermanager.png" />
+            </a>
+        }
+
+        <!-- PROFILE (auto route based on role) -->
+        <a href="@(isBusiness ? "/BusinessProfile" : "/Profile")"
+           class="icon-btn @(isProfileActive ? "active" : "")">
+
+            <img class="nav-icon" src="/images/icons/nav-profile.png" />
+        </a>
+    </div>
+</nav>

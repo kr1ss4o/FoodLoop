@@ -1,0 +1,81 @@
+﻿@model FoodLoop.Models.ViewModels.OfferFormViewModel
+@{
+    ViewData["Title"] = "Edit Offer";
+    ViewData["BodyClass"] = "profile-body";
+}
+
+<link rel="stylesheet" href="~/css/offers-manage.css" />
+
+<div class="offer-form-wrapper">
+
+    <h2 class="form-title">Edit offer</h2>
+
+    <form asp-action="Edit" asp-controller="OfferManager"
+          method="post" enctype="multipart/form-data" class="offer-form">
+
+        <input type="hidden" asp-for="Offer.Id" />
+
+        <label>Title:</label>
+        <input asp-for="Offer.Title" class="input" required />
+
+        <label>Description:</label>
+        <textarea asp-for="Offer.Description" class="input" required></textarea>
+
+        <label>Original price:</label>
+        <input asp-for="Offer.OriginalPrice" class="input" type="number" min="0" step="0.01" required />
+
+        <label>Discounted price:</label>
+        <input asp-for="Offer.DiscountedPrice" class="input" type="number" min="0" step="0.01" required />
+
+        <label>Available quantity:</label>
+        <input asp-for="Offer.QuantityAvailable" class="input" type="number" min="1" required />
+
+
+        <!-- CATEGORY DROPDOWN -->
+        <label>Category:</label>
+        <select asp-for="Offer.CategoryId" class="input">
+            @foreach (var cat in Model.Categories)
+            {
+                <option value="@cat.Id" selected="@(cat.Id == Model.Offer.CategoryId)">
+                    @cat.Name
+                </option>
+            }
+        </select>
+
+
+        <!-- TAG CHECKBOXES -->
+        <label>Tags:</label>
+        <div class="tag-list">
+            @foreach (var tag in Model.Tags)
+            {
+                var isChecked = Model.SelectedTags?.Contains(tag.Id) ?? false;
+
+                <label class="tag-checkbox">
+                    <input type="checkbox" name="SelectedTags" value="@tag.Id" @(isChecked ? "checked" : "") />
+                    @tag.Name
+                </label>
+            }
+        </div>
+
+
+        <label>Current image:</label>
+        <img src="@Model.Offer.ImageUrl" class="preview-img" />
+
+        <label>Upload new image:</label>
+        <input type="file" name="ImageUpload" accept="image/*" class="input" />
+
+        <button type="submit" class="submit-btn">Save changes</button>
+    </form>
+
+</div>
+
+@section Scripts {
+    @if (TempData["Error"] != null)
+    {
+        <script>showToast("@TempData["Error"]", "error");</script>
+    }
+    @if (TempData["Success"] != null)
+    {
+        <script>showToast("@TempData["Success"]", "success");</script>
+    }
+}

@@ -1,0 +1,81 @@
+﻿@model FoodLoop.Models.ViewModels.BusinessProfileViewModel
+@{
+    ViewData["Title"] = "Business Dashboard";
+    ViewData["BodyClass"] = "profile-body";
+}
+
+<link rel="stylesheet" href="~/css/business-profile.css" />
+<link rel="stylesheet" href="/css/modal.css" />
+
+<div class="business-wrapper">
+
+    <h1 class="title">Welcome, @Model.OwnerName</h1>
+
+    <!-- MAIN BUSINESS BOX -->
+    <div class="business-box">
+
+        <div class="business-info">
+            <p><strong>Restaurant / Business name:</strong><br /> @Model.RestaurantName</p>
+
+            <p><strong>Business email:</strong><br /> @Model.BusinessEmail</p>
+
+            <p><strong>Phone:</strong><br /> @Model.Phone</p>
+
+            <p><strong>Address:</strong><br /> @Model.Address</p>
+
+            <button id="epm-open" class="edit-btn">Edit</button>
+            @await Html.PartialAsync("_EditProfileModal")
+        </div>
+
+        <div class="business-photo">
+            <img src="@(!string.IsNullOrEmpty(Model.ImageUrl) ? Model.ImageUrl : "/images/default-restaurant.jpg")" />
+        </div>
+
+    </div>
+
+    <!-- OWNER DETAILS -->
+    <h2 class="section-title">Business owner details:</h2>
+
+    <div class="owner-box">
+        <div class="owner-info">
+            <p><strong>Full name:</strong><br /> @Model.OwnerName</p>
+        </div>
+        <div class="owner-info">
+            <p><strong>Personal email:</strong><br /> @Model.OwnerEmail</p>
+        </div>
+        <div class="owner-info">
+            <p><strong>Phone:</strong><br /> @Model.OwnerPhone</p>
+        </div>
+        <div class="owner-info">
+            <p><strong>Account created:</strong><br /> @Model.AccountCreated.ToShortDateString()</p>
+        </div>
+    </div>
+
+    <!-- BUTTONS -->
+    <form method="post" action="/Account/Logout" onsubmit="return confirm('Log out?');">
+        <button class="logout-btn">Logout</button>
+    </form>
+
+    <form method="post" action="/Profile/Delete" onsubmit="return confirm('Delete account? This cannot be undone.');">
+        <button class="delete-btn">Delete Account</button>
+    </form>
+</div>
+
+<script src="~/js/modal.js"></script>
+@section Scripts {
+    <script>
+        @if (TempData["Success"] != null)
+        {
+                <text>
+                    showToast('@TempData["Success"]', 'success');
+                </text>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+                <text>
+                    showToast('@TempData["Error"]', 'error');
+                </text>
+        }
+    </script>
+}

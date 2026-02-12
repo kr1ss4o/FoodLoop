@@ -1,0 +1,50 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using FoodLoop.Models.Entities
+@using FoodLoop.Data
+
+@inject UserManager<FoodLoop.Models.Entities.User> UserManager
+@inject FoodLoop.Data.ApplicationDbContext Db
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - FoodLoop</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/FoodLoop.styles.css" asp-append-version="true" />
+    
+    <link rel="stylesheet" href="~/css/auth.css" />
+    <link rel="stylesheet" href="~/css/edit-profile-modal.css" />
+</head>
+<body class="@ViewData["BodyClass"]">
+    @{
+        var u = UserManager.GetUserAsync(User).Result;
+        if (u != null)
+        {
+            ViewBag.CartCount = Db.CartItems.Count(c => c.UserId == u.Id);
+        }
+    }
+
+    @await Html.PartialAsync("_Navbar")
+    @await Html.PartialAsync("_EditProfileModal")
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script src="~/js/edit-profile-modal.js" defer></script>
+    <script src="~/js/toast.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
