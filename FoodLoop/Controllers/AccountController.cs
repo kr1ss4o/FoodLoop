@@ -110,14 +110,13 @@ namespace FoodLoop.Controllers
 
             if (!result.Succeeded)
             {
-                ModelState.AddModelError("", "Invalid email or password.");
-                return View(model);
+                TempData["Error"] = "Invalid email or password.";
+                return View(model); // НЕ редирект! трябва View(model)
             }
-            if (!result.Succeeded)
-            {
-                return Content("LOGIN FAILED → " + result.ToString());
-            }
-            // Redirect based on role
+
+            // Successful login
+            TempData["Success"] = "Logged in successfully!";
+
             var user = await _userManager.FindByEmailAsync(model.Email);
 
             if (await _userManager.IsInRoleAsync(user, "Admin"))
@@ -126,15 +125,7 @@ namespace FoodLoop.Controllers
             if (await _userManager.IsInRoleAsync(user, "Restaurant"))
                 return RedirectToAction("Index", "BusinessProfile");
 
-            // Redirect to page
-            if (await _userManager.IsInRoleAsync(user, "Admin"))
-                return RedirectToAction("Index", "Home"); // or AdminPanel when created
-
-            if (await _userManager.IsInRoleAsync(user, "Restaurant"))
-                return RedirectToAction("Index", "Restaurant"); // THIS FIXES YOUR LOGIN
-
-            return RedirectToAction("Index", "Profile"); // Client
-
+            return RedirectToAction("Index", "Profile");
         }
 
         // ---------------------------------------
@@ -143,7 +134,95 @@ namespace FoodLoop.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+            TempData["Success"] = "You have logged out.";
+            return RedirectToAction("Login", "Account");
         }
+
+        //
+        //  Forgot Password (GET)
+        //
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        //
+        // Forgot Password (POST)
+        //
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                TempData["Error"] = "No account found with this email.";
+                return View();
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            // Create reset URL
+            var resetUrl = Url.Action(
+                "ResetPassword",
+                "Account",
+                new { email = user.Email, token = token },
+                Request.Scheme
+            );
+
+            ViewBag.ResetLink = resetUrl;
+            TempData["Success"] = "Password reset link has been generated.";
+
+            return View("ForgotPasswordConfirmation");
+        }
+
+        //
+        //  Reset Password (GET)
+        //
+
+        [HttpGet]
+        public IActionResult ResetPassword(string email, string token)
+        {
+            if (email == null || token == null)
+                return RedirectToAction("Login");
+
+            return View(new ResetPasswordViewModel { Email = email, Token = token });
+        }
+
+        //
+        //  Reset Password (POST)
+        //
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                TempData["Error"] = "Invalid request.";
+                return RedirectToAction("Login");
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                    ModelState.AddModelError("", error.Description);
+
+                return View(model);
+            }
+
+            TempData["Success"] = "Password has been reset successfully!";
+            return RedirectToAction("Login");
+        }
+
     }
 }

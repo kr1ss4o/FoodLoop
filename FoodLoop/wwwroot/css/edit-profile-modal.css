@@ -1,152 +1,130 @@
-﻿/******************************
- OVERLAY (always behind modal)
-******************************/
+﻿/* BACKDROP */
 .epm-overlay {
-    display: none; /* Hidden by default */
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(10px);
+    background: rgba(0,0,0,0.45);
+    display: none;
     justify-content: center;
     align-items: center;
-    z-index: 99999; /* Above everything including Bootstrap */
+    z-index: 3000;
 }
 
-    /* When JS adds .show → modal becomes visible */
     .epm-overlay.show {
         display: flex !important;
     }
 
-/******************************
- MODAL BOX + ANIMATION
-******************************/
+/* MODAL */
 .epm-modal {
-    background: #fff;
-    width: 420px;
-    max-width: 92%;
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 0 35px rgba(0,0,0,0.35);
-    /* Start hidden */
-    opacity: 0;
-    transform: scale(0.85);
-    transition: opacity 0.25s ease, transform 0.25s ease;
-    z-index: 100000; /* Always above overlay */
+    background: #ffffff;
+    width: 460px;
+    padding: 40px 45px;
+    border-radius: 28px;
+    box-shadow: 0 12px 45px rgba(0,0,0,0.25);
+    animation: fadeIn 0.25s ease-out;
 }
 
-/* When overlay has .show → modal animates in */
-.epm-overlay.show .epm-modal {
-    opacity: 1;
-    transform: scale(1);
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-/******************************
- INPUT LABELS
-******************************/
-.epm-modal label {
-    display: block;
-    margin-top: 12px;
-    font-weight: 600;
-    color: #00394f;
+.epm-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 22px;
+    color: #0B3C49;
 }
 
-/******************************
- INPUTS
-******************************/
-.epm-modal input {
-    width: 100%;
-    padding: 10px;
-    margin-top: 4px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 15px;
+/* FIELDS */
+.epm-field {
+    margin-bottom: 20px;
 }
 
-.epm-warning {
-    font-size: 13px;
-    color: #c62828;
-    display: block;
-    min-height: 18px;
-}
+    .epm-field label {
+        font-weight: 600;
+        margin-bottom: 6px;
+        display: block;
+    }
 
-/******************************
- DRAG & DROP ZONE
-******************************/
+    .epm-field input {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 2px solid #aaccc4;
+        background: #f9fffd;
+        transition: 0.2s;
+    }
+
+        .epm-field input:focus {
+            border-color: #0CA678;
+        }
+
+/* DROPZONE */
 .epm-dropzone {
-    margin-top: 8px;
-    padding: 25px;
-    border: 2px dashed #888;
-    border-radius: 10px;
+    background: #f2fffa;
+    border-radius: 16px;
+    border: 2px dashed #85c9b5;
     text-align: center;
+    padding: 24px;
     cursor: pointer;
     transition: 0.2s;
-    background: #fafafa;
 }
 
     .epm-dropzone.dragover {
-        background: #e3ffe3;
-        border-color: #00aa00;
+        background: #d7fff0;
+        border-color: #0CA678;
     }
 
 .epm-preview {
-    width: 140px;
-    height: 140px;
-    border-radius: 10px;
-    object-fit: cover;
+    display: none;
     margin-top: 10px;
+    width: 150px;
+    height: 150px;
+    border-radius: 16px;
+    object-fit: cover;
 }
 
-/******************************
- BUTTONS
-******************************/
+/* BUTTONS */
+.epm-actions {
+    margin-top: 25px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.epm-save {
+    background: #0CA678;
+    padding: 12px 24px;
+    border-radius: 14px;
+    border: none;
+    color: white;
+    font-weight: 700;
+}
+
+.epm-cancel {
+    background: #ddd;
+    padding: 12px 20px;
+    border-radius: 14px;
+    border: none;
+}
 
 .epm-reset {
     background: none;
     border: none;
-    color: #005a73;
+    color: #0CA678;
+    font-weight: 600;
     text-decoration: underline;
     cursor: pointer;
-    font-size: 15px;
-    padding: 0;
-}
-.epm-reset:hover {
-    color: #0086a3;
-}
-.epm-btn-row {
-    margin-top: 20px;
-    display: flex;
-    justify-content: space-between;
-}
-.epm-save {
-    padding: 12px 20px;
-    background: #004d66;
-    color: white;
-    border-radius: 8px;
-    cursor: pointer;
-    border: none;
-    transition: 0.15s;
-}
-.epm-save:hover {
-    background: #006b85;
 }
 
-.epm-cancel {
-    padding: 12px 20px;
-    background: #ccc;
-    color: #333;
-    border-radius: 8px;
-    cursor: pointer;
-    border: none;
-    transition: 0.15s;
-}
-
-    .epm-cancel:hover {
-        background: #b5b5b5;
-    }
-
-/******************************
- FIX BOOTSTRAP INTERFERENCE
-******************************/
-.epm-overlay *,
-.epm-modal * {
-    box-sizing: border-box;
+.epm-modal {
+    max-height: 90vh;
+    overflow-y: auto;
 }

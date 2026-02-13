@@ -4,78 +4,94 @@
     ViewData["BodyClass"] = "profile-body";
 }
 
-<link rel="stylesheet" href="~/css/business-profile.css" />
-<link rel="stylesheet" href="/css/modal.css" />
+<link rel="stylesheet" href="~/css/business-profile.css" asp-append-version="true" />
 
-<div class="business-wrapper">
+<div class="bp-wrapper">
 
-    <h1 class="title">Welcome, @Model.OwnerName</h1>
+    <h1 class="bp-title">Hello, @Model.OwnerName</h1>
 
-    <!-- MAIN BUSINESS BOX -->
-    <div class="business-box">
+    <!-- MAIN PANEL -->
+    <div class="bp-main-card">
 
-        <div class="business-info">
-            <p><strong>Restaurant / Business name:</strong><br /> @Model.RestaurantName</p>
+        <!-- LEFT COLUMN (text info) -->
+        <div class="bp-info">
 
-            <p><strong>Business email:</strong><br /> @Model.BusinessEmail</p>
+            <h2 class="bp-section-head">Business details</h2>
 
-            <p><strong>Phone:</strong><br /> @Model.Phone</p>
+            <div class="bp-row">
+                <span class="bp-label">Restaurant name</span>
+                <span id="rest-name" class="bp-value">@Model.RestaurantName</span>
+            </div>
 
-            <p><strong>Address:</strong><br /> @Model.Address</p>
+            <div class="bp-row">
+                <span class="bp-label">Business email</span>
+                <span id="rest-email" class="bp-value">@Model.BusinessEmail</span>
+            </div>
 
-            <button id="epm-open" class="edit-btn">Edit</button>
+            <div class="bp-row">
+                <span class="bp-label">Phone</span>
+                <span id="rest-phone" class="bp-value">@Model.Phone</span>
+            </div>
+
+            <div class="bp-row">
+                <span class="bp-label">Address</span>
+                <span id="rest-address" class="bp-value">@Model.Address</span>
+            </div>
+
+            <button id="epm-open" class="bp-edit-btn">Edit profile</button>
+
             @await Html.PartialAsync("_EditProfileModal")
         </div>
 
-        <div class="business-photo">
-            <img src="@(!string.IsNullOrEmpty(Model.ImageUrl) ? Model.ImageUrl : "/images/default-restaurant.jpg")" />
+        <!-- RIGHT COLUMN (image) -->
+        <div class="bp-photo">
+            <img id="rest-photo" src="@(string.IsNullOrEmpty(Model.ImageUrl)
+                                     ? "/images/default-restaurant.jpg"
+                                     : Model.ImageUrl)"
+                 alt="Restaurant photo" />
         </div>
 
     </div>
 
-    <!-- OWNER DETAILS -->
-    <h2 class="section-title">Business owner details:</h2>
 
-    <div class="owner-box">
-        <div class="owner-info">
-            <p><strong>Full name:</strong><br /> @Model.OwnerName</p>
+    <!-- OWNER SECTION -->
+    <h2 class="bp-section-title">Owner details</h2>
+
+    <div class="bp-owner-grid">
+
+        <div class="bp-owner-card">
+            <span class="bp-owner-label">Full name</span>
+            <span id="owner-name" class="bp-owner-value">@Model.OwnerName</span>
         </div>
-        <div class="owner-info">
-            <p><strong>Personal email:</strong><br /> @Model.OwnerEmail</p>
+
+        <div class="bp-owner-card">
+            <span class="bp-owner-label">Email</span>
+            <span id="owner-email" class="bp-owner-value">@Model.OwnerEmail</span>
         </div>
-        <div class="owner-info">
-            <p><strong>Phone:</strong><br /> @Model.OwnerPhone</p>
+
+        <div class="bp-owner-card">
+            <span class="bp-owner-label">Phone</span>
+            <span id="owner-phone" class="bp-owner-value">@Model.OwnerPhone</span>
         </div>
-        <div class="owner-info">
-            <p><strong>Account created:</strong><br /> @Model.AccountCreated.ToShortDateString()</p>
+
+        <div class="bp-owner-card">
+            <span class="bp-owner-label">Account created</span>
+            <span class="bp-owner-value">@Model.AccountCreated.ToShortDateString()</span>
         </div>
+
     </div>
 
     <!-- BUTTONS -->
-    <form method="post" action="/Account/Logout" onsubmit="return confirm('Log out?');">
-        <button class="logout-btn">Logout</button>
+    <form method="post" action="/Account/Logout">
+        <button class="bp-logout-btn">Log out</button>
     </form>
 
-    <form method="post" action="/Profile/Delete" onsubmit="return confirm('Delete account? This cannot be undone.');">
-        <button class="delete-btn">Delete Account</button>
+    <form method="post" action="/Profile/Delete" onsubmit="return confirm('Delete this account permanently?');">
+        <button class="bp-delete-btn">Delete account</button>
     </form>
+
 </div>
 
-<script src="~/js/modal.js"></script>
 @section Scripts {
-    <script>
-        @if (TempData["Success"] != null)
-        {
-                <text>
-                    showToast('@TempData["Success"]', 'success');
-                </text>
-        }
-
-        @if (TempData["Error"] != null)
-        {
-                <text>
-                    showToast('@TempData["Error"]', 'error');
-                </text>
-        }
-    </script>
+    <script src="~/js/profile.js" asp-append-version="true"></script>
 }

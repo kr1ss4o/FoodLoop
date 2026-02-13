@@ -1,55 +1,76 @@
 ﻿document.addEventListener("DOMContentLoaded", () => {
 
-    const dropzone = document.getElementById("epm-dropzone");
-    const fileInput = document.getElementById("epm-file");
+    const modal = document.getElementById("editProfileModal");
+    const openBtn = document.getElementById("epm-open");
+    const closeBtn = document.getElementById("epm-close");
+    const resetBtn = document.getElementById("epm-reset");
+
+    const fullNameInput = document.getElementById("epm-fullname");
+    const phoneInput = document.getElementById("epm-phone");
     const preview = document.getElementById("epm-preview");
+    const fileInput = document.getElementById("epm-file");
     const text = document.getElementById("epm-text");
 
-    // CLICK = open file dialog
-    dropzone.addEventListener("click", () => fileInput.click());
+    // Store initial values so reset works correctly
+    let initial = {
+        fullName: "",
+        phone: "",
+        imgSrc: ""
+    };
 
-    // DRAG OVER
-    dropzone.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        dropzone.classList.add("dragover");
-    });
+    // OPEN MODAL + PREFILL
+    if (openBtn) {
+        openBtn.addEventListener("click", () => {
 
-    // DRAG LEAVE
-    dropzone.addEventListener("dragleave", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        dropzone.classList.remove("dragover");
-    });
+            // New profile selectors
+            const nameEl = document.querySelector(".profile-name");
+            const phoneEl = document.querySelector(".profile-phone");
+            const avatarEl = document.querySelector(".profile-avatar");
 
-    // DROP FILE
-    dropzone.addEventListener("drop", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        dropzone.classList.remove("dragover");
+            initial.fullName = nameEl?.innerText.trim() ?? "";
+            initial.phone = phoneEl?.innerText.trim() ?? "";
+            initial.imgSrc = avatarEl?.src ?? "";
 
-        if (e.dataTransfer.files.length > 0) {
-            const file = e.dataTransfer.files[0];
-            fileInput.files = e.dataTransfer.files;
-            showPreview(file);
-        }
-    });
+            fullNameInput.value = initial.fullName;
+            phoneInput.value = initial.phone;
 
-    // FILE SELECTED VIA CLICK
-    fileInput.addEventListener("change", () => {
-        if (fileInput.files.length > 0) {
-            showPreview(fileInput.files[0]);
-        }
-    });
+            // Image preview (only if custom image exists)
+            if (initial.imgSrc && !initial.imgSrc.includes("default")) {
+                preview.src = initial.imgSrc;
+                preview.style.display = "block";
+                text.style.display = "none";
+            } else {
+                preview.style.display = "none";
+                text.style.display = "block";
+            }
 
-    // SHOW PREVIEW FUNCTION
-    function showPreview(file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            preview.src = e.target.result;
-            preview.style.display = "block";
-            text.style.display = "none";
-        };
-        reader.readAsDataURL(file);
+            modal.classList.add("show");
+        });
+    }
+
+    // CLOSE MODAL
+    if (closeBtn) {
+        closeBtn.addEventListener("click", () => {
+            modal.classList.remove("show");
+        });
+    }
+
+    // RESET BUTTON (restore original values)
+    if (resetBtn) {
+        resetBtn.addEventListener("click", () => {
+            fullNameInput.value = initial.fullName;
+            phoneInput.value = initial.phone;
+
+            fileInput.value = "";
+
+            if (initial.imgSrc && !initial.imgSrc.includes("default")) {
+                preview.src = initial.imgSrc;
+                preview.style.display = "block";
+                text.style.display = "none";
+            } else {
+                preview.style.display = "none";
+                text.style.display = "block";
+            }
+        });
     }
 });

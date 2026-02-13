@@ -78,10 +78,15 @@ namespace FoodLoop.Controllers
             return View("~/Views/Restaurant/OrderDashboard/Index.cshtml", reservations);
         }
         [HttpPost]
-        public async Task<IActionResult> EditProfile(string RestaurantName, string BusinessEmail,
-    string Phone, string Address, IFormFile? ImageUpload)
+        public async Task<IActionResult> EditProfile( string FullName, string PhoneNumber, string RestaurantName, string BusinessEmail, string Address, string CurrentPassword, string? NewPassword, IFormFile? ProfileImage)
         {
             var user = await _userManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                TempData["Error"] = "User not found.";
+                return RedirectToAction("Index");
+            }
 
             var restaurant = await _context.Restaurants
                 .FirstOrDefaultAsync(r => r.OwnerUserId == user.Id);
@@ -92,31 +97,55 @@ namespace FoodLoop.Controllers
                 return RedirectToAction("Index");
             }
 
+            // ========== PASSWORD CHECK ==========
+            var passwordCheck = await _userManager.CheckPasswordAsync(user, CurrentPassword);
+            if (!passwordCheck)
+            {
+                TempData["Error"] = "Incorrect current password.";
+                return RedirectToAction("Index");
+            }
+
+            // ========== UPDATE OWNER (USER) ==========
+            user.FullName = FullName;
+            user.PhoneNumber = PhoneNumber;
+
+            if (!string.IsNullOrWhiteSpace(NewPassword))
+            {
+                var result = await _userManager.ChangePasswordAsync(user, CurrentPassword, NewPassword);
+                if (!result.Succeeded)
+                {
+                    TempData["Error"] = "New password is invalid.";
+                    return RedirectToAction("Index");
+                }
+            }
+
+            // ========== UPDATE RESTAURANT ==========
             restaurant.Name = RestaurantName;
             restaurant.BusinessEmail = BusinessEmail;
-            restaurant.Phone = Phone;
+            restaurant.Phone = PhoneNumber;
             restaurant.Address = Address;
 
-            if (ImageUpload != null && ImageUpload.Length > 0)
+            // ========== IMAGE UPDATE ==========
+            if (ProfileImage != null && ProfileImage.Length > 0)
             {
                 var dir = Path.Combine("wwwroot", "images", "restaurants");
-                if (!Directory.Exists(dir))
-                    Directory.CreateDirectory(dir);
+                Directory.CreateDirectory(dir);
 
-                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(ImageUpload.FileName)}";
+                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(ProfileImage.FileName)}";
                 var filePath = Path.Combine(dir, fileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    await ImageUpload.CopyToAsync(stream);
+                    await ProfileImage.CopyToAsync(stream);
                 }
 
                 restaurant.ImageUrl = $"/images/restaurants/{fileName}";
             }
 
+            await _userManager.UpdateAsync(user);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Business profile updated!";
+            TempData["Success"] = "Profile successfully updated!";
             return RedirectToAction("Index");
         }
 

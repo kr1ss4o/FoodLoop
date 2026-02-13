@@ -15,8 +15,10 @@ wwwroot\images\icons\nav-orders.png
 wwwroot\images\icons\nav-profile.png
 wwwroot\images\offers\885ef6fb-ea4d-4fa7-8a91-e79dda13b37f.jpg
 wwwroot\images\offers\af38a171-2edc-413c-a704-867ddba8320e.jpg
+wwwroot\images\profile\0027e8e2-f5f1-4987-8f79-0f92d64087d8.jpg
 wwwroot\images\profile\00feb39f-6709-4ecb-9072-aa6195fbbe4a.jpg
 wwwroot\images\profile\052bb134-abc8-49a9-9406-df32d5ed21fe.gif
+wwwroot\images\profile\0a88d366-f139-4538-843c-6185ceb2f02f.gif
 wwwroot\images\profile\1471366b-7e16-4b0f-9211-96172dc78bd9.gif
 wwwroot\images\profile\1610db30-5e08-4b16-876d-c9df97ad3203.jpg
 wwwroot\images\profile\1ae15b93-8d1c-458b-b25d-3177a4deb36c.gif
@@ -27,12 +29,16 @@ wwwroot\images\profile\4bda612b-bff6-4cbb-a04a-fbf773e21ba9.png
 wwwroot\images\profile\6252227a-b6e5-4981-949f-123a8832aed4.jpg
 wwwroot\images\profile\62fc6a91-b67a-4834-bd5a-8600dc53b6a8.gif
 wwwroot\images\profile\666a8ba5-f72a-4f50-aeb7-2a8c18c182a1.jpg
+wwwroot\images\profile\758f1cc3-7ebe-4431-9bc1-bc6333e644e8.jpg
 wwwroot\images\profile\7e8a33b3-4196-4004-9e6d-0b30ea1c6838.jpg
 wwwroot\images\profile\7f0e80f7-ad89-40c2-811a-cc083d086605.jpg
+wwwroot\images\profile\7fd162e3-9902-4e1c-9366-db9d39428dc9.jpg
 wwwroot\images\profile\81b23bc7-7688-42b3-9387-a549c6704b22.JPG
 wwwroot\images\profile\95613314-2c14-4dc9-a058-f5c4cbe50733.jpg
 wwwroot\images\profile\b1899799-cc27-418a-95cb-92d8e5e468fc.jpg
 wwwroot\images\profile\b2bc4bd9-8588-40eb-a2a9-9daea956f30c.png
+wwwroot\images\profile\b9daefc5-eb25-4a82-bed4-9fef736994cf.jpg
+wwwroot\images\profile\c297d6f7-a238-42c1-8866-e4504e2e37eb.jpg
 wwwroot\images\profile\c5aea70b-0034-41dd-8f78-7aeb0aea8bd4.jpg
 wwwroot\images\profile\c6d13b41-bb15-468f-81ea-04e46001c2d9.jpg
 wwwroot\images\profile\c9882f9d-3b19-46a8-8780-98078d1eef5f.gif
@@ -42,6 +48,7 @@ wwwroot\images\profile\efdc5b29-2d3b-4a37-ae34-e7f95b133805.png
 wwwroot\images\profile\f8f90517-6f3d-4588-860f-4703b7cdf3f0.gif
 wwwroot\images\profile\fec01323-e18f-4335-a72d-cb17f081f5b7.png
 wwwroot\images\profile\ffea8f31-e021-4ff3-9088-a675ba32a6fc.png
+wwwroot\images\restaurants\296696f1-f715-4e9e-952e-8eb5caf3aac8.jpg
 wwwroot\js\cart.js
 wwwroot\js\edit-profile-modal.js
 wwwroot\js\order-dashboard.js

@@ -1,38 +1,73 @@
 ﻿<div id="editProfileModal" class="epm-overlay">
-    <div class="epm-modal epm-animate">
+    <div class="epm-modal">
 
-        <h2>Edit Profile</h2>
+        <h2 class="epm-title">Edit Profile</h2>
 
-        <form asp-action="EditProfile" asp-controller="Profile" method="post" enctype="multipart/form-data">
+        <form id="epm-form"
+              method="post"
+              enctype="multipart/form-data"
+              asp-controller="@(User.IsInRole("Restaurant") ? "BusinessProfile" : "Profile")"
+              asp-action="EditProfile">
 
-            <label>Full Name:</label>
-            <input type="text" name="FullName" id="epm-fullname" required />
-
-            <label>Phone number:</label>
-            <input type="text" name="PhoneNumber" id="epm-phone" required />
-            <small class="epm-warning" id="epm-phone-warning"></small>
-
-            <label>New profile photo:</label>
-            <div id="epm-dropzone" class="epm-dropzone">
-                <p id="epm-text">Drag & drop image here<br>or click to upload</p>
-                <img id="epm-preview" class="epm-preview" src="" style="display:none;" />
+            <!-- OWNER FULL NAME (ALWAYS REQUIRED) -->
+            <div class="epm-field">
+                <label>Full Name</label>
+                <input id="epm-fullname" name="FullName" type="text" required />
             </div>
 
-            <!-- SINGLE FILE INPUT -->
-            <input type="file" id="epm-file" name="ProfileImage" accept="image/*" hidden />
+            <!-- PHONE -->
+            <div class="epm-field">
+                <label>Phone Number</label>
+                <input id="epm-phone" name="PhoneNumber" type="text" required />
+            </div>
 
-            <label>Current password (required):</label>
-            <input type="password" name="CurrentPassword" required />
+            <!-- BUSINESS-ONLY FIELDS -->
+            @if (User.IsInRole("Restaurant"))
+            {
+                <div class="epm-field">
+                    <label>Business Name</label>
+                    <input id="epm-businessname" name="RestaurantName" type="text" required />
+                </div>
 
-            <label>New password:</label>
-            <input type="password" name="NewPassword" id="epm-pass" />
-            <small class="epm-warning" id="epm-pass-warning"></small>
+                <div class="epm-field">
+                    <label>Business Email</label>
+                    <input id="epm-email" name="BusinessEmail" type="email" required />
+                </div>
 
-            <div class="epm-btn-row">
-                <button type="submit" id="epm-save" class="epm-save">Save changes</button>
+                <div class="epm-field">
+                    <label>Address</label>
+                    <input id="epm-address" name="Address" type="text" required />
+                </div>
+            }
+
+            <!-- IMAGE -->
+            <div class="epm-field">
+                <label>Profile Photo</label>
+                <div id="epm-dropzone" class="epm-dropzone">
+                    <p id="epm-text">Drag or click to upload</p>
+                    <img id="epm-preview" class="epm-preview" />
+                </div>
+                <input type="file" id="epm-file" name="ProfileImage" hidden />
+            </div>
+
+            <!-- PASSWORDS -->
+            <div class="epm-field">
+                <label>Current Password *</label>
+                <input id="epm-currentpass" name="CurrentPassword" type="password" required />
+            </div>
+
+            <div class="epm-field">
+                <label>New Password (optional)</label>
+                <input id="epm-newpass" name="NewPassword" type="password" />
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="epm-actions">
                 <button type="button" id="epm-reset" class="epm-reset">Reset</button>
                 <button type="button" id="epm-close" class="epm-cancel">Cancel</button>
+                <button type="submit" class="epm-save">Save</button>
             </div>
+
         </form>
     </div>
 </div>

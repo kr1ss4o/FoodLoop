@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "otG6LYxALXY=",
+  "dgSpecHash": "KCFIL7J8TlA=",
   "success": true,
-  "projectFilePath": "C:\\Users\\krist\\OneDrive\\Documents\\FoodLoop\\FoodLoop\\FoodLoop.csproj",
+  "projectFilePath": "C:\\Users\\krist\\OneDrive\\Desktop\\FoodLoop\\FoodLoop\\FoodLoop.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\krist\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\krist\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",

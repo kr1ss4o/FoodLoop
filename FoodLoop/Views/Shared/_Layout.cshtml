@@ -6,15 +6,17 @@
 @inject ApplicationDbContext Db
 
 @{
-    // Current request path
+    // Current path
     string path = Context.Request.Path.Value?.ToLower() ?? "";
 
-    // Pages where navbar + modal must be hidden
+    // Hide UI on login/register
     bool hideUI =
         path.Contains("/account/login") ||
         path.Contains("/account/register");
 
-    // Get cart count if logged in
+    bool isLogged = User?.Identity?.IsAuthenticated ?? false;
+
+    // Cart count
     var u = UserManager.GetUserAsync(User).Result;
     if (u != null)
     {
@@ -33,13 +35,13 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/FoodLoop.styles.css" asp-append-version="true" />
 
+    <!-- Auth + modal style -->
     <link rel="stylesheet" href="~/css/auth.css" />
     <link rel="stylesheet" href="~/css/edit-profile-modal.css" />
 </head>
 <body class="@ViewData["BodyClass"]">
 
-    @* Only show navbar + modal if NOT on Login/Register *@
-    @if (!hideUI)
+    @if (!hideUI && isLogged)
     {
         @await Html.PartialAsync("_Navbar")
         @await Html.PartialAsync("_EditProfileModal")
@@ -57,9 +59,27 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/js/edit-profile-modal.js" defer></script>
     <script src="~/js/toast.js"></script>
 
+    @* ONLY load modal JS when modal exists *@
+    @if (isLogged && !hideUI)
+    {
+        <script src="~/js/edit-profile-modal.js" defer></script>
+    }
+
     @await RenderSectionAsync("Scripts", required: false)
+
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            showToast("@TempData["Success"]", "success");
+        </script>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <script>
+            showToast("@TempData["Error"]", "error");
+        </script>
+    }
 </body>
 </html>

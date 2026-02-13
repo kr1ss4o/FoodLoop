@@ -1,88 +1,122 @@
 ﻿document.addEventListener("DOMContentLoaded", () => {
 
-    // ===== MODAL ELEMENTS =====
     const modal = document.getElementById("editProfileModal");
     const openBtn = document.getElementById("epm-open");
     const closeBtn = document.getElementById("epm-close");
     const resetBtn = document.getElementById("epm-reset");
 
-    // ===== INPUTS =====
     const fullName = document.getElementById("epm-fullname");
+    const businessName = document.getElementById("epm-businessname");
+    const businessEmail = document.getElementById("epm-email");
     const phone = document.getElementById("epm-phone");
+    const address = document.getElementById("epm-address");
 
-    // ===== IMAGE / DROPZONE =====
     const dropzone = document.getElementById("epm-dropzone");
     const fileInput = document.getElementById("epm-file");
     const preview = document.getElementById("epm-preview");
     const text = document.getElementById("epm-text");
 
-    // ===== ORIGINAL VALUES =====
-    let originalFullName = "";
-    let originalPhone = "";
+    let initial = {};
 
-    // Extract values from profile page
-    function loadOriginalValues() {
-        const nameEl = document.querySelector(".profile-info p:nth-child(1)");
-        const phoneEl = document.querySelector(".profile-info p:nth-child(3)");
-
-        originalFullName = nameEl?.innerText.split("\n")[1] || "";
-        originalPhone = phoneEl?.innerText.split("\n")[1] || "";
-    }
-
-    // ===== OPEN MODAL =====
+    // -------------------------------------------------
+    // OPEN MODAL + PREFILL
+    // -------------------------------------------------
     if (openBtn) {
         openBtn.addEventListener("click", () => {
 
-            loadOriginalValues();
+            const isBusiness = document.querySelector(".bp-wrapper") !== null;
 
-            fullName.value = originalFullName;
-            phone.value = originalPhone;
+            if (isBusiness) {
 
-            // Always show text mode (no preview)
-            preview.style.display = "none";
-            text.style.display = "block";
-            fileInput.value = "";
+                const imgElement = document.querySelector("#rest-photo"); // <-- FIXED
+
+                initial = {
+                    fullName: document.getElementById("owner-name")?.innerText.trim() ?? "",
+                    phone: document.getElementById("owner-phone")?.innerText.trim() ?? "",
+                    businessName: document.getElementById("rest-name")?.innerText.trim() ?? "",
+                    businessEmail: document.getElementById("rest-email")?.innerText.trim() ?? "",
+                    address: document.getElementById("rest-address")?.innerText.trim() ?? "",
+                    imgSrc: imgElement?.src ?? ""
+                };
+
+                fullName.value = initial.fullName;
+                phone.value = initial.phone;
+                businessName.value = initial.businessName;
+                businessEmail.value = initial.businessEmail;
+                address.value = initial.address;
+
+            } else {
+
+                const imgElement = document.getElementById("prof-photo");
+
+                initial = {
+                    fullName: document.getElementById("prof-name")?.innerText.trim() ?? "",
+                    phone: document.getElementById("prof-phone")?.innerText.trim() ?? "",
+                    imgSrc: imgElement?.src ?? ""
+                };
+
+                fullName.value = initial.fullName;
+                phone.value = initial.phone;
+            }
+
+            // IMAGE preview
+            if (initial.imgSrc && !initial.imgSrc.includes("default")) {
+                preview.src = initial.imgSrc;
+                preview.style.display = "block";
+                text.style.display = "none";
+            } else {
+                preview.style.display = "none";
+                text.style.display = "block";
+            }
 
             modal.classList.add("show");
         });
     }
 
-    // ===== CLOSE MODAL =====
-    if (closeBtn) {
-        closeBtn.addEventListener("click", () => {
-            modal.classList.remove("show");
-        });
-    }
+    // -------------------------------------------------
+    // CLOSE MODAL
+    // -------------------------------------------------
+    closeBtn?.addEventListener("click", () => modal.classList.remove("show"));
 
-    // ===== RESET =====
-    if (resetBtn) {
-        resetBtn.addEventListener("click", () => {
+    // -------------------------------------------------
+    // RESET BUTTON
+    // -------------------------------------------------
+    resetBtn?.addEventListener("click", () => {
 
-            // Restore original text fields
-            fullName.value = originalFullName;
-            phone.value = originalPhone;
+        if (fullName) fullName.value = initial.fullName;
+        if (phone) phone.value = initial.phone;
 
-            // Clear file input + show default text
-            fileInput.value = "";
+        if (businessName) businessName.value = initial.businessName ?? "";
+        if (businessEmail) businessEmail.value = initial.businessEmail ?? "";
+        if (address) address.value = initial.address ?? "";
+
+        fileInput.value = "";
+
+        if (initial.imgSrc && !initial.imgSrc.includes("default")) {
+            preview.src = initial.imgSrc;
+            preview.style.display = "block";
+            text.style.display = "none";
+        } else {
             preview.style.display = "none";
             text.style.display = "block";
-        });
-    }
+        }
+    });
 
-    // ===== DRAG & DROP LOGIC =====
-    dropzone.addEventListener("click", () => fileInput.click());
+    // -------------------------------------------------
+    // DRAG & DROP + FILE PREVIEW
+    // -------------------------------------------------
+    dropzone?.addEventListener("click", () => fileInput.click());
 
-    dropzone.addEventListener("dragover", e => {
+    dropzone?.addEventListener("dragover", e => {
         e.preventDefault();
         dropzone.classList.add("dragover");
     });
 
-    dropzone.addEventListener("dragleave", e => {
-        e.preventDefault();
+    dropzone?.addEventListener("dragleave", () => {
         dropzone.classList.remove("dragover");
     });
 
-    dropzone.addEventListener("drop", e => {
+    dropzone?.addEventListener("drop", e => {
         e.preventDefault();
         dropzone.classList.remove("dragover");
 
@@ -93,13 +127,12 @@
         }
     });
 
-    fileInput.addEventListener("change", () => {
+    fileInput?.addEventListener("change", () => {
         if (fileInput.files.length > 0) {
             showPreview(fileInput.files[0]);
         }
     });
 
-    // ===== PREVIEW FUNCTION =====
     function showPreview(file) {
         const reader = new FileReader();
         reader.onload = e => {

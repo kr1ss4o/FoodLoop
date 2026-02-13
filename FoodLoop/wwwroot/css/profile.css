@@ -1,124 +1,171 @@
-﻿.profile-body {
-    background-color: #f3f3f3;
+﻿/* ============================================
+   GLOBAL PAGE BACKGROUND
+============================================ */
+.profile-body {
+    background: #ECFDF5;
+    min-height: 100vh;
+    padding-bottom: 40px;
 }
 
-.profile-wrapper {
-    width: 100%;
-    max-width: 900px;
-    margin: auto;
-    padding: 20px;
+/* ============================================
+   MAIN CONTAINER
+============================================ */
+.profile-container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
 }
 
-.title {
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 25px;
-    color: #00394f;
-}
-
-.profile-box {
-    background: white;
-    padding: 30px;
-    border-radius: 15px;
+/* ============================================
+   HEADER (Avatar + Info)
+============================================ */
+.profile-header {
+    background: #ffffff;
+    padding: 32px;
+    border-radius: 22px;
     display: flex;
-    justify-content: space-between;
-    margin-bottom: 30px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    gap: 32px;
+    align-items: center;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
 }
 
-.profile-info p {
-    margin-bottom: 15px;
-    font-size: 16px;
+.profile-avatar-box {
+    flex-shrink: 0;
 }
 
-.profile-photo {
-    width: 200px;
-    height: 200px;
-}
-
-.profile-photo img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
+.profile-avatar {
+    width: 140px;
+    height: 140px;
+    border-radius: 18px;
     object-fit: cover;
-    border: 3px solid #ddd;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-.section-title {
-    font-size: 22px;
+.profile-header-info {
+    flex: 1;
+}
+
+.profile-name {
+    font-size: 30px;
     font-weight: 700;
-    margin-bottom: 15px;
-    color: #00394f;
+    color: #003B33;
+    margin-bottom: 6px;
 }
 
-.insights-box {
-    background: white;
-    padding: 25px;
-    border-radius: 15px;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 30px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+.profile-email,
+.profile-phone {
+    color: #4A4A4A;
+    font-size: 15px;
+    margin-bottom: 4px;
 }
 
-.insight div {
-    margin-top: 5px;
-    font-size: 18px;
-    font-weight: 600;
-}
-
-/* ============================================================
-   EDIT BUTTON
-   ============================================================ */
-
-.edit-btn {
-    padding: 10px 24px;
-    background: #00394f;
+/* EDIT BUTTON */
+.btn-edit {
+    margin-top: 15px;
+    background: #00A36C;
+    padding: 12px 20px;
     color: white;
-    border-radius: 10px;
-    text-decoration: none;
     font-weight: 600;
+    border-radius: 12px;
     border: none;
     cursor: pointer;
-    margin-top: 10px;
-    display: inline-block;
+    transition: 0.2s;
 }
 
-.edit-btn:hover {
-    background: #005a73;
-}
-
-
-/* ============================================================
-   BUTTONS (Logout / Delete)
-   ============================================================ */
-
-.logout-btn,
-.delete-btn {
-    width: 100%;
-    padding: 16px;
-    font-size: 18px;
-    border-radius: 14px;
-    font-weight: 700;
-    border: none;
-    margin-bottom: 15px;
-    cursor: pointer;
-}
-
-.logout-btn {
-    background: #ffecec;
-    color: #cc2b2b;
-}
-
-.delete-btn {
-    background: #ff8c8c;
-    color: white;
-}
-
-    .delete-btn:hover {
-        background: #ff6d6d;
+    .btn-edit:hover {
+        background: #008B5A;
     }
 
-.logout-btn:hover {
-    background: #ffd6d6;
+/* ============================================
+   INSIGHTS
+============================================ */
+.section-title {
+    font-size: 23px;
+    margin: 40px 0 18px;
+    font-weight: 700;
+    color: #003B33;
+}
+
+.insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 20px;
+}
+
+.insight-card {
+    background: white;
+    padding: 24px;
+    border-radius: 18px;
+    text-align: center;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.insight-label {
+    color: #6A6A6A;
+    font-size: 14px;
+}
+
+.insight-value {
+    font-size: 26px;
+    margin-top: 6px;
+    font-weight: 700;
+    color: #00A36C;
+}
+
+/* ============================================
+   ACTION BUTTONS
+============================================ */
+.profile-actions {
+    margin-top: 40px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn-logout,
+.btn-delete {
+    padding: 12px 22px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    transition: 0.2s;
+}
+
+.btn-logout {
+    background: #004D66;
+    color: white;
+}
+
+    .btn-logout:hover {
+        background: #003B50;
+    }
+
+.btn-delete {
+    background: #FF5C5C;
+    color: white;
+}
+
+    .btn-delete:hover {
+        background: #D94949;
+    }
+
+/* ============================================
+   RESPONSIVE
+============================================ */
+@media (max-width: 780px) {
+
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+    }
+
+    .profile-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
 }

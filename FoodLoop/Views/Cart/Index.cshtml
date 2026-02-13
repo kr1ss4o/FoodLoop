@@ -1,7 +1,6 @@
 ﻿@using FoodLoop.Models.Enums
 @model FoodLoop.Models.ViewModels.CartPageViewModel
 
-
 @{
     ViewData["Title"] = "My Orders";
     ViewData["BodyClass"] = "profile-body";
@@ -22,60 +21,64 @@
 
 <link rel="stylesheet" href="~/css/cart.css" />
 
+<div class="cart-section">
 
-<!-- ========================================================= -->
-<!-- ORDER CHECKOUT SECTION -->
-<!-- ========================================================= -->
-<h2 class="section-title">Order checkout</h2>
+    <!-- ========================================================= -->
+    <!-- ORDER CHECKOUT SECTION -->
+    <!-- ========================================================= -->
+    <h2 class="section-title">Order checkout</h2>
 
-@if (!cart.Any())
-{
-    <p class="empty-text">Your cart is empty.</p>
-}
-else
-{
-    foreach (var item in cart)
+    @if (!cart.Any())
     {
-        <div class="cart-item-card">
+        <p class="empty-text">Your cart is empty.</p>
+    }
+    else
+    {
+        foreach (var item in cart)
+        {
+            <div class="cart-item-card">
 
-            <div class="left-part">
-                <p class="item-title">@item.Offer.Title</p>
-                <p class="item-restaurant">by @item.Offer.Restaurant.Name</p>
+                <div class="left-part">
+                    <p class="item-title">@item.Offer.Title</p>
+                    <p class="item-restaurant">by @item.Offer.Restaurant.Name</p>
 
-                <div class="quantity-controls">
-                    <form asp-action="DecreaseQuantity" method="post">
-                        <input type="hidden" name="itemId" value="@item.Id" />
-                        <button class="qty-btn">-</button>
-                    </form>
+                    <div class="quantity-controls">
+                        <form asp-action="DecreaseQuantity" method="post">
+                            <input type="hidden" name="itemId" value="@item.Id" />
+                            <button class="qty-btn">-</button>
+                        </form>
 
-                    <span class="qty-number">@item.Quantity</span>
+                        <span class="qty-number">@item.Quantity</span>
 
-                    <form asp-action="IncreaseQuantity" method="post">
-                        <input type="hidden" name="itemId" value="@item.Id" />
-                        <button class="qty-btn">+</button>
+                        <form asp-action="IncreaseQuantity" method="post">
+                            <input type="hidden" name="itemId" value="@item.Id" />
+                            <button class="qty-btn">+</button>
+                        </form>
+                    </div>
+
+                    <form asp-action="RemoveFromCart" method="post">
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <button class="remove-btn">Remove</button>
                     </form>
                 </div>
 
-                <form asp-action="RemoveFromCart" method="post">
-                    <input type="hidden" name="id" value="@item.Id" />
-                    <button class="remove-btn">Remove</button>
-                </form>
+                <img src="@item.Offer.ImageUrl" class="cart-item-image" />
             </div>
+        }
 
-            <img src="@item.Offer.ImageUrl" class="cart-item-image" />
+        <!-- TOTAL -->
+        <div class="checkout-total">
+            <strong>Total:</strong> @total EUR
         </div>
+
+        <!-- ACTIONS -->
+        <form asp-action="Checkout" method="post" class="checkout-actions">
+            <button class="order-now-btn">Order now</button>
+            <a href="/Home/Index" class="cancel-order-btn">Cancel</a>
+        </form>
     }
 
-    <div class="checkout-total">
-        <strong>Order total:</strong> @total EUR
-    </div>
-
-    <form asp-action="Checkout" method="post" class="checkout-actions">
-        <button class="order-now-btn">Order now</button>
-        <a href="/Home/Index" class="cancel-order-btn">Cancel</a>
-    </form>
-}
-
+</div>
 
 
 <!-- ========================================================= -->
@@ -83,9 +86,9 @@ else
 <!-- ========================================================= -->
 @if (ongoing.Any())
 {
-    <h2 class="section-title" style="margin-top: 40px;">Ongoing orders:</h2>
+    <h2 class="section-title">Ongoing orders</h2>
 
-    foreach (var o in ongoing)
+    @foreach (var o in ongoing)
     {
         <div class="order-card">
 
@@ -123,7 +126,7 @@ else
 <!-- ========================================================= -->
 <!-- ORDER HISTORY -->
 <!-- ========================================================= -->
-<h2 class="section-title" style="margin-top: 40px;">Order history:</h2>
+<h2 class="section-title">Order history</h2>
 
 @if (!history.Any())
 {
@@ -142,7 +145,6 @@ else
                 <p class="title">@h.Offer.Title</p>
                 <p><strong>Client:</strong> @h.User.FullName</p>
                 <p><strong>Phone:</strong> @h.User.PhoneNumber</p>
-
                 <p>
                     <strong>Status:</strong>
                     <span class="history-status @(h.Status == ReservationStatus.Finished ? "finished" : "canceled")">
@@ -166,7 +168,6 @@ else
                         <p class="title">@h.Offer.Title</p>
                         <p><strong>Client:</strong> @h.User.FullName</p>
                         <p><strong>Phone:</strong> @h.User.PhoneNumber</p>
-
                         <p>
                             <strong>Status:</strong>
                             <span class="history-status @(h.Status == ReservationStatus.Finished ? "finished" : "canceled")">
@@ -187,11 +188,11 @@ else
     <script>
         @if (TempData["Success"] != null)
         {
-            <text> showToast("@TempData["Success"]", "success"); </text>
+                <text>showToast("@TempData["Success"]", "success");</text>
         }
         @if (TempData["Error"] != null)
         {
-            <text> showToast("@TempData["Error"]", "error"); </text>
+                <text>showToast("@TempData["Error"]", "error");</text>
         }
     </script>
 }

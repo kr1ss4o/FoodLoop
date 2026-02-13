@@ -1,76 +1,70 @@
 ﻿@model FoodLoop.Models.ViewModels.ProfileViewModel
 @{
-    ViewData["Title"] = Model.FullName + "'s profile";
+    ViewData["Title"] = "My Profile";
     ViewData["BodyClass"] = "profile-body";
 }
 
-<!-- CORRECT CSS LOADING -->
 <link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
-<link rel="stylesheet" href="~/css/modal.css" asp-append-version="true" />
 
-<div class="profile-wrapper">
+<div class="profile-container">
 
-    <h1 class="title">Welcome, @Model.FullName</h1>
-
-    <!-- MAIN PROFILE BOX -->
-    <div class="profile-box">
-        <div class="profile-info">
-            <p><strong>Name:</strong><br /> @Model.FullName</p>
-            <p><strong>Email:</strong><br /> @Model.Email</p>
-            <p><strong>Phone:</strong><br /> @Model.PhoneNumber</p>
-
-            <button id="epm-open" class="edit-btn">Edit</button>
-            @await Html.PartialAsync("_EditProfileModal")
+    <!-- HEADER -->
+    <div class="profile-header">
+        <div class="profile-avatar-box">
+            <img id="prof-photo" src="@(string.IsNullOrEmpty(Model.ProfileImageUrl)
+                                         ? "/images/default-avatar.jpg"
+                                         : Model.ProfileImageUrl)"
+                 class="profile-avatar" />
         </div>
 
-        <div class="profile-photo">
-            <img class="profile-photo"
-                 src="@(string.IsNullOrEmpty(Model.ProfileImageUrl)
-                                         ? "/images/default-avatar.jpg"
-                                         : Model.ProfileImageUrl)" />
+        <div class="profile-header-info">
+            <h1 id="prof-name" class="profile-name">@Model.FullName</h1>
+            <p id="prof-email" class="profile-email">@Model.Email</p>
+            <p id="prof-phone" class="profile-phone">@Model.PhoneNumber</p>
+
+            <button id="epm-open" class="btn-edit">Edit profile</button>
         </div>
     </div>
 
     <!-- INSIGHTS -->
-    <h2 class="section-title">Insights:</h2>
+    <h2 class="section-title">Your activity</h2>
 
-    <div class="insights-box">
-        <div class="insight">
-            <strong>Total orders:</strong>
-            <div>@Model.TotalOrders</div>
+    <div class="insights-grid">
+
+        <div class="insight-card">
+            <span class="insight-label">Total orders</span>
+            <span class="insight-value">@Model.TotalOrders</span>
         </div>
-        <div class="insight">
-            <strong>Money spent:</strong>
-            <div>@Model.MoneySpent EUR</div>
+
+        <div class="insight-card">
+            <span class="insight-label">Money spent</span>
+            <span class="insight-value">@Model.MoneySpent EUR</span>
         </div>
-        <div class="insight">
-            <strong>Account created:</strong>
-            <div>@Model.AccountCreated.ToShortDateString()</div>
+
+        <div class="insight-card">
+            <span class="insight-label">Member since</span>
+            <span class="insight-value">@Model.AccountCreated.ToShortDateString()</span>
         </div>
+
     </div>
 
-    <!-- BUTTONS -->
-    <form method="post" action="/Account/Logout" onsubmit="return confirmLogout();">
-        <button class="logout-btn">Logout</button>
-    </form>
+    <!-- ACTIONS -->
+    <div class="profile-actions">
+        <form method="post" action="/Account/Logout">
+            <button class="btn-logout">Log out</button>
+        </form>
 
-    <form method="post" action="/Profile/Delete" onsubmit="return confirmDelete();">
-        <button class="delete-btn">Delete Account</button>
-    </form>
+        <form method="post" action="/Profile/Delete"
+              onsubmit="return confirm('Are you sure you want to delete your account?');">
+            <button class="btn-delete">Delete account</button>
+        </form>
+    </div>
+
 </div>
 
-<!-- FIXED JS IMPORT -->
-<script src="~/js/modal.js" asp-append-version="true"></script>
+<!-- MODAL -->
+@await Html.PartialAsync("_EditProfileModal")
 
 @section Scripts {
-    <script>
-        @if (TempData["Success"] != null)
-        {
-                <text>showToast('@TempData["Success"]', 'success');</text>
-        }
-        @if (TempData["Error"] != null)
-        {
-                <text>showToast('@TempData["Error"]', 'error');</text>
-        }
-    </script>
+    <script src="~/js/edit-profile-modal.js"></script>
 }

@@ -1,184 +1,154 @@
-﻿/* ============================================================
-   PAGE WRAPPER
-   ============================================================ */
-
-.business-wrapper {
+﻿/* WRAPPER */
+.bp-wrapper {
     width: 100%;
-    max-width: 1100px;
-    margin: auto;
-    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 20px;
 }
 
-
-/* ============================================================
-   TITLES
-   ============================================================ */
-
-.title {
-    font-size: 28px;
+/* PAGE TITLE */
+.bp-title {
+    font-size: 32px;
     font-weight: 700;
+    color: #004d66;
     margin-bottom: 25px;
-    color: #00394f;
 }
 
-.section-title {
-    font-size: 22px;
-    font-weight: 700;
-    margin: 35px 0 15px 0;
-    color: #00394f;
-}
-
-
-/* ============================================================
-   MAIN BUSINESS BOX
-   ============================================================ */
-
-.business-box {
-    background: white;
+/* MAIN PROFILE CARD */
+.bp-main-card {
+    display: flex;
+    gap: 30px;
+    background: #ffffff;
     padding: 30px;
     border-radius: 18px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 25px;
-    margin-bottom: 35px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
 }
 
-.business-info {
-    width: 55%;
-}
-
-    .business-info p {
-        margin-bottom: 15px;
-        font-size: 16px;
-    }
-
-    .business-info strong {
-        color: #00394f;
-    }
-
-
-/* ============================================================
-   BUSINESS IMAGE
-   ============================================================ */
-
-.business-photo img {
-    width: 320px;
-    height: 260px;
-    border-radius: 16px;
-    object-fit: cover;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.18);
-}
-
-
-/* ============================================================
-   EDIT BUTTON
-   ============================================================ */
-
-.edit-btn {
-    padding: 10px 24px;
-    background: #00394f;
-    color: white;
-    border-radius: 10px;
-    text-decoration: none;
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-    margin-top: 10px;
-    display: inline-block;
-}
-
-.edit-btn:hover {
-    background: #005a73;
-}
-
-
-/* ============================================================
-   OWNER DETAILS BOX
-   ============================================================ */
-
-.owner-box {
-    background: white;
-    padding: 25px;
-    border-radius: 18px;
-    display: flex;
-    justify-content: space-between;
-    gap: 25px;
-    margin-bottom: 35px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-}
-
-.owner-info {
+/* LEFT SIDE INFO */
+.bp-info {
     flex: 1;
 }
 
-    .owner-info p {
-        margin-bottom: 10px;
-    }
-
-    .owner-info strong {
-        color: #00394f;
-    }
-
-
-/* ============================================================
-   BUTTONS (Logout / Delete)
-   ============================================================ */
-
-.logout-btn,
-.delete-btn {
-    width: 100%;
-    padding: 16px;
-    font-size: 18px;
-    border-radius: 14px;
-    font-weight: 700;
-    border: none;
+.bp-section-head {
+    font-size: 22px;
+    color: #004d66;
     margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.bp-row {
+    margin-bottom: 12px;
+}
+
+.bp-label {
+    display: block;
+    font-weight: 600;
+    color: #004d66;
+}
+
+.bp-value {
+    font-size: 15px;
+    color: #222;
+}
+
+/* EDIT BUTTON */
+.bp-edit-btn {
+    margin-top: 18px;
+    background: #008B5A;
+    color: white;
+    padding: 12px 22px;
+    border-radius: 10px;
+    border: none;
     cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
 }
 
-.logout-btn {
-    background: #ffecec;
-    color: #cc2b2b;
+    .bp-edit-btn:hover {
+        background: #006945;
+    }
+
+/* RIGHT SIDE IMAGE */
+.bp-photo img {
+    width: 290px;
+    height: 220px;
+    border-radius: 14px;
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-.delete-btn {
-    background: #ff8c8c;
+
+/* OWNER GRID */
+.bp-section-title {
+    margin-top: 40px;
+    margin-bottom: 15px;
+    color: #004d66;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.bp-owner-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+}
+
+.bp-owner-card {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.bp-owner-label {
+    display: block;
+    font-weight: 600;
+    color: #004d66;
+    margin-bottom: 6px;
+}
+
+.bp-owner-value {
+    color: #222;
+}
+
+
+/* BUTTONS */
+.bp-logout-btn, .bp-delete-btn {
+    margin-top: 25px;
+    padding: 12px 22px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.bp-logout-btn {
+    background: #005F99;
+    color: #fff;
+}
+
+    .bp-logout-btn:hover {
+        background: #004b77;
+    }
+
+.bp-delete-btn {
+    background: #cc3f3f;
     color: white;
 }
 
-.delete-btn:hover {
-    background: #ff6d6d;
-}
+    .bp-delete-btn:hover {
+        background: #b52929;
+    }
 
-.logout-btn:hover {
-    background: #ffd6d6;
-}
-
-
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
-
-@media (max-width: 850px) {
-    .business-box {
-        flex-direction: column;
-        align-items: center;
+/* RESPONSIVE */
+@media (max-width: 800px) {
+    .bp-main-card {
+        flex-direction: column-reverse;
         text-align: center;
     }
 
-    .business-info {
+    .bp-photo img {
         width: 100%;
-    }
-
-    .business-photo img {
-        width: 100%;
-        height: 240px;
-    }
-
-    .owner-box {
-        flex-direction: column;
-        text-align: center;
+        height: auto;
     }
 }

@@ -1,0 +1,57 @@
+## Ignore Visual Studio temporary files, build results, and cache ##
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Ignore build output ##
+bin/
+obj/
+Debug/
+Release/
+x64/
+x86/
+[Aa][Rr][Mm]*/
+[Aa][Rr][Mm]64*/
+
+## Ignore publish profiles ##
+Properties/PublishProfiles/
+
+## Ignore NuGet packages ##
+*.nupkg
+packages/
+*.snupkg
+
+## Ignore logs ##
+*.log
+
+## Ignore wwwroot auto-generated cache ##
+wwwroot/lib/
+wwwroot/node_modules/
+
+## Ignore Node modules ##
+node_modules/
+
+## Ignore Rider / JetBrains ##
+.idea/
+*.sln.iml
+
+## Ignore VS Code settings ##
+.vscode/
+
+## Ignore SQL dev files ##
+*.mdf
+*.ldf
+
+## Ignore backups ##
+*.bak
+
+## Ignore ReSharper cache ##
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+## Ignore Image Cache ##
+*.jpg.tmp
+*.png.tmp

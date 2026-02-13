@@ -278,3 +278,4 @@ C:\Users\krist\OneDrive\Documents\FoodLoop\FoodLoop\obj\Debug\net8.0\refint\Food
 C:\Users\krist\OneDrive\Documents\FoodLoop\FoodLoop\obj\Debug\net8.0\FoodLoop.pdb
 C:\Users\krist\OneDrive\Documents\FoodLoop\FoodLoop\obj\Debug\net8.0\FoodLoop.genruntimeconfig.cache
 C:\Users\krist\OneDrive\Documents\FoodLoop\FoodLoop\obj\Debug\net8.0\ref\FoodLoop.dll
+C:\Users\krist\OneDrive\Desktop\FoodLoop\FoodLoop\obj\Debug\net8.0\FoodLoop.sourcelink.json
