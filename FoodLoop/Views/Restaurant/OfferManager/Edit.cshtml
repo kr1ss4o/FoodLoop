@@ -10,56 +10,75 @@
 
     <h2 class="form-title">Edit offer</h2>
 
-    <form asp-action="Edit" asp-controller="OfferManager"
-          method="post" enctype="multipart/form-data" class="offer-form">
+    <form asp-action="Edit"
+          asp-controller="OfferManager"
+          method="post"
+          enctype="multipart/form-data"
+          class="offer-form">
+
+        @Html.AntiForgeryToken()
 
         <input type="hidden" asp-for="Offer.Id" />
 
+        <div asp-validation-summary="All" class="text-danger"></div>
+
         <label>Title:</label>
-        <input asp-for="Offer.Title" class="input" required />
+        <input asp-for="Offer.Title" class="input" />
+        <span asp-validation-for="Offer.Title" class="text-danger"></span>
 
         <label>Description:</label>
-        <textarea asp-for="Offer.Description" class="input" required></textarea>
+        <textarea asp-for="Offer.Description" class="input"></textarea>
+        <span asp-validation-for="Offer.Description" class="text-danger"></span>
 
         <label>Original price:</label>
-        <input asp-for="Offer.OriginalPrice" class="input" type="number" min="0" step="0.01" required />
+        <input asp-for="Offer.OriginalPrice" class="input" type="number" step="0.01" />
+        <span asp-validation-for="Offer.OriginalPrice" class="text-danger"></span>
 
         <label>Discounted price:</label>
-        <input asp-for="Offer.DiscountedPrice" class="input" type="number" min="0" step="0.01" required />
+        <input asp-for="Offer.DiscountedPrice" class="input" type="number" step="0.01" />
+        <span asp-validation-for="Offer.DiscountedPrice" class="text-danger"></span>
 
         <label>Available quantity:</label>
-        <input asp-for="Offer.QuantityAvailable" class="input" type="number" min="1" required />
+        <input asp-for="Offer.QuantityAvailable" class="input" type="number" min="0" />
+        <span asp-validation-for="Offer.QuantityAvailable" class="text-danger"></span>
 
-
-        <!-- CATEGORY DROPDOWN -->
+        <!-- CATEGORY -->
         <label>Category:</label>
-        <select asp-for="Offer.CategoryId" class="input">
-            @foreach (var cat in Model.Categories)
-            {
-                <option value="@cat.Id" selected="@(cat.Id == Model.Offer.CategoryId)">
-                    @cat.Name
-                </option>
-            }
+        <select asp-for="Offer.CategoryId" class="input"
+                asp-items="@(new SelectList(Model.Categories, "Id", "Name"))">
         </select>
 
-
-        <!-- TAG CHECKBOXES -->
+        <!-- TAGS -->
         <label>Tags:</label>
         <div class="tag-list">
             @foreach (var tag in Model.Tags)
             {
-                var isChecked = Model.SelectedTags?.Contains(tag.Id) ?? false;
+                var isChecked = Model.SelectedTags != null && Model.SelectedTags.Contains(tag.Id);
 
                 <label class="tag-checkbox">
-                    <input type="checkbox" name="SelectedTags" value="@tag.Id" @(isChecked ? "checked" : "") />
+                    <input type="checkbox"
+                           name="SelectedTags"
+                           value="@tag.Id"
+                           @(isChecked ? "checked" : "") />
                     @tag.Name
                 </label>
             }
         </div>
 
+        <!-- ENDS AT -->
+        <label>Ends at:</label>
+        <input asp-for="Offer.EndsAt"
+               type="datetime-local"
+               class="input"
+               value="@(Model.Offer.EndsAt != default
+                                       ? Model.Offer.EndsAt.ToString("yyyy-MM-ddTHH:mm")
+                                       : "")" />
 
         <label>Current image:</label>
-        <img src="@Model.Offer.ImageUrl" class="preview-img" />
+        @if (!string.IsNullOrEmpty(Model.Offer.ImageUrl))
+        {
+            <img src="@Model.Offer.ImageUrl" class="preview-img" />
+        }
 
         <label>Upload new image:</label>
         <input type="file" name="ImageUpload" accept="image/*" class="input" />
@@ -70,12 +89,5 @@
 </div>
 
 @section Scripts {
-    @if (TempData["Error"] != null)
-    {
-        <script>showToast("@TempData["Error"]", "error");</script>
-    }
-    @if (TempData["Success"] != null)
-    {
-        <script>showToast("@TempData["Success"]", "success");</script>
-    }
+    <partial name="_ValidationScriptsPartial" />
 }

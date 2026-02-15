@@ -1,0 +1,112 @@
+﻿@model List<FoodLoop.Models.Entities.Offer>
+
+@{
+    ViewData["Title"] = "Marketplace";
+    var categories = ViewBag.Categories as List<FoodLoop.Models.Entities.Category>;
+}
+
+<link rel="stylesheet" href="~/css/store.css" />
+
+<div class="store-wrapper">
+
+    <h2 class="store-title">Marketplace</h2>
+
+    <!-- FILTERS -->
+    <div class="filters-wrapper">
+        <form method="get" asp-action="Index" class="marketplace-filters">
+
+            <input type="text"
+                   name="search"
+                   value="@Context.Request.Query["search"]"
+                   placeholder="Search offers, restaurants or tags..."
+                   class="search-input" />
+
+            <select name="sort" class="sort-select">
+                <option value="">Sort by</option>
+                <option value="price_asc"
+                        selected="@(Context.Request.Query["sort"] == "price_asc")">
+                    Price ↑
+                </option>
+                <option value="price_desc"
+                        selected="@(Context.Request.Query["sort"] == "price_desc")">
+                    Price ↓
+                </option>
+                <option value="newest"
+                        selected="@(Context.Request.Query["sort"] == "newest")">
+                    Newest
+                </option>
+            </select>
+
+            <button type="submit" class="filter-btn">
+                Apply
+            </button>
+
+            <a asp-action="Index" class="clear-btn">
+                Clear
+            </a>
+
+        </form>
+    </div>
+
+
+    <!-- GRID -->
+    <div class="store-grid">
+
+        @if (!Model.Any())
+        {
+            <p>No active offers found.</p>
+        }
+
+        @foreach (var offer in Model)
+        {
+            <a asp-controller="Offers"
+               asp-action="Details"
+               asp-route-id="@offer.Id"
+               class="store-card-link">
+
+                <div class="store-card">
+
+                    <img src="@(string.IsNullOrEmpty(offer.ImageUrl)
+                                                                      ? "/images/no-image.png"
+                                                                      : offer.ImageUrl)"
+                     class="store-image" />
+
+                    <div class="store-body">
+
+                        <div class="store-title-small">
+                            @offer.Title
+                        </div>
+
+                        <div class="store-restaurant">
+                            @offer.Restaurant.Name
+                        </div>
+
+                        <div class="store-price">
+                            @offer.DiscountedPrice EUR
+                        </div>
+
+                        <div class="store-stock">
+                        @if (offer.QuantityAvailable <= 5)
+                            {
+                                <span class="low-stock">
+                                    Only @offer.QuantityAvailable left
+                                </span>
+                            }
+                            else
+                            {
+                                <span>
+                                    @offer.QuantityAvailable available
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+            </a>
+
+            
+        }
+
+    </div>
+
+</div>

@@ -62,21 +62,6 @@ namespace FoodLoop.Controllers
 
             return View(vm);
         }
-        public async Task<IActionResult> OrderDashboard()
-        {
-            var user = await _userManager.GetUserAsync(User);
-
-            var restaurant = await _context.Restaurants
-                .FirstOrDefaultAsync(r => r.OwnerUserId == user.Id);
-
-            var reservations = await _context.Reservations
-                .Include(r => r.User)
-                .Include(r => r.Offer)
-                .Where(r => r.Offer.RestaurantId == restaurant.Id)
-                .ToListAsync();
-
-            return View("~/Views/Restaurant/OrderDashboard/Index.cshtml", reservations);
-        }
         [HttpPost]
         public async Task<IActionResult> EditProfile( string FullName, string PhoneNumber, string RestaurantName, string BusinessEmail, string Address, string CurrentPassword, string? NewPassword, IFormFile? ProfileImage)
         {

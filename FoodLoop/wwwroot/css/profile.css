@@ -79,12 +79,6 @@
 /* ============================================
    INSIGHTS
 ============================================ */
-.section-title {
-    font-size: 23px;
-    margin: 40px 0 18px;
-    font-weight: 700;
-    color: #003B33;
-}
 
 .insights-grid {
     display: grid;

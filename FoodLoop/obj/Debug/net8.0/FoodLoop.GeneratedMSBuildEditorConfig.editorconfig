@@ -44,10 +44,6 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQnVzaW5lc3NQcm9maWxlXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/krist/OneDrive/Desktop/FoodLoop/FoodLoop/Views/Cart/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2FydFxJbmRleC5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
 [C:/Users/krist/OneDrive/Desktop/FoodLoop/FoodLoop/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
@@ -56,8 +52,24 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/krist/OneDrive/Desktop/FoodLoop/FoodLoop/Views/Offers/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2ZmZXJzXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/krist/OneDrive/Desktop/FoodLoop/FoodLoop/Views/Offers/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT2ZmZXJzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/krist/OneDrive/Desktop/FoodLoop/FoodLoop/Views/Orders/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/krist/OneDrive/Desktop/FoodLoop/FoodLoop/Views/Profile/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZmlsZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/krist/OneDrive/Desktop/FoodLoop/FoodLoop/Views/RestaurantDashboard/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVzdGF1cmFudERhc2hib2FyZFxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/krist/OneDrive/Desktop/FoodLoop/FoodLoop/Views/Restaurant/OfferManager/Create.cshtml]

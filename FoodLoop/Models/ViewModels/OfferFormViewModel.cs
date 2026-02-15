@@ -4,11 +4,11 @@ namespace FoodLoop.Models.ViewModels
 {
     public class OfferFormViewModel
     {
-        public Offer Offer { get; set; }
-        public List<Category> Categories { get; set; }
-        public List<Tag> Tags { get; set; }
+        public Offer Offer { get; set; } = new();
 
-        // ✔ Selected tags when creating or editing
+        public List<Category>? Categories { get; set; }
+        public List<Tag>? Tags { get; set; }
+
         public List<Guid>? SelectedTags { get; set; }
     }
 }

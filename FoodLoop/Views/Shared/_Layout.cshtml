@@ -1,85 +1,171 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using FoodLoop.Models.Entities
+@using FoodLoop.Models.Enums
 @using FoodLoop.Data
 
 @inject UserManager<User> UserManager
 @inject ApplicationDbContext Db
 
 @{
-    // Current path
-    string path = Context.Request.Path.Value?.ToLower() ?? "";
+    /* =====================================================
+       BASIC STATE
+    ===================================================== */
 
-    // Hide UI on login/register
-    bool hideUI =
-        path.Contains("/account/login") ||
-        path.Contains("/account/register");
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
 
     bool isLogged = User?.Identity?.IsAuthenticated ?? false;
 
-    // Cart count
-    var u = UserManager.GetUserAsync(User).Result;
-    if (u != null)
+    // Hide UI explicitly on Login & Register
+    bool hideUI =
+        controller == "Account" &&
+        (action == "Login" || action == "Register");
+
+    /* =====================================================
+       GET CURRENT USER (ASYNC SAFE)
+    ===================================================== */
+
+    User? currentUser = null;
+
+    if (isLogged)
     {
-        ViewBag.CartCount = Db.CartItems.Count(c => c.UserId == u.Id);
+        currentUser = await UserManager.GetUserAsync(User);
+    }
+
+    /* =====================================================
+       BADGES (CartCount for Client, PendingCount for Restaurant)
+    ===================================================== */
+
+    ViewBag.CartCount = 0;
+    ViewBag.PendingCount = 0;
+
+    if (currentUser != null)
+    {
+        // Client cart badge (safe even for restaurant users)
+        ViewBag.CartCount = Db.CartItems.Count(c => c.UserId == currentUser.Id);
+
+        // Restaurant pending badge
+        var roles = await UserManager.GetRolesAsync(currentUser);
+
+        if (roles.Contains("Restaurant"))
+        {
+            var restaurantId = Db.Restaurants
+                .Where(r => r.OwnerUserId == currentUser.Id)
+                .Select(r => (Guid?)r.Id)
+                .FirstOrDefault();
+
+            if (restaurantId != null)
+            {
+                ViewBag.PendingCount = Db.Reservations
+                    .Count(r =>
+                        r.Status == ReservationStatus.Pending &&
+                        r.Items.Any(i => i.Offer.RestaurantId == restaurantId.Value));
+            }
+        }
     }
 }
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+    <!-- =====================================================
+         META
+    ===================================================== -->
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - FoodLoop</title>
 
+    <!-- =====================================================
+         CSS - CORE
+    ===================================================== -->
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Global Styles -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/FoodLoop.styles.css" asp-append-version="true" />
 
-    <!-- Auth + modal style -->
+    <!-- Auth + Profile Modal Styles -->
     <link rel="stylesheet" href="~/css/auth.css" />
     <link rel="stylesheet" href="~/css/edit-profile-modal.css" />
-</head>
-<body class="@ViewData["BodyClass"]">
 
+</head>
+
+<body class="@ViewData["BodyClass"]" data-theme="green">
+
+    <!-- =====================================================
+         NAVBAR + PROFILE MODAL
+         (Hidden on Login/Register)
+    ===================================================== -->
     @if (!hideUI && isLogged)
     {
         @await Html.PartialAsync("_Navbar")
         @await Html.PartialAsync("_EditProfileModal")
     }
 
-    <div class="container">
-        <main role="main" class="pb-3">
+    <!-- =====================================================
+         MAIN CONTENT
+    ===================================================== -->
+
+    <div class="container py-4">
+        <main role="main">
             @RenderBody()
         </main>
     </div>
 
+    <!-- =====================================================
+         GLOBAL TOAST CONTAINER
+    ===================================================== -->
+
     <div id="toast-container"></div>
+
+    <!-- =====================================================
+         JAVASCRIPT - CORE
+    ===================================================== -->
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
+    <!-- Global JS -->
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- Toast System -->
     <script src="~/js/toast.js"></script>
 
-    @* ONLY load modal JS when modal exists *@
+    <!-- =====================================================
+         PROFILE MODAL SCRIPT (LOAD ONLY WHEN LOGGED)
+    ===================================================== -->
     @if (isLogged && !hideUI)
     {
         <script src="~/js/edit-profile-modal.js" defer></script>
     }
 
+    <!-- =====================================================
+         PAGE SPECIFIC SCRIPTS  ✅ IMPORTANT
+    ===================================================== -->
     @await RenderSectionAsync("Scripts", required: false)
 
+    <!-- =====================================================
+         TEMP DATA TOAST HANDLING
+    ===================================================== -->
     @if (TempData["Success"] != null)
     {
         <script>
             showToast("@TempData["Success"]", "success");
         </script>
     }
+
     @if (TempData["Error"] != null)
     {
         <script>
             showToast("@TempData["Error"]", "error");
         </script>
     }
+
 </body>
 </html>

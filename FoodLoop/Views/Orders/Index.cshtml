@@ -1,0 +1,296 @@
+﻿@using FoodLoop.Models.Enums
+@model FoodLoop.Models.ViewModels.CartPageViewModel
+
+@{
+    ViewData["Title"] = "My Orders";
+
+    var cart = Model.CartItems;
+    var reservations = Model.Reservations;
+
+    var ongoing = reservations
+    .Where(r => r.Status == ReservationStatus.Pending ||
+                r.Status == ReservationStatus.Confirmed ||
+                r.Status == ReservationStatus.OutForDelivery).ToList();
+
+    var history = reservations
+        .Where(r => r.Status == ReservationStatus.Finished || r.Status == ReservationStatus.Canceled)
+        .ToList();
+
+    decimal total = cart.Sum(c => c.Offer.DiscountedPrice * c.Quantity);
+}
+
+<link rel="stylesheet" href="~/css/cart.css" />
+
+
+<div class="orders-wrapper">
+
+    <!-- HEADER -->
+    <div class="mb-4">
+        <h2 class="fw-bold">My Orders</h2>
+        <p class="text-muted">Track and manage your food reservations</p>
+    </div>
+
+    <!-- TABS -->
+    <ul class="nav nav-pills mb-4 gap-2">
+        <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#cart-tab">
+                <i class="bi bi-bag"></i> Cart
+            </button>
+        </li>
+
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="pill" data-bs-target="#ongoing-tab">
+                <i class="bi bi-clock-history"></i> Ongoing
+            </button>
+        </li>
+
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="pill" data-bs-target="#history-tab">
+                <i class="bi bi-check-circle"></i> History
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+
+        <!-- ================= CART TAB ================= -->
+        <div class="tab-pane fade show active" id="cart-tab">
+
+            @if (!cart.Any())
+            {
+                <div class="empty-state">
+                    <i class="bi bi-bag-x fs-1 text-muted"></i>
+                    <p class="mt-3">Your cart is empty.</p>
+                </div>
+            }
+            else
+            {
+                @foreach (var item in cart)
+                {
+                    <div class="app-card mb-3">
+
+                        <div class="d-flex justify-content-between align-items-center">
+
+                            <div>
+                                <div class="fw-semibold">@item.Offer.Title</div>
+                                <small class="text-muted">@item.Offer.Restaurant.Name</small>
+                            </div>
+
+                            <div class="text-end">
+                                <div class="fw-bold">
+                                    @(item.Offer.DiscountedPrice* item.Quantity) EUR
+                                </div>
+                                <small>x @item.Quantity</small>
+                            </div>
+
+                        </div>
+
+                        <div class="d-flex gap-2 mt-3">
+
+                            <form asp-controller="Cart" asp-action="DecreaseQuantity" method="post">
+                                <input type="hidden" name="itemId" value="@item.Id" />
+                                <button class="btn btn-sm btn-outline-secondary">-</button>
+                            </form>
+
+                            <form asp-controller="Cart" asp-action="IncreaseQuantity" method="post">
+                                <input type="hidden" name="itemId" value="@item.Id" />
+                                <button class="btn btn-sm btn-outline-secondary">+</button>
+                            </form>
+
+                            <form asp-controller="Cart" asp-action="RemoveFromCart" method="post" class="ms-auto">
+                                <input type="hidden" name="id" value="@item.Id" />
+                                <button class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+
+                        </div>
+
+                    </div>
+                }
+
+                <!-- CHECKOUT PANEL -->
+                <div class="checkout-panel mt-4">
+
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Total</span>
+                        <span class="fw-bold fs-5">@total EUR</span>
+                    </div>
+
+                    <form asp-controller="Cart" asp-action="Checkout" method="post">
+
+                        <div class="mb-3">
+                            <label class="form-label">Delivery Type</label>
+                            <select name="deliveryType" class="form-select">
+                                <option value="Pickup">Pickup (Pay on location)</option>
+                                <option value="Delivery">Delivery (Pay on delivery)</option>
+                            </select>
+                        </div>
+                        <div class="recipient-section">
+
+                            <div class="form-check mb-2">
+
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="orderForSomeone"
+                                       name="IsForSomeoneElse"
+                                       value="true"
+                                       onchange="toggleRecipientFields()" />
+
+                                <input type="hidden"
+                                       name="IsForSomeoneElse"
+                                       value="false" />
+
+                                <label class="form-check-label" for="orderForSomeone">
+                                    Order for someone else
+                                </label>
+                            </div>
+
+                            <div id="recipientFields" style="display:none;">
+
+                                <input type="text"
+                                       name="RecipientFullName"
+                                       class="form-control mb-2"
+                                       placeholder="Recipient full name" />
+
+                                <input type="text"
+                                       name="RecipientPhone"
+                                       class="form-control"
+                                       maxlength="10"
+                                       pattern="\d{10}"
+                                       inputmode="numeric"
+                                       placeholder="Recipient phone (10 digits)" />
+                            </div>
+
+                        </div>
+                        <button class="btn btn-primary-custom w-100">
+                            Confirm Reservation
+                        </button>
+
+                    </form>
+
+                </div>
+            }
+
+        </div>
+
+        <!-- ================= ONGOING TAB ================= -->
+        <div class="tab-pane fade" id="ongoing-tab">
+
+            @if (!ongoing.Any())
+            {
+                <div class="empty-state">
+                    <i class="bi bi-hourglass-split fs-1 text-muted"></i>
+                    <p class="mt-3">No ongoing orders.</p>
+                </div>
+            }
+            else
+            {
+                @foreach (var o in ongoing)
+                {
+                    <div class="app-card mb-3">
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="fw-semibold">
+                                Order #@o.Id.ToString().Substring(0, 6)
+                            </span>
+
+                            <div class="progress-status">
+
+                                <span class="step @(o.Status >= ReservationStatus.Pending ? "done" : "")">
+                                    Pending
+                                </span>
+
+                                <span class="step @(o.Status >= ReservationStatus.Confirmed ? "done" : "")">
+                                    Confirmed
+                                </span>
+
+                                @if (o.DeliveryType == "Delivery")
+                                {
+                                    <span class="step @(o.Status >= ReservationStatus.OutForDelivery ? "done" : "")">
+                                        Out for delivery
+                                    </span>
+                                }
+
+                                <span class="step @(o.Status == ReservationStatus.Finished ? "done" : "")">
+                                    Finished
+                                </span>
+
+                            </div>
+                        </div>
+
+                        @foreach (var item in o.Items)
+                        {
+                            <div class="small text-muted">
+                                @item.Offer.Title (Quantity: @item.Quantity)
+                            </div>
+                        }
+
+                        <div class="fw-bold mt-2">
+                            Total: @o.TotalPrice EUR
+                        </div>
+
+                    </div>
+                }
+            }
+
+        </div>
+
+        <!-- ================= HISTORY TAB ================= -->
+        <div class="tab-pane fade" id="history-tab">
+
+            @if (!history.Any())
+            {
+                <div class="empty-state">
+                    <i class="bi bi-check-circle fs-1 text-muted"></i>
+                    <p class="mt-3">No past orders.</p>
+                </div>
+            }
+            else
+            {
+                @foreach (var h in history)
+                {
+                    <div class="app-card mb-3">
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="fw-semibold">
+                                Order #@h.Id.ToString().Substring(0, 6)
+                            </span>
+
+                            <span class="badge
+                                @(h.Status == ReservationStatus.Finished ? "bg-success" : h.Status == ReservationStatus.Canceled ? "bg-danger"
+                                : "bg-secondary")">
+                                @h.Status
+                            </span>
+
+                        </div>
+
+                        @foreach (var item in h.Items)
+                        {
+                            <div class="small text-muted">
+                                @item.Offer.Title (Quantity: @item.Quantity)
+                            </div>
+                        }
+
+                        <div class="fw-bold mt-2">
+                            Total: @h.TotalPrice EUR
+                        </div>
+
+                    </div>
+                }
+            }
+
+        </div>
+
+    </div>
+</div>
+@section Scripts {
+    <script>
+        function toggleRecipientFields() {
+            const checkbox = document.getElementById("orderForSomeone");
+            const fields = document.getElementById("recipientFields");
+
+            fields.style.display = checkbox.checked ? "block" : "none";
+        }
+    </script>
+}

@@ -4,66 +4,171 @@
 @inject UserManager<User> UserManager
 
 @{
-    var user = UserManager.GetUserAsync(User).Result;
+    /* =====================================================
+       GET CURRENT USER (ASYNC SAFE)
+    ===================================================== */
+
+    User? user = await UserManager.GetUserAsync(User);
 
     string currentPath = Context.Request.Path.Value?.ToLower() ?? "";
 
-    string role = user != null
-        ? (UserManager.GetRolesAsync(user).Result.FirstOrDefault() ?? "Client")
-        : "None";
+    string role = "Client";
+
+    if (user != null)
+    {
+        var roles = await UserManager.GetRolesAsync(user);
+        role = roles.FirstOrDefault() ?? "Client";
+    }
 
     bool isBusiness = role == "Restaurant";
 
-    // Active detection
+    /* =====================================================
+       ACTIVE PAGE DETECTION
+    ===================================================== */
+
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+
     bool isProfileActive =
-        currentPath.Contains("/profile") ||
-        currentPath.Contains("/businessprofile");
+        controller == "Profile" ||
+        controller == "BusinessProfile";
 
-    bool isCartActive = currentPath.Contains("/cart");
+    bool isCartActive =
+        controller == "Orders";
 
-    bool isOrderManagerActive = currentPath.Contains("/ordermanager");
-    bool isOfferManagerActive = currentPath.Contains("/offermanager");
+    bool isOrderManagerActive =
+        controller == "OrderManager";
+
+    bool isOfferManagerActive =
+        controller == "OfferManager";
 }
 
-<nav class="cart-navbar">
+<nav class="navbar navbar-expand-lg app-navbar">
 
-    <!-- BACK BUTTON -->
-    <a href="javascript:history.back()" class="icon-btn">
-        <img class="nav-icon" src="/images/icons/nav-back.png" />
-    </a>
+    <div class="container-fluid">
 
-    <div class="right-icons">
+        <!-- =====================================================
+             LOGO / BRAND
+        ===================================================== -->
 
-        @if (!isBusiness)
-        {
-            <!-- CLIENT → CART -->
-            <a href="/Cart/Index" class="icon-btn @(isCartActive ? "active" : "")">
-                <img class="nav-icon" src="/images/icons/nav-cart.png" />
-
-                @if (ViewBag.CartCount > 0)
-                {
-                    <span class="cart-bubble">@ViewBag.CartCount</span>
-                }
-            </a>
-        }
-        else
-        {
-            <!-- BUSINESS → ORDER MANAGER -->
-            <a href="/OrderManager" class="icon-btn @(isOrderManagerActive ? "active" : "")">
-                <img class="nav-icon" src="/images/icons/nav-orders.png" />
-            </a>
-
-            <!-- BUSINESS → OFFER MANAGER -->
-            <a href="/OfferManager" class="icon-btn @(isOfferManagerActive ? "active" : "")">
-                <img class="nav-icon" src="/images/icons/nav-offermanager.png" />
-            </a>
-        }
-
-        <!-- PROFILE (auto route based on role) -->
-        <a href="@(isBusiness ? "/BusinessProfile" : "/Profile")"
-           class="icon-btn @(isProfileActive ? "active" : "")">
-
-            <img class="nav-icon" src="/images/icons/nav-profile.png" />
+        <a class="navbar-brand fw-bold text-success" href="/">
+            <i class="bi bi-leaf-fill"></i> FoodLoop
         </a>
+
+        <!-- MOBILE TOGGLER -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- =====================================================
+             NAV LINKS
+        ===================================================== -->
+
+        <div class="collapse navbar-collapse" id="mainNavbar">
+
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+
+                @if (!isBusiness)
+                {
+                    <!-- CLIENT LINKS -->
+
+                    <li class="nav-item">
+                        <a asp-controller="Orders"
+                           asp-action="Index"
+                           class="nav-link @(isCartActive ? "active fw-semibold" : "")">
+
+                            <i class="bi bi-bag"></i> My Orders
+
+                            @if (ViewBag.CartCount != null && ViewBag.CartCount > 0)
+                            {
+                                <span id="cartBadge"
+                                      class="badge bg-success ms-1 cart-badge @(ViewBag.CartCount > 0 ? "" : "d-none")">
+                                    @ViewBag.CartCount
+                                </span>
+                            }
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-controller="Offers"
+                           asp-action="Index"
+                           class="nav-link">
+                            <i class="bi bi-shop"></i> Browse
+                        </a>
+                    </li>
+
+                }
+                else
+                {
+                    <!-- BUSINESS LINKS -->
+
+                    <li class="nav-item">
+                        <a asp-controller="OrderManager"
+                           asp-action="Index"
+                           class="nav-link @(isOrderManagerActive ? "active fw-semibold" : "")">
+
+                            <i class="bi bi-receipt"></i> Orders
+
+                            @if (ViewBag.PendingCount != null && ViewBag.PendingCount > 0)
+                            {
+                                <span id="pendingBadge"
+                                      class="badge bg-danger ms-1 @(ViewBag.PendingCount > 0 ? "" : "d-none")">
+                                    @ViewBag.PendingCount
+                                </span>
+                            }
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a asp-controller="OfferManager"
+                           asp-action="Index"
+                           class="nav-link @(isOfferManagerActive ? "active fw-semibold" : "")">
+
+                            <i class="bi bi-megaphone"></i> Offers
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-controller="RestaurantDashboard"
+                           asp-action="Index"
+                           class="nav-link @(controller == "RestaurantDashboard" ? "active fw-semibold" : "")">
+                            <i class="bi bi-graph-up"></i> Dashboard
+                        </a>
+                    </li>
+                }
+
+                <!-- PROFILE -->
+
+                <li class="nav-item">
+                    @if (isBusiness)
+                    {
+                        <a asp-controller="BusinessProfile"
+                           asp-action="Index"
+                           class="nav-link @(isProfileActive ? "active fw-semibold" : "")">
+                            <i class="bi bi-person-circle"></i> Profile
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Profile"
+                           asp-action="Index"
+                           class="nav-link @(isProfileActive ? "active fw-semibold" : "")">
+                            <i class="bi bi-person-circle"></i> Profile
+                        </a>
+                    }
+                </li>
+
+                <!-- LOGOUT -->
+
+                <li class="nav-item">
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                        <button type="submit" class="nav-link border-0 bg-transparent">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </button>
+                    </form>
+                </li>
+
+            </ul>
+
+        </div>
     </div>
+
 </nav>

@@ -142,14 +142,27 @@ namespace FoodLoop.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("OfferId")
+                    b.Property<string>("DeliveryType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsForSomeoneElse")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid?>("OfferId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
+                    b.Property<string>("RecipientFullName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RecipientPhone")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -162,6 +175,36 @@ namespace FoodLoop.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Reservations");
+                });
+
+            modelBuilder.Entity("FoodLoop.Models.Entities.ReservationItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("OfferId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("PriceSnapshot")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("ReservationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OfferId");
+
+                    b.HasIndex("ReservationId");
+
+                    b.ToTable("ReservationItems");
                 });
 
             modelBuilder.Entity("FoodLoop.Models.Entities.Restaurant", b =>
@@ -494,11 +537,9 @@ namespace FoodLoop.Migrations
 
             modelBuilder.Entity("FoodLoop.Models.Entities.Reservation", b =>
                 {
-                    b.HasOne("FoodLoop.Models.Entities.Offer", "Offer")
+                    b.HasOne("FoodLoop.Models.Entities.Offer", null)
                         .WithMany("Reservations")
-                        .HasForeignKey("OfferId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("OfferId");
 
                     b.HasOne("FoodLoop.Models.Entities.User", "User")
                         .WithMany("Reservations")
@@ -506,9 +547,26 @@ namespace FoodLoop.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FoodLoop.Models.Entities.ReservationItem", b =>
+                {
+                    b.HasOne("FoodLoop.Models.Entities.Offer", "Offer")
+                        .WithMany()
+                        .HasForeignKey("OfferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FoodLoop.Models.Entities.Reservation", "Reservation")
+                        .WithMany("Items")
+                        .HasForeignKey("ReservationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Offer");
 
-                    b.Navigation("User");
+                    b.Navigation("Reservation");
                 });
 
             modelBuilder.Entity("FoodLoop.Models.Entities.Restaurant", b =>
@@ -581,6 +639,11 @@ namespace FoodLoop.Migrations
                     b.Navigation("OfferTags");
 
                     b.Navigation("Reservations");
+                });
+
+            modelBuilder.Entity("FoodLoop.Models.Entities.Reservation", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("FoodLoop.Models.Entities.Restaurant", b =>

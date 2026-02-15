@@ -2,210 +2,258 @@
 @model List<FoodLoop.Models.Entities.Reservation>
 
 @{
-    ViewData["Title"] = "Order Dashboard";
+
+    ViewData["Title"] = "Order Manager";
     ViewData["BodyClass"] = "profile-body";
-}
 
-<link rel="stylesheet" href="~/css/order-dashboard.css" />
-
-<h2 class="section-title">Pending orders:</h2>
-
-@{
     var pending = Model.Where(r => r.Status == ReservationStatus.Pending).ToList();
-}
 
-@if (!pending.Any())
-{
-    <p class="empty-text">No pending orders.</p>
-}
-else
-{
-    foreach (var p in pending)
-    {
-        <div class="order-card">
-            <div class="order-info">
-                <p class="title">@p.Offer.Title</p>
-                <p><strong>Client name:</strong> @p.User.FullName</p>
-                <p><strong>Client phone:</strong> @p.User.PhoneNumber</p>
-            </div>
+    var confirmed = Model.Where(r =>
 
-            <div class="status-box">
-                <form method="post" action="/BusinessProfile/Cancel">
-                    <input type="hidden" name="id" value="@p.Id" />
-                    <button class="cancel-btn">Cancel</button>
-                </form>
+    r.Status == ReservationStatus.Confirmed ||
 
-                <form method="post" action="/BusinessProfile/Confirm">
-                    <input type="hidden" name="id" value="@p.Id" />
-                    <button class="confirm-btn">Confirm</button>
-                </form>
-            </div>
+    r.Status == ReservationStatus.OutForDelivery);
 
-            <img src="@p.Offer.ImageUrl" class="order-image" />
-        </div>
-    }
-}
-
-
-
-<h2 class="section-title" style="margin-top:40px;">Confirmed orders:</h2>
-
-@{
-    var confirmed = Model
-        .Where(r => r.Status == ReservationStatus.Confirmed)
-        .OrderByDescending(r => r.CreatedAt)
-        .ToList();
-
-    var confirmedPreview = confirmed.Take(3).ToList();
-    var confirmedMore = confirmed.Skip(3).ToList();
-}
-
-@if (!confirmed.Any())
-{
-    <p class="empty-text">No confirmed orders.</p>
-}
-else
-{
-    <div id="confirmed-container">
-
-        <!-- ALWAYS SHOW FIRST 3 -->
-        @foreach (var c in confirmedPreview)
-        {
-            <div class="order-card">
-                <div class="order-info">
-                    <p class="title">@c.Offer.Title</p>
-                    <p><strong>Client name:</strong> @c.User.FullName</p>
-                    <p><strong>Client phone:</strong> @c.User.PhoneNumber</p>
-                </div>
-
-                <div class="status-box">
-                    <form method="post" action="/BusinessProfile/Cancel">
-                        <input type="hidden" name="id" value="@c.Id" />
-                        <button class="cancel-btn">Cancel</button>
-                    </form>
-
-                    <form method="post" action="/BusinessProfile/Finish">
-                        <input type="hidden" name="id" value="@c.Id" />
-                        <button class="finish-btn">Finish</button>
-                    </form>
-                </div>
-
-                <img src="@c.Offer.ImageUrl" class="order-image" />
-            </div>
-        }
-
-        <!-- MORE (HIDDEN INITIALLY) -->
-        <div id="confirmed-more" style="display:none;">
-            @foreach (var c in confirmedMore)
-            {
-                <div class="order-card">
-                    <div class="order-info">
-                        <p class="title">@c.Offer.Title</p>
-                        <p><strong>Client name:</strong> @c.User.FullName</p>
-                        <p><strong>Client phone:</strong> @c.User.PhoneNumber</p>
-                    </div>
-
-                    <div class="status-box">
-                        <form method="post" action="/BusinessProfile/Cancel">
-                            <input type="hidden" name="id" value="@c.Id" />
-                            <button class="cancel-btn">Cancel</button>
-                        </form>
-
-                        <form method="post" action="/BusinessProfile/Finish">
-                            <input type="hidden" name="id" value="@c.Id" />
-                            <button class="finish-btn">Finish</button>
-                        </form>
-                    </div>
-
-                    <img src="@c.Offer.ImageUrl" class="order-image" />
-                </div>
-            }
-        </div>
-
-        @if (confirmed.Count > 3)
-        {
-            <button id="btn-confirmed-toggle" class="show-more-btn">Show more</button>
-        }
-    </div>
-}
-
-<h2 class="section-title" style="margin-top:40px;">Order history:</h2>
-
-@{
     var history = Model
         .Where(r => r.Status == ReservationStatus.Finished || r.Status == ReservationStatus.Canceled)
-        .OrderByDescending(r => r.CreatedAt)
         .ToList();
-
-    var historyPreview = history.Take(3).ToList();
-    var historyMore = history.Skip(3).ToList();
 }
 
-@if (!history.Any())
-{
-    <p class="empty-text">No past orders.</p>
-}
-else
-{
-    <div id="history-container">
+<link rel="stylesheet" href="~/css/order-manager.css" />
 
-        @foreach (var h in historyPreview)
+<div class="order-manager-wrapper">
+
+    <h2 class="dashboard-title">Order Manager</h2>
+
+    <!-- ================= PENDING ================= -->
+
+    <h4 class="section-heading">Pending Orders</h4>
+
+    @if (!pending.Any())
+    {
+        <p class="empty-text">No pending orders.</p>
+    }
+    else
+    {
+        @foreach (var order in pending)
         {
-            <div class="order-card history">
-                <div class="order-info">
-                    <p class="title">@h.Offer.Title</p>
-                    <p><strong>Client name:</strong> @h.User.FullName</p>
-                    <p><strong>Client phone:</strong> @h.User.PhoneNumber</p>
-                    <p>
-                        <strong>Status:</strong>
-                        <span class="history-status @(h.Status == ReservationStatus.Finished ? "finished" : "canceled")">
-                            @h.Status
-                        </span>
-                    </p>
-                </div>
+            <div class="dashboard-card pending-card">
 
-                <img src="@h.Offer.ImageUrl" class="order-image" />
-            </div>
-        }
-
-        <div id="history-more" style="display:none;">
-            @foreach (var h in historyMore)
-            {
-                <div class="order-card history">
-                    <div class="order-info">
-                        <p class="title">@h.Offer.Title</p>
-                        <p><strong>Client name:</strong> @h.User.FullName</p>
-                        <p><strong>Client phone:</strong> @h.User.PhoneNumber</p>
-                        <p>
-                            <strong>Status:</strong>
-                            <span class="history-status @(h.Status == ReservationStatus.Finished ? "finished" : "canceled")">
-                                @h.Status
-                            </span>
-                        </p>
+                <div class="card-header-row">
+                    <div>
+                        <strong>Order #@order.Id.ToString().Substring(0, 6)</strong>
+                        <div class="small-text">
+                            @if (order.IsForSomeoneElse)
+                            {
+                                <div class="small-text">
+                                    <strong>Recipient:</strong> @order.RecipientFullName · @order.RecipientPhone
+                                </div>
+                                <div class="small-text text-muted">
+                                    Ordered by: @order.User.FullName
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="small-text">
+                                    @order.User.FullName · @order.User.PhoneNumber
+                                </div>
+                            }
+                        </div>
+                        <div class="small-text">
+                            Delivery: @order.DeliveryType
+                        </div>
                     </div>
 
-                    <img src="@h.Offer.ImageUrl" class="order-image" />
+                    <span class="status-badge pending">
+                        @order.Status
+                    </span>
                 </div>
-            }
-        </div>
 
-        @if (history.Count > 3)
-        {
-            <button id="btn-history-toggle" class="show-more-btn">Show more</button>
+                <div class="items-section">
+                    @foreach (var item in order.Items)
+                    {
+                        <div class="item-line">
+                            @item.Offer.Title (Quantity: @item.Quantity)
+                        </div>
+                    }
+                </div>
+
+                <div class="card-footer-row">
+                    <div class="order-total">
+                        Total: @order.TotalPrice EUR
+                    </div>
+
+                    <div class="actions">
+                        <form asp-action="Confirm" method="post">
+                            <input type="hidden" name="id" value="@order.Id" />
+                            <button class="btn-action confirm-btn">Confirm</button>
+                        </form>
+
+                        <form asp-action="Cancel" method="post">
+                            <input type="hidden" name="id" value="@order.Id" />
+                            <button class="btn-action cancel-btn">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
         }
-    </div>
-}
-
-@section Scripts {
-    <script src="~/js/order-dashboard.js"></script>
-
-    @if (TempData["Success"] != null)
-    {
-        <script>showToast("@TempData["Success"]", "success");</script>
     }
 
-    @if (TempData["Error"] != null)
+    <!-- ================= CONFIRMED ================= -->
+
+    <h4 class="section-heading mt-5">Confirmed Orders</h4>
+
+    @if (!confirmed.Any())
     {
-        <script>showToast("@TempData["Error"]", "error");</script>
+        <p class="empty-text">No confirmed orders.</p>
     }
-}
+    else
+    {
+        @foreach (var order in confirmed)
+        {
+            <div class="dashboard-card confirmed-card">
+
+                <div class="card-header-row">
+                    <div>
+                        <strong>Order #@order.Id.ToString().Substring(0, 6)</strong>
+                        <div class="small-text">
+                            @if (order.IsForSomeoneElse)
+                            {
+                                <div class="small-text">
+                                    <strong>Recipient:</strong> @order.RecipientFullName · @order.RecipientPhone
+                                </div>
+                                <div class="small-text text-muted">
+                                    Ordered by: @order.User.FullName
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="small-text">
+                                    @order.User.FullName · @order.User.PhoneNumber
+                                </div>
+                            }
+
+                        </div>
+                        <div class="small-text">
+                            Delivery: @order.DeliveryType
+                        </div>
+                    </div>
+
+                    <span class="status-badge confirmed">
+                        @order.Status
+                    </span>
+                </div>
+
+                <div class="items-section">
+                    @foreach (var item in order.Items)
+                    {
+                        <div class="item-line">
+                            @item.Offer.Title (Quantity: @item.Quantity)
+                        </div>
+                    }
+                </div>
+
+                <div class="card-footer-row">
+                    <div class="order-total">
+                        Total: @order.TotalPrice EUR
+                    </div>
+
+                    <div class="actions">
+
+                        @if (order.DeliveryType == "Delivery" && order.Status == ReservationStatus.Confirmed)
+                        {
+                            <form asp-action="OutForDelivery" method="post">
+                                <input type="hidden" name="id" value="@order.Id" />
+                                <button class="btn-action delivery-btn">
+                                    Out for delivery
+                                </button>
+                            </form>
+                        }
+
+                        <form asp-action="Finish" method="post">
+                            <input type="hidden" name="id" value="@order.Id" />
+                            <button class="btn-action finish-btn">
+                                Finish
+                            </button>
+                        </form>
+
+                        <form asp-action="Cancel" method="post">
+                            <input type="hidden" name="id" value="@order.Id" />
+                            <button class="btn-action cancel-btn">
+                                Cancel
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+
+            </div>
+        }
+    }
+
+    <!-- ================= HISTORY ================= -->
+
+    <h4 class="section-heading mt-5">Order History</h4>
+
+    @if (!history.Any())
+    {
+        <p class="empty-text">No past orders.</p>
+    }
+    else
+    {
+        @foreach (var order in history)
+        {
+            <div class="dashboard-card history-card">
+
+                <div class="card-header-row">
+                    <div>
+                        <strong>Order #@order.Id.ToString().Substring(0, 6)</strong>
+
+                        @if (order.IsForSomeoneElse)
+                        {
+                            <div class="small-text">
+                                Recipient: @order.RecipientFullName · @order.RecipientPhone
+                            </div>
+                            <div class="small-text text-muted">
+                                Ordered by: @order.User.FullName
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="small-text">
+                                @order.User.FullName · @order.User.PhoneNumber
+                            </div>
+                        }
+
+                        <div class="small-text">
+                            Delivery: @order.DeliveryType
+                        </div>
+                    </div>
+
+
+                    <span class="status-badge @(order.Status == ReservationStatus.Finished ? "finished" : "canceled")">
+                        @order.Status
+                    </span>
+                </div>
+
+                <div class="items-section">
+                    @foreach (var item in order.Items)
+                    {
+                        <div class="item-line">
+                            @item.Offer.Title (Quantity: @item.Quantity)
+                        </div>
+                    }
+                </div>
+
+                <div class="card-footer-row">
+                    <div class="order-total">
+                        Total: @order.TotalPrice EUR
+                    </div>
+                </div>
+
+            </div>
+        }
+    }
+
+</div>

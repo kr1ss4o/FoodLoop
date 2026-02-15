@@ -10,53 +10,61 @@
 
     <h2 class="form-title">Create new offer</h2>
 
-    <form asp-action="Create" asp-controller="OfferManager"
-          method="post" enctype="multipart/form-data" class="offer-form">
+    <form asp-action="Create"
+          asp-controller="OfferManager"
+          method="post"
+          enctype="multipart/form-data"
+          class="offer-form">
+
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="All" class="text-danger"></div>
 
         <label>Title:</label>
-        <input asp-for="Offer.Title" class="input" required />
+        <input asp-for="Offer.Title" class="input" />
+        <span asp-validation-for="Offer.Title" class="text-danger"></span>
 
         <label>Description:</label>
-        <textarea asp-for="Offer.Description" class="input" required></textarea>
+        <textarea asp-for="Offer.Description" class="input"></textarea>
+        <span asp-validation-for="Offer.Description" class="text-danger"></span>
 
         <label>Original price:</label>
-        <input asp-for="Offer.OriginalPrice" class="input" type="number" step="0.01" required />
+        <input asp-for="Offer.OriginalPrice" class="input" type="number" step="0.01" />
 
         <label>Discounted price:</label>
-        <input asp-for="Offer.DiscountedPrice" class="input" type="number" step="0.01" required />
+        <input asp-for="Offer.DiscountedPrice" class="input" type="number" step="0.01" />
 
         <label>Available quantity:</label>
-        <input asp-for="Offer.QuantityAvailable" type="number" class="input" min="1" required />
+        <input asp-for="Offer.QuantityAvailable" type="number" class="input" min="0" />
 
-
-        <!-- CATEGORY DROPDOWN -->
+        <!-- CATEGORY -->
         <label>Category:</label>
-        <select asp-for="Offer.CategoryId" class="input" required>
-            @foreach (var cat in Model.Categories)
-            {
-                <option value="@cat.Id">@cat.Name</option>
-            }
+        <select asp-for="Offer.CategoryId" class="input"
+                asp-items="@(new SelectList(Model.Categories, "Id", "Name"))">
         </select>
 
-
-        <!-- TAG SELECTION -->
+        <!-- TAGS -->
         <label>Tags:</label>
         <div class="tag-list">
             @foreach (var tag in Model.Tags)
             {
                 <label class="tag-checkbox">
-                    <input type="checkbox" name="SelectedTags" value="@tag.Id" />
+                    <input type="checkbox"
+                           name="SelectedTags"
+                           value="@tag.Id" />
                     @tag.Name
                 </label>
             }
         </div>
 
-
+        <!-- ENDS AT -->
         <label>Ends at:</label>
-        <input asp-for="Offer.EndsAt" type="datetime-local" class="input" required />
+        <input asp-for="Offer.EndsAt"
+               type="datetime-local"
+               class="input" />
 
         <label>Image:</label>
-        <input type="file" name="ImageUpload" accept="image/*" class="input" required />
+        <input type="file" name="ImageUpload" accept="image/*" class="input" />
 
         <button type="submit" class="submit-btn">Create offer</button>
     </form>
@@ -64,12 +72,5 @@
 </div>
 
 @section Scripts {
-    @if (TempData["Error"] != null)
-    {
-        <script>showToast("@TempData["Error"]", "error");</script>
-    }
-    @if (TempData["Success"] != null)
-    {
-        <script>showToast("@TempData["Success"]", "success");</script>
-    }
+    <partial name="_ValidationScriptsPartial" />
 }

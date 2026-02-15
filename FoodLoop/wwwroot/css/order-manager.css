@@ -1,0 +1,120 @@
+﻿.order-manager-wrapper {
+    max-width: 1000px;
+    margin: 40px auto;
+}
+
+.dashboard-title {
+    font-weight: 700;
+    margin-bottom: 30px;
+}
+
+.section-heading {
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.dashboard-card {
+    background: white;
+    padding: 24px;
+    border-radius: 18px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    border: 1px solid #eef2f3;
+}
+
+.card-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.small-text {
+    font-size: 13px;
+    color: #6c7a86;
+}
+
+.items-section {
+    margin-bottom: 15px;
+}
+
+.item-line {
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.card-footer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.order-total {
+    font-weight: 600;
+}
+
+.status-badge {
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+    .status-badge.pending {
+        background: #fff1d6;
+        color: #b26a00;
+    }
+
+    .status-badge.confirmed {
+        background: #d6eaff;
+        color: #004a99;
+    }
+
+    .status-badge.finished {
+        background: #d7f8e3;
+        color: #007a4d;
+    }
+
+    .status-badge.canceled {
+        background: #ffe0e0;
+        color: #b00020;
+    }
+
+.btn-action {
+    border: none;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.confirm-btn {
+    background: #008b5a;
+    color: white;
+}
+
+.finish-btn {
+    background: #0052cc;
+    color: white;
+}
+
+.cancel-btn {
+    background: #d9534f;
+    color: white;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+}
+
+.status-badge.outfordelivery {
+    background: #e6f0ff;
+    color: #004a99;
+}
+
+.delivery-btn {
+    background: #0052cc;
+    color: white;
+}

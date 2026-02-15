@@ -123,7 +123,7 @@ namespace FoodLoop.Controllers
                 return RedirectToAction("Panel", "Admin");
 
             if (await _userManager.IsInRoleAsync(user, "Restaurant"))
-                return RedirectToAction("Index", "BusinessProfile");
+                return RedirectToAction("Index", "RestaurantDashboard");
 
             return RedirectToAction("Index", "Profile");
         }

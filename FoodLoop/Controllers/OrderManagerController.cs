@@ -20,9 +20,9 @@ namespace FoodLoop.Controllers
             _userManager = userManager;
         }
 
-        // -------------------------------
-        // Dashboard page
-        // -------------------------------
+        // =========================================================
+        // DASHBOARD
+        // =========================================================
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -36,62 +36,84 @@ namespace FoodLoop.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            // NEW MULTI-ITEM STRUCTURE
             var reservations = await _context.Reservations
-                .Include(r => r.User)
-                .Include(r => r.Offer)
-                .Where(r => r.Offer.RestaurantId == restaurant.Id)
-                .OrderByDescending(r => r.CreatedAt)
-                .ToListAsync();
+            .Include(r => r.User)
+            .Include(r => r.Items)
+            .ThenInclude(i => i.Offer)
+            .Where(r => r.Items.Any(i => i.Offer.RestaurantId == restaurant.Id))
+            .OrderByDescending(r => r.CreatedAt)
+            .ToListAsync();
 
             return View("/Views/Restaurant/OrderDashboard/Index.cshtml", reservations);
         }
 
-        // -------------------------------
-        // Confirm
-        // -------------------------------
+        // =========================================================
+        // CONFIRM
+        // =========================================================
         [HttpPost]
         public async Task<IActionResult> Confirm(Guid id)
         {
-            var r = await _context.Reservations.FindAsync(id);
-            if (r == null) return RedirectToAction("Index");
+            var reservation = await _context.Reservations.FindAsync(id);
+            if (reservation == null)
+                return RedirectToAction("Index");
 
-            r.Status = ReservationStatus.Confirmed;
+            reservation.Status = ReservationStatus.Confirmed;
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "Order confirmed!";
             return RedirectToAction("Index");
         }
 
-        // -------------------------------
-        // Cancel
-        // -------------------------------
+        // =========================================================
+        // CANCEL
+        // =========================================================
         [HttpPost]
         public async Task<IActionResult> Cancel(Guid id)
         {
-            var r = await _context.Reservations.FindAsync(id);
-            if (r == null) return RedirectToAction("Index");
+            var reservation = await _context.Reservations.FindAsync(id);
+            if (reservation == null)
+                return RedirectToAction("Index");
 
-            r.Status = ReservationStatus.Canceled;
+            reservation.Status = ReservationStatus.Canceled;
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "Order canceled!";
             return RedirectToAction("Index");
         }
 
-        // -------------------------------
-        // Finish
-        // -------------------------------
+        // =========================================================
+        // FINISH
+        // =========================================================
         [HttpPost]
         public async Task<IActionResult> Finish(Guid id)
         {
-            var r = await _context.Reservations.FindAsync(id);
-            if (r == null) return RedirectToAction("Index");
+            var reservation = await _context.Reservations.FindAsync(id);
+            if (reservation == null)
+                return RedirectToAction("Index");
 
-            r.Status = ReservationStatus.Finished;
+            reservation.Status = ReservationStatus.Finished;
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "Order finished!";
             return RedirectToAction("Index");
         }
+
+        // -------------------------------
+        // Mark as Out For Delivery
+        // -------------------------------
+        [HttpPost]
+        public async Task<IActionResult> OutForDelivery(Guid id)
+        {
+            var reservation = await _context.Reservations.FindAsync(id);
+            if (reservation == null) return RedirectToAction("Index");
+
+            reservation.Status = ReservationStatus.OutForDelivery;
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Order is now out for delivery!";
+            return RedirectToAction("Index");
+        }
+
     }
 }

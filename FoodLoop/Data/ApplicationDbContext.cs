@@ -16,6 +16,7 @@ namespace FoodLoop.Data
         public DbSet<Tag> Tags { get; set; }
         public DbSet<OfferTag> OfferTags { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<ReservationItem> ReservationItems { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)

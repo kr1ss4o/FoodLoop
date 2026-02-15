@@ -1,5 +1,6 @@
 ﻿using FoodLoop.Data;
 using FoodLoop.Models.Entities;
+using FoodLoop.Models.Enums;
 using FoodLoop.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -26,16 +27,13 @@ namespace FoodLoop.Controllers
             if (user == null)
                 return RedirectToAction("Login", "Account");
 
-            // Fetch total orders
             var totalOrders = await _context.Reservations
-                .Where(r => r.UserId == user.Id)
-                .CountAsync();
+            .Where(r => r.UserId == user.Id &&
+               r.Status != ReservationStatus.Canceled).CountAsync();
 
-            // Total money spent
             var moneySpent = await _context.Reservations
-                .Where(r => r.UserId == user.Id)
-                .Include(r => r.Offer)
-                .SumAsync(r => (decimal?)r.Offer.DiscountedPrice) ?? 0;
+            .Where(r => r.UserId == user.Id &&
+            r.Status == ReservationStatus.Finished).SumAsync(r => (decimal?)r.TotalPrice) ?? 0;
 
             var model = new ProfileViewModel
             {
@@ -52,22 +50,23 @@ namespace FoodLoop.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditProfile(string FullName, string PhoneNumber,
-        string CurrentPassword, string? NewPassword, IFormFile? ProfileImage)
+        public async Task<IActionResult> EditProfile(
+            string FullName,
+            string PhoneNumber,
+            string CurrentPassword,
+            string? NewPassword,
+            IFormFile? ProfileImage)
         {
             var user = await _userManager.GetUserAsync(User);
-
             if (user == null)
                 return RedirectToAction("Login", "Account");
 
-            // Validate phone length 10-13
             if (PhoneNumber.Length < 10 || PhoneNumber.Length > 13)
             {
                 TempData["Error"] = "Phone number must be between 10 and 13 digits.";
                 return RedirectToAction("Index");
             }
 
-            // Email cannot be changed, but Phone must be unique
             var existingPhone = await _context.Users
                 .FirstOrDefaultAsync(u => u.PhoneNumber == PhoneNumber && u.Id != user.Id);
 
@@ -77,7 +76,6 @@ namespace FoodLoop.Controllers
                 return RedirectToAction("Index");
             }
 
-            // Check current password
             var passwordCheck = await _userManager.CheckPasswordAsync(user, CurrentPassword);
 
             if (!passwordCheck)
@@ -86,14 +84,13 @@ namespace FoodLoop.Controllers
                 return RedirectToAction("Index");
             }
 
-            // Update name + phone
             user.FullName = FullName;
             user.PhoneNumber = PhoneNumber;
 
-            // Update photo
             if (ProfileImage != null && ProfileImage.Length > 0)
             {
                 var uploadDir = Path.Combine("wwwroot", "images", "profile");
+
                 if (!Directory.Exists(uploadDir))
                     Directory.CreateDirectory(uploadDir);
 
@@ -108,10 +105,10 @@ namespace FoodLoop.Controllers
                 user.ProfileImageUrl = $"/images/profile/{fileName}";
             }
 
-            // Change password
             if (!string.IsNullOrEmpty(NewPassword))
             {
                 var result = await _userManager.ChangePasswordAsync(user, CurrentPassword, NewPassword);
+
                 if (!result.Succeeded)
                 {
                     TempData["Error"] = "New password is invalid.";
@@ -125,10 +122,12 @@ namespace FoodLoop.Controllers
             TempData["Success"] = "Profile successfully updated!";
             return RedirectToAction("Index");
         }
+
         [HttpPost]
         public async Task<IActionResult> Delete()
         {
             var user = await _userManager.GetUserAsync(User);
+
             if (user != null)
             {
                 await _userManager.DeleteAsync(user);

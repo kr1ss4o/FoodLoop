@@ -8,7 +8,7 @@
     }
 
     const toast = document.createElement("div");
-    toast.classList.add("toast");
+    toast.classList.add("toast-custom");
     toast.classList.add(type === "error" ? "toast-error" : "toast-success");
 
     toast.textContent = message;

@@ -1,0 +1,108 @@
+﻿@model FoodLoop.Models.ViewModels.RestaurantDashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<link rel="stylesheet" href="~/css/dashboard.css" />
+
+<h2 class="mb-4">@Model.RestaurantName Dashboard</h2>
+
+<div class="kpi-grid">
+
+    <div class="kpi-card">
+        <div class="kpi-title">Total Orders</div>
+        <div class="kpi-value">@Model.TotalOrders</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-title">Total Revenue</div>
+        <div class="kpi-value">@Model.TotalRevenue EUR</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-title">Orders This Week</div>
+        <div class="kpi-value">@Model.OrdersThisWeek</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-title">Revenue This Week</div>
+        <div class="kpi-value">@Model.RevenueThisWeek EUR</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-title">Avg Order Value</div>
+        <div class="kpi-value">@Model.AverageOrderValue.ToString("0.00") EUR</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-title">Pending Orders</div>
+        <div class="kpi-value">@Model.PendingOrders</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-title">Delivery Orders</div>
+        <div class="kpi-value">@Model.DeliveryOrders</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-title">Pickup Orders</div>
+        <div class="kpi-value">@Model.PickupOrders</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-title">Orders for others</div>
+        <div class="kpi-value">@Model.OrdersForOthers</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-title">Top Offer</div>
+        <div class="kpi-value">
+            @Model.TopOfferTitle <br />
+            <small>@Model.TopOfferSoldCount sold</small>
+        </div>
+    </div>
+
+</div>
+
+<div class="chart-section mt-5">
+    <canvas id="ordersChart"></canvas>
+</div>
+
+@if (Model.LowStockOffers.Any())
+{
+    <div class="low-stock mt-4">
+        <h5>⚠ Low Stock Offers</h5>
+        <ul>
+            @foreach (var offer in Model.LowStockOffers)
+            {
+                <li>
+                    @offer.Title — @offer.QuantityAvailable left
+                </li>
+            }
+        </ul>
+    </div>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const ctx = document.getElementById('ordersChart');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ChartLabels)),
+                datasets: [{
+                    label: 'Orders',
+                    data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ChartOrders)),
+                    borderColor: '#00a86b',
+                    backgroundColor: 'rgba(0,168,107,0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            }
+        });
+    </script>
+}

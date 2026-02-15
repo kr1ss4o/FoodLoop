@@ -21,82 +21,55 @@ namespace FoodLoop.Controllers
             _userManager = userManager;
         }
 
-        // --------------------------------------------------------------
-        // CART PAGE (Checkout section + Ongoing orders + History)
-        // --------------------------------------------------------------
-        public async Task<IActionResult> Index()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-                return RedirectToAction("Login", "Account");
-
-            // Cart items for "Order checkout"
-            var cartItems = await _context.CartItems
-                .Where(c => c.UserId == user.Id)
-                .Include(c => c.Offer)
-                .ThenInclude(o => o.Restaurant)
-                .ToListAsync();
-
-            // Reservations (ongoing + history)
-            var reservations = await _context.Reservations
-                .Where(r => r.UserId == user.Id)
-                .Include(r => r.Offer)
-                .ThenInclude(o => o.Restaurant)
-                .OrderByDescending(r => r.CreatedAt)
-                .ToListAsync();
-
-            var model = new CartPageViewModel
-            {
-                CartItems = cartItems,
-                Reservations = reservations
-            };
-
-            return View(model);
-        }
-
-        // --------------------------------------------------------------
+        // ==============================================================
         // ADD TO CART
-        // --------------------------------------------------------------
+        // ==============================================================
+
         [HttpPost]
-        public async Task<IActionResult> AddToCart(Guid offerId)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddToCart(Guid offerId, int quantity)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
-                return Unauthorized();
+                return Json(new { success = false });
 
-            var offer = await _context.Offers.FindAsync(offerId);
+            var offer = await _context.Offers
+                .FirstOrDefaultAsync(o => o.Id == offerId);
+
             if (offer == null)
-            {
-                TempData["Error"] = "Offer not found.";
-                return RedirectToAction("Index", "Home");
-            }
+                return Json(new { success = false });
 
-            bool exists = await _context.CartItems
-                .AnyAsync(c => c.UserId == user.Id && c.OfferId == offerId);
+            if (quantity < 1) quantity = 1;
+            if (quantity > offer.QuantityAvailable)
+                quantity = offer.QuantityAvailable;
 
-            if (exists)
-            {
-                TempData["Error"] = "This offer is already in your cart.";
-                return RedirectToAction("Index");
-            }
+            var existingItem = await _context.CartItems
+                .FirstOrDefaultAsync(c => c.UserId == user.Id && c.OfferId == offerId);
 
-            _context.CartItems.Add(new CartItem
-            {
-                UserId = user.Id,
-                OfferId = offerId,
-                Quantity = 1,
-                AddedAt = DateTime.UtcNow
-            });
+            if (existingItem != null)
+                existingItem.Quantity += quantity;
+            else
+                _context.CartItems.Add(new CartItem
+                {
+                    Id = Guid.NewGuid(),
+                    UserId = user.Id,
+                    OfferId = offerId,
+                    Quantity = quantity
+                });
 
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Offer added to cart!";
-            return RedirectToAction("Index");
+            var cartCount = await _context.CartItems
+                .Where(c => c.UserId == user.Id)
+                .SumAsync(c => c.Quantity);
+
+            return Json(new { success = true, cartCount });
         }
 
-        // --------------------------------------------------------------
+        // ==============================================================
         // REMOVE FROM CART
-        // --------------------------------------------------------------
+        // ==============================================================
+
         [HttpPost]
         public async Task<IActionResult> RemoveFromCart(Guid id)
         {
@@ -108,19 +81,20 @@ namespace FoodLoop.Controllers
             if (item == null)
             {
                 TempData["Error"] = "Item not found.";
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Orders");
             }
 
             _context.CartItems.Remove(item);
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "Item removed.";
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "Orders");
         }
 
-        // --------------------------------------------------------------
+        // ==============================================================
         // INCREASE QUANTITY
-        // --------------------------------------------------------------
+        // ==============================================================
+
         [HttpPost]
         public async Task<IActionResult> IncreaseQuantity(Guid itemId)
         {
@@ -129,7 +103,7 @@ namespace FoodLoop.Controllers
                 .FirstOrDefaultAsync(c => c.Id == itemId);
 
             if (item == null)
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Orders");
 
             if (item.Quantity < item.Offer.QuantityAvailable)
             {
@@ -141,19 +115,20 @@ namespace FoodLoop.Controllers
                 TempData["Error"] = "Not enough items available.";
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "Orders");
         }
 
-        // --------------------------------------------------------------
+        // ==============================================================
         // DECREASE QUANTITY
-        // --------------------------------------------------------------
+        // ==============================================================
+
         [HttpPost]
         public async Task<IActionResult> DecreaseQuantity(Guid itemId)
         {
             var item = await _context.CartItems.FindAsync(itemId);
 
             if (item == null)
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Orders");
 
             if (item.Quantity > 1)
             {
@@ -161,14 +136,15 @@ namespace FoodLoop.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "Orders");
         }
 
-        // --------------------------------------------------------------
-        // CHECKOUT → Converts CartItems into Reservations
-        // --------------------------------------------------------------
+        // ==============================================================
+        // CHECKOUT
+        // ==============================================================
+
         [HttpPost]
-        public async Task<IActionResult> Checkout()
+        public async Task<IActionResult> Checkout(string deliveryType, bool IsForSomeoneElse, string? RecipientFullName, string? RecipientPhone)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -182,39 +158,71 @@ namespace FoodLoop.Controllers
             if (!cartItems.Any())
             {
                 TempData["Error"] = "Your cart is empty.";
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Orders");
             }
+
+            // ==============================
+            // VALIDATION FOR THIRD PERSON
+            // ==============================
+            if (IsForSomeoneElse)
+            {
+                if (string.IsNullOrWhiteSpace(RecipientFullName) ||
+                    string.IsNullOrWhiteSpace(RecipientPhone))
+                {
+                    TempData["Error"] = "Recipient name and phone are required.";
+                    return RedirectToAction("Index", "Orders");
+                }
+
+                if (RecipientPhone.Length != 10 || !RecipientPhone.All(char.IsDigit))
+                {
+                    TempData["Error"] = "Recipient phone must be exactly 10 digits.";
+                    return RedirectToAction("Index", "Orders");
+                }
+            }
+
+            var reservation = new Reservation
+            {
+                UserId = user.Id,
+                Status = ReservationStatus.Pending,
+                CreatedAt = DateTime.UtcNow,
+                DeliveryType = deliveryType,
+                TotalPrice = 0,
+
+                IsForSomeoneElse = IsForSomeoneElse,
+                RecipientFullName = IsForSomeoneElse ? RecipientFullName : null,
+                RecipientPhone = IsForSomeoneElse ? RecipientPhone : null
+            };
 
             foreach (var item in cartItems)
             {
-                // 1) Validate stock
                 if (item.Offer.QuantityAvailable < item.Quantity)
                 {
                     TempData["Error"] = $"Not enough stock for {item.Offer.Title}.";
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Index", "Orders");
                 }
 
-                // 2) Deduct stock
                 item.Offer.QuantityAvailable -= item.Quantity;
 
-                // 3) Create reservation
-                _context.Reservations.Add(new Reservation
+                var reservationItem = new ReservationItem
                 {
-                    UserId = user.Id,
                     OfferId = item.OfferId,
                     Quantity = item.Quantity,
-                    Status = ReservationStatus.Pending,
-                    CreatedAt = DateTime.UtcNow
-                });
+                    PriceSnapshot = item.Offer.DiscountedPrice
+                };
+
+                reservation.TotalPrice += item.Offer.DiscountedPrice * item.Quantity;
+
+                reservation.Items.Add(reservationItem);
             }
 
-            // 4) Clear cart
+            _context.Reservations.Add(reservation);
             _context.CartItems.RemoveRange(cartItems);
 
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "Your order has been placed!";
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "Orders");
         }
+
     }
 }

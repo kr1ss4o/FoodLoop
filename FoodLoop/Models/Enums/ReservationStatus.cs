@@ -4,7 +4,8 @@
     {
         Pending = 0,
         Confirmed = 1,
-        Finished = 2,
-        Canceled = 3
+        OutForDelivery = 2,
+        Finished = 3,
+        Canceled = 4
     }
 }

@@ -1,0 +1,156 @@
+﻿@model FoodLoop.Models.Entities.Offer
+
+@{
+    ViewData["Title"] = Model.Title;
+    ViewData["BodyClass"] = "store-body";
+}
+
+<link rel="stylesheet" href="~/css/offer-details.css" />
+
+<div class="details-wrapper">
+
+    <div class="details-grid">
+
+        <!-- IMAGE -->
+        <div class="details-image-box">
+            <img src="@Model.ImageUrl" class="details-image" />
+        </div>
+
+        <!-- INFO -->
+        <div class="details-info">
+
+            <div class="details-restaurant">
+                by @Model.Restaurant.Name
+            </div>
+
+            <h1 class="details-title">
+                @Model.Title
+            </h1>
+
+            <!-- TAGS -->
+            @if (Model.OfferTags != null && Model.OfferTags.Any())
+            {
+                <div class="details-tags">
+                    @foreach (var tag in Model.OfferTags)
+                    {
+                        <a asp-controller="Offers"
+                           asp-action="Index"
+                           asp-route-search="@tag.Tag.Name"
+                           class="tag-pill">
+                            @tag.Tag.Name
+                        </a>
+                    }
+                </div>
+            }
+
+            <!-- PRICE -->
+            <div class="details-price-section">
+                <span class="details-price">
+                    @Model.DiscountedPrice EUR
+                </span>
+
+                @if (Model.OriginalPrice > Model.DiscountedPrice)
+                {
+                    <span class="details-original">
+                        @Model.OriginalPrice EUR
+                    </span>
+
+                    var discount = (int)(100 - (Model.DiscountedPrice / Model.OriginalPrice * 100));
+
+                    <span class="details-badge">
+                        -@discount%
+                    </span>
+                }
+            </div>
+
+            <!-- STOCK -->
+            <div class="details-stock">
+                @if (Model.QuantityAvailable <= 5)
+                {
+                    <span class="low-stock">
+                        Only @Model.QuantityAvailable left
+                    </span>
+                }
+                else
+                {
+                    <span>
+                        @Model.QuantityAvailable available
+                    </span>
+                }
+            </div>
+
+            <!-- DESCRIPTION -->
+            <p class="details-description">
+                @Model.Description
+            </p>
+
+            <!-- ADD TO CART -->
+            @if (User.Identity.IsAuthenticated)
+            {
+                <form id="addToCartForm" class="details-cart-form">
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" name="offerId" value="@Model.Id" />
+
+                    <input type="number"
+                           name="quantity"
+                           value="1"
+                           min="1"
+                           max="@Model.QuantityAvailable"
+                           class="quantity-input" />
+
+                    <button type="submit" class="add-btn">
+                        Add to cart
+                    </button>
+                </form>
+            }
+            else
+            {
+                <a asp-controller="Account"
+                   asp-action="Login"
+                   class="details-login-btn">
+                    Login to order
+                </a>
+            }
+
+            <div class="details-ends">
+                Ends at: @Model.EndsAt.ToString("dd MMM yyyy HH:mm")
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+
+    <script>
+        document.getElementById("addToCartForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const form = this;
+            const formData = new FormData(form);
+
+            fetch("/Cart/AddToCart", {
+                method: "POST",
+                headers: {
+                    "RequestVerificationToken":
+                        form.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+
+                    showToast("Added to cart!", "success");
+
+                    const badge = document.getElementById("cart-badge");
+                    if (badge)
+                        badge.innerText = data.cartCount;
+                }
+            });
+        });
+    </script>
+
+}
