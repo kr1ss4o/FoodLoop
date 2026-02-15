@@ -289,9 +289,72 @@ img {
     display: block;
 }
 
-    .store-card-link:hover,
-    .offer-card-link:hover,
-    .card-link-reset:hover {
-        text-decoration: none !important;
-        color: inherit !important;
-    }
+.store-card-link:hover,
+.offer-card-link:hover,
+.card-link-reset:hover {
+    text-decoration: none !important;
+    color: inherit !important;
+}
+
+.mini-cart {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 280px;
+    background: white;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    padding: 15px;
+    z-index: 1000;
+}
+
+.mini-cart-btn {
+    display: block;
+    margin-top: 10px;
+    text-align: center;
+    background: #198754;
+    color: white;
+    padding: 8px;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+/* ===================================== */
+/* MINI CART IMPROVED */
+/* ===================================== */
+
+.mini-cart {
+    backdrop-filter: blur(8px);
+    border: 1px solid #e5e7eb;
+    padding: 18px;
+    transition: 0.2s ease;
+}
+
+.mini-item {
+    padding: 12px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.mini-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #111827;
+}
+
+.mini-meta {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.mini-price {
+    font-weight: 700;
+    color: #16a34a;
+}
+
+.mini-cart-btn {
+    margin-top: 14px;
+    padding: 12px;
+    font-weight: 700;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #16a34a, #15803d);
+}

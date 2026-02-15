@@ -44,7 +44,12 @@ namespace FoodLoop.Controllers
                 _ => query.OrderByDescending(o => o.CreatedAt)
             };
 
-            var offers = await query.ToListAsync();
+            var offers = await _context.Offers
+            .Include(o => o.Restaurant)
+            .Where(o =>
+            o.QuantityAvailable > 0 &&
+            o.EndsAt > DateTime.UtcNow)
+            .ToListAsync();
 
             return View(offers);
         }

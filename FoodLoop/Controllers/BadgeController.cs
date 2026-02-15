@@ -20,6 +20,7 @@ public class BadgeController : Controller
     }
 
     [HttpGet]
+    [HttpGet]
     public async Task<IActionResult> GetCounts()
     {
         var user = await _userManager.GetUserAsync(User);
@@ -31,28 +32,26 @@ public class BadgeController : Controller
         int cartCount = 0;
         int pendingCount = 0;
 
-        // ================= CLIENT BADGE =================
         if (roles.Contains("Client"))
         {
-            cartCount = await _context.CartItems
-                .CountAsync(c => c.UserId == user.Id);
+            cartCount = _context.CartItems
+                .Count(c => c.UserId == user.Id);
         }
 
-        // ================= RESTAURANT BADGE =================
         if (roles.Contains("Restaurant"))
         {
-            var restaurant = await _context.Restaurants
-                .FirstOrDefaultAsync(r => r.OwnerUserId == user.Id);
+            var restaurantId = _context.Restaurants
+                .Where(r => r.OwnerUserId == user.Id)
+                .Select(r => (Guid?)r.Id)
+                .FirstOrDefault();
 
-            if (restaurant != null)
+            if (restaurantId != null)
             {
-                pendingCount = await _context.Reservations
-                    .Include(r => r.Items)
-                        .ThenInclude(i => i.Offer)
-                    .Where(r =>
+                pendingCount = _context.Reservations
+                    .Count(r =>
                         r.Status == ReservationStatus.Pending &&
-                        r.Items.Any(i => i.Offer.RestaurantId == restaurant.Id))
-                    .CountAsync();
+                        r.Items.Any(i =>
+                            i.Offer.RestaurantId == restaurantId.Value));
             }
         }
 

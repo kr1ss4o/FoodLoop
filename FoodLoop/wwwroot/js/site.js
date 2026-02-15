@@ -1,57 +1,57 @@
-﻿// ======================================================
-// GLOBAL SITE JS
-// ======================================================
+﻿document.addEventListener("DOMContentLoaded", function () {
 
-document.addEventListener("DOMContentLoaded", function () {
+    const cartBadge = document.getElementById("cartBadge");
+    const miniCart = document.getElementById("miniCartDropdown");
+    const cartLink = document.getElementById("cartLink");
 
-    initBadges();
+    /* ==============================================
+       EVENT-BASED BADGE UPDATE
+    ============================================== */
+
+    document.addEventListener("cartUpdated", function (e) {
+
+        const count = e.detail.count;
+
+        if (!cartBadge) return;
+
+        cartBadge.innerText = count;
+
+        if (count > 0)
+            cartBadge.classList.remove("d-none");
+        else
+            cartBadge.classList.add("d-none");
+    });
+
+    /* ==============================================
+       MINI CART LOAD
+    ============================================== */
+
+    window.loadMiniCart = async function () {
+
+        if (!miniCart) return;
+
+        const content = document.getElementById("miniCartContent");
+
+        const response = await fetch("/Cart/MiniCart");
+        const html = await response.text();
+
+        content.innerHTML = html;
+    };
+
+    /* ==============================================
+       MINI CART HOVER
+    ============================================== */
+
+    if (cartLink && miniCart) {
+
+        cartLink.addEventListener("mouseenter", async function () {
+            miniCart.classList.remove("d-none");
+            await loadMiniCart();
+        });
+
+        miniCart.addEventListener("mouseleave", function () {
+            miniCart.classList.add("d-none");
+        });
+    }
 
 });
-
-
-// ======================================================
-// BADGE SYSTEM (Cart + Pending Orders)
-// ======================================================
-
-function initBadges() {
-
-    fetch("/Badge/GetCounts")
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Failed to load badge data.");
-            }
-            return response.json();
-        })
-        .then(data => {
-
-            updateBadge("cartBadge", data.cart);
-            updateBadge("pendingBadge", data.pending);
-
-        })
-        .catch(error => {
-            console.error("Badge system error:", error);
-        });
-}
-
-function updateBadge(elementId, value) {
-
-    const badge = document.getElementById(elementId);
-    if (!badge) return;
-
-    if (value && value > 0) {
-        badge.innerText = value;
-        badge.classList.remove("d-none");
-    } else {
-        badge.innerText = "";
-        badge.classList.add("d-none");
-    }
-}
-
-
-// ======================================================
-// OPTIONAL: expose manual refresh if needed later
-// ======================================================
-
-window.refreshBadges = function () {
-    initBadges();
-};

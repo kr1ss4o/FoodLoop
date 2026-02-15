@@ -3,6 +3,9 @@
 @{
     ViewData["Title"] = Model.Title;
     ViewData["BodyClass"] = "store-body";
+
+    bool isExpired = Model.EndsAt <= DateTime.UtcNow;
+    bool isOutOfStock = Model.QuantityAvailable <= 0;
 }
 
 <link rel="stylesheet" href="~/css/offer-details.css" />
@@ -45,37 +48,55 @@
 
             <!-- PRICE -->
             <div class="details-price-section">
+
                 <span class="details-price">
                     @Model.DiscountedPrice EUR
                 </span>
 
                 @if (Model.OriginalPrice > Model.DiscountedPrice)
                 {
+                    var discount = (int)(100 - (Model.DiscountedPrice / Model.OriginalPrice * 100));
+
                     <span class="details-original">
                         @Model.OriginalPrice EUR
                     </span>
-
-                    var discount = (int)(100 - (Model.DiscountedPrice / Model.OriginalPrice * 100));
 
                     <span class="details-badge">
                         -@discount%
                     </span>
                 }
+
+                @if (isExpired)
+                {
+                    <div class="expired-badge">
+                        Expired
+                    </div>
+                }
+                else if (isOutOfStock)
+                {
+                    <div class="expired-badge out-of-stock">
+                        Out of stock
+                    </div>
+                }
+
             </div>
 
             <!-- STOCK -->
             <div class="details-stock">
-                @if (Model.QuantityAvailable <= 5)
+                @if (!isOutOfStock)
                 {
-                    <span class="low-stock">
-                        Only @Model.QuantityAvailable left
-                    </span>
-                }
-                else
-                {
-                    <span>
-                        @Model.QuantityAvailable available
-                    </span>
+                    if (Model.QuantityAvailable <= 5)
+                    {
+                        <span class="low-stock">
+                            Only @Model.QuantityAvailable left
+                        </span>
+                    }
+                    else
+                    {
+                        <span>
+                            @Model.QuantityAvailable available
+                        </span>
+                    }
                 }
             </div>
 
@@ -87,30 +108,40 @@
             <!-- ADD TO CART -->
             @if (User.Identity.IsAuthenticated)
             {
-                <form id="addToCartForm" class="details-cart-form">
-                    @Html.AntiForgeryToken()
-
-                    <input type="hidden" name="offerId" value="@Model.Id" />
-
-                    <input type="number"
-                           name="quantity"
-                           value="1"
-                           min="1"
-                           max="@Model.QuantityAvailable"
-                           class="quantity-input" />
-
-                    <button type="submit" class="add-btn">
-                        Add to cart
+                if (isExpired || isOutOfStock)
+                {
+                    <button class="add-btn disabled-btn" disabled>
+                        Not available
                     </button>
-                </form>
+                }
+                else
+                {
+                    <form id="addToCartForm" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="offerId" value="@Model.Id" />
+
+                        <input type="number"
+                               name="quantity"
+                               value="1"
+                               min="1"
+                               max="@Model.QuantityAvailable"
+                               class="quantity-input" />
+
+                        <button type="submit" class="add-btn">
+                            Add to cart
+                        </button>
+                    </form>
+
+                }
             }
-            else
+
+            <!-- COUNTDOWN -->
+            @if (!isExpired)
             {
-                <a asp-controller="Account"
-                   asp-action="Login"
-                   class="details-login-btn">
-                    Login to order
-                </a>
+                <div id="countdown"
+                     class="details-countdown"
+                     data-end="@Model.EndsAt.ToString("o")">
+                </div>
             }
 
             <div class="details-ends">
@@ -125,32 +156,79 @@
 @section Scripts {
 
     <script>
-        document.getElementById("addToCartForm").addEventListener("submit", function (e) {
-            e.preventDefault();
 
-            const form = this;
-            const formData = new FormData(form);
+        // ============================================
+        // ADD TO CART (AJAX + LIVE BADGE UPDATE)
+        // ============================================
 
-            fetch("/Cart/AddToCart", {
-                method: "POST",
-                headers: {
-                    "RequestVerificationToken":
-                        form.querySelector('input[name="__RequestVerificationToken"]').value
-                },
-                body: formData
-            })
-            .then(res => res.json())
-            .then(data => {
+        const form = document.getElementById("addToCartForm");
+
+        if (form) {
+
+            form.addEventListener("submit", async function (e) {
+
+                e.preventDefault();
+
+                const formData = new FormData(form);
+
+                const response = await fetch("/Cart/AddToCart", {
+                    method: "POST",
+                    headers: {
+                        "RequestVerificationToken":
+                            form.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
                 if (data.success) {
 
                     showToast("Added to cart!", "success");
 
-                    const badge = document.getElementById("cart-badge");
-                    if (badge)
-                        badge.innerText = data.cartCount;
+                    // 🔥 Trigger global badge update
+                    document.dispatchEvent(
+                        new CustomEvent("cartUpdated", {
+                            detail: { count: data.cartCount }
+                        })
+                    );
+
+                    // 🔥 Reload mini cart content
+                    if (window.loadMiniCart)
+                        window.loadMiniCart();
                 }
             });
-        });
-    </script>
+        }
 
+        // ============================================
+        // COUNTDOWN TIMER
+        // ============================================
+
+        const countdownEl = document.getElementById("countdown");
+
+        if (countdownEl) {
+
+            const endDate = new Date(countdownEl.dataset.end);
+
+            function updateCountdown() {
+
+                const now = new Date();
+                const diff = endDate - now;
+
+                if (diff <= 0) {
+                    countdownEl.innerText = "Offer expired";
+                    return;
+                }
+
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff / (1000 * 60)) % 60);
+
+                countdownEl.innerText = `Ends in ${hours}h ${minutes}m`;
+            }
+
+            updateCountdown();
+            setInterval(updateCountdown, 60000);
+        }
+
+    </script>
 }

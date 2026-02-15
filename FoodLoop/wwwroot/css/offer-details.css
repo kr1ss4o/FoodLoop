@@ -218,6 +218,11 @@
     box-shadow: none;
 
 }
+.details-countdown {
+    margin-top: 12px;
+    font-weight: 600;
+    color: #198754;
+}
 
 /* RESPONSIVE */
 

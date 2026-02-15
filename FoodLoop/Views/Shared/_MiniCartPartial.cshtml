@@ -1,0 +1,27 @@
+﻿@model List<FoodLoop.Models.Entities.CartItem>
+
+@if (!Model.Any())
+{
+    <div class="mini-empty">
+        <i class="bi bi-bag-x"></i>
+        <p>Your cart is empty</p>
+    </div>
+}
+else
+{
+    @foreach (var item in Model)
+    {
+        <div class="mini-item">
+            <div class="mini-title">
+                @item.Offer.Title
+            </div>
+
+            <div class="mini-meta">
+                x @item.Quantity
+                <span class="mini-price">
+                    @(item.Offer.DiscountedPrice* item.Quantity) EUR
+                </span>
+            </div>
+        </div>
+    }
+}

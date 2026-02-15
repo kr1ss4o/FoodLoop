@@ -86,11 +86,17 @@
                         </div>
 
                         <div class="store-stock">
-                        @if (offer.QuantityAvailable <= 5)
+                            @if (offer.QuantityAvailable <= 5)
                             {
                                 <span class="low-stock">
                                     Only @offer.QuantityAvailable left
                                 </span>
+                            }
+                            else if (offer.QuantityAvailable <= 3)
+                            {
+                                <div class="urgent-badge">
+                                    🔥 Almost gone
+                                </div>
                             }
                             else
                             {

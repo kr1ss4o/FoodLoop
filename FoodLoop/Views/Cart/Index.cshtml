@@ -4,16 +4,18 @@
 @{
     ViewData["Title"] = "My Orders";
 
-    var cart = Model.CartItems;
-    var reservations = Model.Reservations;
+    var cart = Model.CartItems ?? new List<FoodLoop.Models.Entities.CartItem>();
+    var reservations = Model.Reservations ?? new List<FoodLoop.Models.Entities.Reservation>();
 
     var ongoing = reservations
-    .Where(r => r.Status == ReservationStatus.Pending ||
-                r.Status == ReservationStatus.Confirmed ||
-                r.Status == ReservationStatus.OutForDelivery).ToList();
+        .Where(r => r.Status == ReservationStatus.Pending ||
+                    r.Status == ReservationStatus.Confirmed ||
+                    r.Status == ReservationStatus.OutForDelivery)
+        .ToList();
 
     var history = reservations
-        .Where(r => r.Status == ReservationStatus.Finished || r.Status == ReservationStatus.Canceled)
+        .Where(r => r.Status == ReservationStatus.Finished ||
+                    r.Status == ReservationStatus.Canceled)
         .ToList();
 
     decimal total = cart.Sum(c => c.Offer.DiscountedPrice * c.Quantity);
@@ -21,16 +23,13 @@
 
 <link rel="stylesheet" href="~/css/cart.css" />
 
-
 <div class="orders-wrapper">
 
-    <!-- HEADER -->
     <div class="mb-4">
         <h2 class="fw-bold">My Orders</h2>
         <p class="text-muted">Track and manage your food reservations</p>
     </div>
 
-    <!-- TABS -->
     <ul class="nav nav-pills mb-4 gap-2">
         <li class="nav-item">
             <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#cart-tab">
@@ -58,7 +57,7 @@
 
             @if (!cart.Any())
             {
-                <div class="empty-state">
+                <div class="empty-state text-center">
                     <i class="bi bi-bag-x fs-1 text-muted"></i>
                     <p class="mt-3">Your cart is empty.</p>
                 </div>
@@ -70,10 +69,9 @@
                     <div class="app-card mb-3">
 
                         <div class="d-flex justify-content-between align-items-center">
-
                             <div>
-                                <div class="fw-semibold">@item.Offer.Title</div>
-                                <small class="text-muted">@item.Offer.Restaurant.Name</small>
+                                <div class="fw-semibold">@item.Offer?.Title</div>
+                                <small class="text-muted">@item.Offer?.Restaurant?.Name</small>
                             </div>
 
                             <div class="text-end">
@@ -82,22 +80,21 @@
                                 </div>
                                 <small>x @item.Quantity</small>
                             </div>
-
                         </div>
 
                         <div class="d-flex gap-2 mt-3">
 
-                            <form asp-controller="Cart" asp-action="DecreaseQuantity" method="post">
+                            <form asp-controller="Cart" asp-action="Decrease" method="post">
                                 <input type="hidden" name="itemId" value="@item.Id" />
                                 <button class="btn btn-sm btn-outline-secondary">-</button>
                             </form>
 
-                            <form asp-controller="Cart" asp-action="IncreaseQuantity" method="post">
+                            <form asp-controller="Cart" asp-action="Increase" method="post">
                                 <input type="hidden" name="itemId" value="@item.Id" />
                                 <button class="btn btn-sm btn-outline-secondary">+</button>
                             </form>
 
-                            <form asp-controller="Cart" asp-action="RemoveFromCart" method="post" class="ms-auto">
+                            <form asp-controller="Cart" asp-action="Remove" method="post" class="ms-auto">
                                 <input type="hidden" name="id" value="@item.Id" />
                                 <button class="btn btn-sm btn-outline-danger">
                                     <i class="bi bi-trash"></i>
@@ -109,7 +106,6 @@
                     </div>
                 }
 
-                <!-- CHECKOUT PANEL -->
                 <div class="checkout-panel mt-4">
 
                     <div class="d-flex justify-content-between mb-3">
@@ -122,64 +118,61 @@
                         <div class="mb-3">
                             <label class="form-label">Delivery Type</label>
                             <select name="deliveryType" class="form-select">
-                                <option value="Pickup">Pickup (Pay on location)</option>
-                                <option value="Delivery">Delivery (Pay on delivery)</option>
+                                <option value="Pickup">Pickup</option>
+                                <option value="Delivery">Delivery</option>
                             </select>
                         </div>
-                        <div class="recipient-section">
 
-                            <div class="form-check mb-2">
+                        <!-- RECIPIENT SECTION -->
+                        <div class="form-check mb-2">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   id="orderForSomeone"
+                                   name="IsForSomeoneElse"
+                                   value="true"
+                                   onchange="toggleRecipientFields()" />
 
-                                <input class="form-check-input"
-                                       type="checkbox"
-                                       id="orderForSomeone"
-                                       name="IsForSomeoneElse"
-                                       value="true"
-                                       onchange="toggleRecipientFields()" />
+                            <input type="hidden"
+                                   name="IsForSomeoneElse"
+                                   value="false" />
 
-                                <input type="hidden"
-                                       name="IsForSomeoneElse"
-                                       value="false" />
-
-                                <label class="form-check-label" for="orderForSomeone">
-                                    Order for someone else
-                                </label>
-                            </div>
-
-                            <div id="recipientFields" style="display:none;">
-
-                                <input type="text"
-                                       name="RecipientFullName"
-                                       class="form-control mb-2"
-                                       placeholder="Recipient full name" />
-
-                                <input type="text"
-                                       name="RecipientPhone"
-                                       class="form-control"
-                                       maxlength="10"
-                                       pattern="\d{10}"
-                                       inputmode="numeric"
-                                       placeholder="Recipient phone (10 digits)" />
-                            </div>
-
+                            <label class="form-check-label" for="orderForSomeone">
+                                Order for someone else
+                            </label>
                         </div>
-                        <button class="btn btn-primary-custom w-100">
+
+                        <div id="recipientFields" style="display:none;">
+
+                            <input type="text"
+                                   name="RecipientFullName"
+                                   class="form-control mb-2"
+                                   placeholder="Recipient full name" />
+
+                            <input type="text"
+                                   name="RecipientPhone"
+                                   class="form-control"
+                                   maxlength="10"
+                                   pattern="\d{10}"
+                                   inputmode="numeric"
+                                   placeholder="Recipient phone (10 digits)" />
+                        </div>
+
+                        <button class="btn btn-primary-custom w-100 mt-3">
                             Confirm Reservation
                         </button>
 
                     </form>
-
                 </div>
             }
 
         </div>
 
-        <!-- ================= ONGOING TAB ================= -->
+        <!-- ================= ONGOING ================= -->
         <div class="tab-pane fade" id="ongoing-tab">
 
             @if (!ongoing.Any())
             {
-                <div class="empty-state">
+                <div class="empty-state text-center">
                     <i class="bi bi-hourglass-split fs-1 text-muted"></i>
                     <p class="mt-3">No ongoing orders.</p>
                 </div>
@@ -195,34 +188,15 @@
                                 Order #@o.Id.ToString().Substring(0, 6)
                             </span>
 
-                            <div class="progress-status">
-
-                                <span class="step @(o.Status >= ReservationStatus.Pending ? "done" : "")">
-                                    Pending
-                                </span>
-
-                                <span class="step @(o.Status >= ReservationStatus.Confirmed ? "done" : "")">
-                                    Confirmed
-                                </span>
-
-                                @if (o.DeliveryType == "Delivery")
-                                {
-                                    <span class="step @(o.Status >= ReservationStatus.OutForDelivery ? "done" : "")">
-                                        Out for delivery
-                                    </span>
-                                }
-
-                                <span class="step @(o.Status == ReservationStatus.Finished ? "done" : "")">
-                                    Finished
-                                </span>
-
-                            </div>
+                            <span class="badge bg-warning">
+                                @o.Status
+                            </span>
                         </div>
 
-                        @foreach (var item in o.Items)
+                        @foreach (var item in o.Items ?? new List<FoodLoop.Models.Entities.ReservationItem>())
                         {
                             <div class="small text-muted">
-                                @item.Offer.Title (Quantity: @item.Quantity)
+                                @item.Offer?.Title (x @item.Quantity)
                             </div>
                         }
 
@@ -236,12 +210,12 @@
 
         </div>
 
-        <!-- ================= HISTORY TAB ================= -->
+        <!-- ================= HISTORY ================= -->
         <div class="tab-pane fade" id="history-tab">
 
             @if (!history.Any())
             {
-                <div class="empty-state">
+                <div class="empty-state text-center">
                     <i class="bi bi-check-circle fs-1 text-muted"></i>
                     <p class="mt-3">No past orders.</p>
                 </div>
@@ -257,18 +231,15 @@
                                 Order #@h.Id.ToString().Substring(0, 6)
                             </span>
 
-                            <span class="badge
-                                @(h.Status == ReservationStatus.Finished ? "bg-success" : h.Status == ReservationStatus.Canceled ? "bg-danger"
-                                : "bg-secondary")">
+                            <span class="badge @(h.Status == ReservationStatus.Finished ? "bg-success" : "bg-danger")">
                                 @h.Status
                             </span>
-
                         </div>
 
-                        @foreach (var item in h.Items)
+                        @foreach (var item in h.Items ?? new List<FoodLoop.Models.Entities.ReservationItem>())
                         {
                             <div class="small text-muted">
-                                @item.Offer.Title (Quantity: @item.Quantity)
+                                @item.Offer?.Title (x @item.Quantity)
                             </div>
                         }
 
