@@ -342,84 +342,19 @@
     margin-top: 10px;
 }
 
-    .progress-status .step {
-        padding: 6px 12px;
-        border-radius: 999px;
-        background: #eef2f3;
-        font-size: 12px;
-        font-weight: 600;
-        color: #6c7a86;
-    }
-
-        .progress-status .step.done {
-            background: linear-gradient(135deg,#00a86b,#008b5a);
-            color: white;
-        }
-
-/* Modern Client Timeline */
-
-.client-timeline {
-    display: flex;
-    align-items: center;
-    margin-top: 15px;
+.progress-status .step {
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: #eef2f3;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6c7a86;
 }
 
-.timeline-step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: 13px;
-    color: #aaa;
+.progress-status .step.done {
+    background: linear-gradient(135deg,#00a86b,#008b5a);
+    color: white;
 }
-
-    .timeline-step .circle {
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        background: #555;
-        margin-bottom: 6px;
-        transition: 0.3s ease;
-    }
-
-    .timeline-step.done {
-        color: #4caf50;
-    }
-
-        .timeline-step.done .circle {
-            background: #4caf50;
-        }
-
-    .timeline-step.active .circle {
-        background: #ff9800;
-        animation: pulse 1.5s infinite;
-    }
-
-.timeline-line {
-    width: 40px;
-    height: 3px;
-    background: #444;
-    margin: 0 6px;
-    transition: 0.3s;
-}
-
-    .timeline-line.done-line {
-        background: #4caf50;
-    }
-
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(255,152,0,0.7);
-    }
-
-    70% {
-        box-shadow: 0 0 0 8px rgba(255,152,0,0);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(255,152,0,0);
-    }
-}
-
 
 /* =========================================================
    RESPONSIVENESS + UI POLISH

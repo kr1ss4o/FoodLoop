@@ -9,6 +9,7 @@ namespace FoodLoop.Models.Entities
         public ReservationStatus Status { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public string DeliveryType { get; set; } = "Pickup";
+        public string? DeliveryAddress { get; set; }
         public decimal TotalPrice { get; set; }
         public bool IsForSomeoneElse { get; set; }
         public string? RecipientFullName { get; set; }

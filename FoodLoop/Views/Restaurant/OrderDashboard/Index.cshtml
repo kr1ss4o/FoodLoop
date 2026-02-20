@@ -52,6 +52,7 @@
 }
 
 <link rel="stylesheet" href="~/css/order-manager.css" />
+<link rel="stylesheet" href="~/css/timeline.css" />
 
 <div class="order-manager-wrapper">
 
@@ -192,18 +193,25 @@
                     }
                 </div>
 
+                <!-- TIMELINE BLOCK -->
                 <div class="client-timeline modern">
 
                     @{
-                        var current = order.Status;
-                    }
-
-                    @foreach (var step in new[] {
+                        var steps = new List<ReservationStatus>
+                        {
                         ReservationStatus.Pending,
                         ReservationStatus.Confirmed,
                         ReservationStatus.OutForDelivery,
                         ReservationStatus.Finished
-                        })
+                        };
+
+                        if (order.Status == ReservationStatus.Canceled)
+                        {
+                            steps.Add(ReservationStatus.Canceled);
+                        }
+                    }
+
+                    @foreach (var step in steps)
                     {
                         if (step == ReservationStatus.OutForDelivery && order.DeliveryType != "Delivery")
                         {
@@ -211,16 +219,15 @@
                         }
 
                         var reached = HasReachedStatus(order, step);
-                        var active = current == step;
 
-                        <div class="timeline-step @(reached ? "done" : "") @(active ? "active" : "")">
+                        <div class="timeline-step @(reached ? "done" : "") @(step == ReservationStatus.Canceled ? "cancel" : "")">
                             <div class="circle"></div>
-                            <span>@FormatStatus(step)</span>
+                            <span>@step</span>
                         </div>
 
-                        if (step != ReservationStatus.Finished)
+                        if (step != steps.Last())
                         {
-                            <div class="timeline-line @(reached ? "done-line" : "")"></div>
+                            <div class="timeline-line @(step == ReservationStatus.Canceled ? "cancel-line" : "")"></div>
                         }
                     }
                 </div>
@@ -275,7 +282,10 @@
     {
         @foreach (var order in history)
         {
-            <div class="dashboard-card history-card">
+            var index = history.IndexOf(order);
+            var hiddenClass = index >= 5 ? "history-hidden" : "";
+
+            <div class="dashboard-card history-card @hiddenClass">
 
                 <div class="card-header-row">
                     <div>
@@ -317,37 +327,49 @@
                     }
                 </div>
 
-                <div class="order-timeline">
+                <!-- ORDER TIMELINE -->
 
-                    <div class="timeline-step @(HasReachedStatus(order, ReservationStatus.Pending) ? "done" : "")">
-                        <div class="circle"></div>
-                        <span>Pending</span>
-                    </div>
+                <div class="client-timeline modern">
 
-                    <div class="timeline-line"></div>
+                    @{
+                        var steps = new List<ReservationStatus>
+                        {
+                        ReservationStatus.Pending,
+                        ReservationStatus.Confirmed,
+                        ReservationStatus.OutForDelivery,
+                        ReservationStatus.Finished
+                        };
 
-                    <div class="timeline-step @(HasReachedStatus(order, ReservationStatus.Confirmed) ? "done" : "")">
-                        <div class="circle"></div>
-                        <span>Confirmed</span>
-                    </div>
-
-                    <div class="timeline-line"></div>
-
-                    @if (order.DeliveryType == "Delivery")
-                    {
-                        <div class="timeline-step @(HasReachedStatus(order, ReservationStatus.OutForDelivery) ? "done" : "")">
-                            <div class="circle"></div>
-                            <span>Out For Delivery</span>
-                        </div>
-
-                        <div class="timeline-line"></div>
+                        if (order.Status == ReservationStatus.Canceled)
+                        {
+                            steps.Add(ReservationStatus.Canceled);
+                        }
                     }
 
-                    <div class="timeline-step @(HasReachedStatus(order, ReservationStatus.Finished) ? "done" : "")">
-                        <div class="circle"></div>
-                        <span>Finished</span>
-                    </div>
+                    @foreach (var step in steps)
+                    {
+                        var reached = HasReachedStatus(order, step);
+                        var time = order.StatusLogs
+                        .Where(l => l.NewStatus == step)
+                        .OrderBy(l => l.ChangedAt)
+                        .Select(l => (DateTime?)l.ChangedAt)
+                        .FirstOrDefault();
 
+                        <div class="timeline-step @(reached ? "done" : "") @(step == ReservationStatus.Canceled ? "cancel" : "")">
+                            <div class="circle"></div>
+                            <span>@step</span>
+
+                            @if (time != null)
+                            {
+                                <small class="text-muted">@time.Value.ToLocalTime().ToString("HH:mm")</small>
+                            }
+                        </div>
+
+                        if (step != steps.Last())
+                        {
+                            <div class="timeline-line @(step == ReservationStatus.Canceled ? "cancel-line" : "")"></div>
+                        }
+                    }
                 </div>
 
                 <div class="card-footer-row">
@@ -358,6 +380,24 @@
 
             </div>
         }
+        @if (history.Count > 5)
+        {
+            <button id="showMoreBtn" class="btn btn-outline-secondary mt-3">
+                Show more
+            </button>
+        }
     }
 
 </div>
+
+@section Scripts {
+    <script>
+            document.getElementById("showMoreBtn")?.addEventListener("click", function () {
+            document.querySelectorAll(".history-hidden").forEach(card => {
+                card.style.display = "block";
+            });
+
+            this.style.display = "none";
+        });
+    </script>
+}

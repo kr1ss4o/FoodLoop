@@ -1,0 +1,88 @@
+﻿/* =====================================================
+   GLOBAL TIMELINE STYLES
+===================================================== */
+
+.client-timeline,
+.order-timeline {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+/* STEP */
+
+.timeline-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 13px;
+    color: #9ca3af; /* neutral gray */
+    position: relative;
+    min-width: 60px;
+    text-align: center;
+    transition: 0.2s ease;
+}
+
+    .timeline-step .circle {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #d1d5db;
+        margin-bottom: 6px;
+        transition: 0.3s ease;
+    }
+
+    /* DONE STEP */
+
+    .timeline-step.done {
+        color: #2e7d32;
+        font-weight: 600;
+    }
+
+        .timeline-step.done .circle {
+            background: #2e7d32;
+        }
+
+    /* ACTIVE STEP */
+
+    .timeline-step.active .circle {
+        box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.2);
+    }
+
+/* LINE */
+
+.timeline-line {
+    height: 2px;
+    width: 50px;
+    background: #d1d5db;
+    transition: 0.3s ease;
+}
+
+    .timeline-line.done-line {
+        background: #2e7d32;
+    }
+
+/* CANCEL STATE */
+
+.timeline-step.cancel {
+    color: #dc3545 !important;
+    font-weight: 600;
+}
+
+    .timeline-step.cancel .circle {
+        background: #dc3545 !important;
+    }
+
+.timeline-line.cancel-line {
+    background: #dc3545 !important;
+}
+
+/* TIMESTAMP */
+
+.timeline-step small {
+    margin-top: 3px;
+    font-size: 11px;
+    color: #6b7280;
+}

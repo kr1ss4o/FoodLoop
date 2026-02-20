@@ -142,44 +142,7 @@
     margin-left: 6px;
 }
 
-/* ================= TIMELINE ================= */
-
-.order-timeline {
-    display: flex;
-    align-items: center;
-    margin-top: 15px;
-    margin-bottom: 15px;
-}
-
-.timeline-step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: 13px;
-    color: #999;
-    position: relative;
-}
-
-.timeline-step .circle {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: #ccc;
-    margin-bottom: 5px;
-    transition: 0.3s ease;
-}
-
-.timeline-step.done {
-    color: #2e7d32;
-}
-
-.timeline-step.done .circle {
-    background: #2e7d32;
-}
-
-.timeline-line {
-    height: 2px;
-    width: 40px;
-    background: #ccc;
-    margin: 0 5px;
+/* Show more - hidden items */
+.history-hidden {
+    display: none;
 }

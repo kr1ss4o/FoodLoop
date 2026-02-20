@@ -50,6 +50,7 @@
 }
 
 <link rel="stylesheet" href="~/css/cart.css" />
+<link rel="stylesheet" href="~/css/timeline.css" />
 
 <div class="orders-wrapper">
 
@@ -160,6 +161,15 @@
                                     <option value="Delivery">Delivery (+2.00 EUR)</option>
                                 </select>
 
+                                <div id="addressField" style="display:none;" class="mt-3">
+                                    <label class="form-label">Delivery Address</label>
+                                    <input type="text"
+                                           name="DeliveryAddress"
+                                           class="form-control"
+                                           maxlength="150"
+                                           placeholder="Street, number, city..." />
+                                </div>
+
                                 <div id="deliveryInfo" class="delivery-fee-info"></div>
                             </div>
 
@@ -242,15 +252,21 @@
                         <div class="client-timeline modern">
 
                             @{
-                                var current = GetCurrentStep(o);
-                            }
-
-                            @foreach (var step in new[] {
+                                var steps = new List<ReservationStatus>
+                                        {
                                         ReservationStatus.Pending,
                                         ReservationStatus.Confirmed,
                                         ReservationStatus.OutForDelivery,
                                         ReservationStatus.Finished
-                                        })
+                                        };
+
+                                if (o.Status == ReservationStatus.Canceled)
+                                {
+                                    steps.Add(ReservationStatus.Canceled);
+                                }
+                            }
+
+                            @foreach (var step in steps)
                             {
                                 if (step == ReservationStatus.OutForDelivery && o.DeliveryType != "Delivery")
                                 {
@@ -258,16 +274,21 @@
                                 }
 
                                 var reached = HasReachedStatus(o, step);
-                                var active = current == step;
+                                var time = GetStatusTime(o, step);
 
-                                <div class="timeline-step @(reached ? "done" : "") @(active ? "active" : "")">
+                                <div class="timeline-step @(reached ? "done" : "") @(step == ReservationStatus.Canceled ? "cancel" : "")">
                                     <div class="circle"></div>
                                     <span>@step</span>
+
+                                    @if (time != null)
+                                    {
+                                        <small class="text-muted">@time.Value.ToLocalTime().ToString("HH:mm")</small>
+                                    }
                                 </div>
 
-                                if (step != ReservationStatus.Finished)
+                                if (step != steps.Last())
                                 {
-                                    <div class="timeline-line @(reached ? "done-line" : "")"></div>
+                                    <div class="timeline-line @(step == ReservationStatus.Canceled ? "cancel-line" : "")"></div>
                                 }
                             }
                         </div>
@@ -333,22 +354,89 @@
                             </span>
                         </div>
 
-                        <!-- Timeline with timestamps -->
-                        <div class="client-timeline">
+                        <!-- CLIENT / RECIPIENT INFO -->
+                        @if (h.IsForSomeoneElse)
+                        {
+                            <div class="small-text">
+                                <strong>Recipient:</strong> @h.RecipientFullName · @h.RecipientPhone
+                            </div>
+                            <div class="small-text text-muted">
+                                Ordered by: @h.User.FullName · @h.User.PhoneNumber
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="small-text">
+                                @h.User.FullName · @h.User.PhoneNumber
+                            </div>
+                        }
 
-                            @foreach (ReservationStatus step in Enum.GetValues(typeof(ReservationStatus)))
+                        <div class="small-text">
+                            Delivery: @h.DeliveryType
+                        </div>
+
+                        @if (h.DeliveryType == "Delivery" && !string.IsNullOrEmpty(h.DeliveryAddress))
+                        {
+                            <div class="small-text">
+                                Address: @h.DeliveryAddress
+                            </div>
+                        }
+
+                        <!-- PRODUCTS -->
+
+                        <div class="items-section mt-2">
+                            @foreach (var item in h.Items)
                             {
-                                if (step == ReservationStatus.Canceled && h.Status != ReservationStatus.Canceled)
+                                <div class="item-line">
+                                    @item.Offer.Title (Quantity: @item.Quantity)
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Timeline -->
+                        <div class="client-timeline modern">
+
+                            @{
+                                var steps = new List<ReservationStatus>
+                                        {
+                                        ReservationStatus.Pending,
+                                        ReservationStatus.Confirmed
+                                        };
+
+                                if (h.DeliveryType == "Delivery")
                                 {
-                                    continue;
+                                    steps.Add(ReservationStatus.OutForDelivery);
                                 }
 
-                                var reached = HasReachedStatus(h, step);
-                                var time = GetStatusTime(h, step);
+                                if (h.Status == ReservationStatus.Canceled)
+                                {
+                                    steps.Add(ReservationStatus.Canceled);
+                                }
+                                else
+                                {
+                                    steps.Add(ReservationStatus.Finished);
+                                }
+                            }
 
-                                <div class="timeline-step @(reached ? "done" : "")">
+                            @foreach (var step in steps)
+                            {
+                                var reached =
+                                step == ReservationStatus.Pending ||
+                                h.StatusLogs.Any(l => l.NewStatus == step) ||
+                                h.Status == step;
+
+                                var time = step == ReservationStatus.Pending
+                                ? h.CreatedAt
+                                : h.StatusLogs
+                                .Where(l => l.NewStatus == step)
+                                .OrderBy(l => l.ChangedAt)
+                                .Select(l => (DateTime?)l.ChangedAt)
+                                .FirstOrDefault();
+
+                                <div class="timeline-step @(reached && step != ReservationStatus.Canceled ? "done" : "") @(step == ReservationStatus.Canceled ? "cancel" : "")">
                                     <div class="circle"></div>
                                     <span>@step</span>
+
                                     @if (time != null)
                                     {
                                         <small class="text-muted">
@@ -357,10 +445,9 @@
                                     }
                                 </div>
 
-                                if (step != ReservationStatus.Finished &&
-                                step != ReservationStatus.Canceled)
+                                if (step != steps.Last())
                                 {
-                                    <div class="timeline-line"></div>
+                                    <div class="timeline-line @(step == ReservationStatus.Canceled ? "cancel-line" : "")"></div>
                                 }
                             }
 
@@ -382,8 +469,16 @@
     <script>
 
         let deliveryFee = 0;
-
         document.addEventListener("DOMContentLoaded", function () {
+
+            const addressField = document.getElementById("addressField");
+
+            if (deliverySelect && addressField) {
+                deliverySelect.addEventListener("change", function () {
+                addressField.style.display = this.value === "Delivery" ? "block" : "none"; });
+                addressField.style.display =
+                deliverySelect.value === "Delivery" ? "block" : "none";
+            }
 
             const totalEl = document.getElementById("cartTotal");
             const deliverySelect = document.getElementById("deliveryTypeSelect");

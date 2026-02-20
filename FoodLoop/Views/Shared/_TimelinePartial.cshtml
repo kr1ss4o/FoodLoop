@@ -1,0 +1,51 @@
+﻿@model FoodLoop.Models.Entities.Reservation
+@using FoodLoop.Models.Enums
+
+@{
+    var steps = new List<ReservationStatus>
+    {
+        ReservationStatus.Pending,
+        ReservationStatus.Confirmed,
+        ReservationStatus.OutForDelivery,
+        ReservationStatus.Finished
+    };
+
+    if (Model.Status == ReservationStatus.Canceled)
+    {
+        steps.Add(ReservationStatus.Canceled);
+    }
+}
+
+<div class="client-timeline modern">
+
+    @foreach (var step in steps)
+    {
+        var reached = Model.StatusLogs.Any(l => l.NewStatus == step)
+        || Model.Status == step
+        || step == ReservationStatus.Pending;
+
+        var time = Model.StatusLogs
+        .Where(l => l.NewStatus == step)
+        .OrderBy(l => l.ChangedAt)
+        .Select(l => (DateTime?)l.ChangedAt)
+        .FirstOrDefault();
+
+        <div class="timeline-step @(reached ? "done" : "") @(step == ReservationStatus.Canceled ? "cancel" : "")">
+            <div class="circle"></div>
+            <span>@step</span>
+
+            @if (time != null)
+            {
+                <small class="text-muted">
+                    @time.Value.ToLocalTime().ToString("HH:mm")
+                </small>
+            }
+        </div>
+
+        if (step != steps.Last())
+        {
+            <div class="timeline-line"></div>
+        }
+    }
+
+</div>

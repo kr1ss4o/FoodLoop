@@ -231,7 +231,7 @@ namespace FoodLoop.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Checkout(string deliveryType, bool IsForSomeoneElse, string? RecipientFullName,   string? RecipientPhone)
+        public async Task<IActionResult> Checkout(string deliveryType, bool IsForSomeoneElse, string? RecipientFullName,   string? RecipientPhone, string? DeliveryAddress)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -273,6 +273,7 @@ namespace FoodLoop.Controllers
                     CreatedAt = DateTime.UtcNow,
                     Status = ReservationStatus.Pending,
                     DeliveryType = deliveryType,
+                    DeliveryAddress = deliveryType == "Delivery" ? DeliveryAddress : null,
                     TotalPrice = 0,
 
                     IsForSomeoneElse = IsForSomeoneElse,
