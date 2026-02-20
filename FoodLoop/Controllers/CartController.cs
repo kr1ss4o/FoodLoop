@@ -43,6 +43,7 @@ namespace FoodLoop.Controllers
                 .Where(r => r.UserId == user.Id)
                 .Include(r => r.Items)
                     .ThenInclude(i => i.Offer)
+                .Include(r => r.StatusLogs)
                 .OrderByDescending(r => r.CreatedAt)
                 .ToListAsync();
 
@@ -137,7 +138,7 @@ namespace FoodLoop.Controllers
                 .FirstOrDefaultAsync(c => c.Id == itemId && c.UserId == user.Id);
 
             if (item == null)
-                return RedirectToAction("Index");
+                return Json(new { success = false });
 
             if (item.Quantity < item.Offer.QuantityAvailable)
             {
@@ -145,7 +146,17 @@ namespace FoodLoop.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToAction("Index");
+            var newTotal = await _context.CartItems
+                .Where(c => c.UserId == user.Id)
+                .SumAsync(c => c.Quantity * c.Offer.DiscountedPrice);
+
+            return Json(new
+            {
+                success = true,
+                quantity = item.Quantity,
+                itemTotal = item.Quantity * item.Offer.DiscountedPrice,
+                cartTotal = newTotal
+            });
         }
 
 
@@ -163,7 +174,7 @@ namespace FoodLoop.Controllers
                 .FirstOrDefaultAsync(c => c.Id == itemId && c.UserId == user.Id);
 
             if (item == null)
-                return RedirectToAction("Index");
+                return Json(new { success = false });
 
             if (item.Quantity > 1)
             {
@@ -171,9 +182,18 @@ namespace FoodLoop.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            return RedirectToAction("Index");
-        }
+            var newTotal = await _context.CartItems
+                .Where(c => c.UserId == user.Id)
+                .SumAsync(c => c.Quantity * c.Offer.DiscountedPrice);
 
+            return Json(new
+            {
+                success = true,
+                quantity = item.Quantity,
+                itemTotal = item.Quantity * item.Offer.DiscountedPrice,
+                cartTotal = newTotal
+            });
+        }
 
         // ==============================================================
         // REMOVE
@@ -185,15 +205,24 @@ namespace FoodLoop.Controllers
             var user = await _userManager.GetUserAsync(User);
 
             var item = await _context.CartItems
+                .Include(c => c.Offer)
                 .FirstOrDefaultAsync(c => c.Id == id && c.UserId == user.Id);
 
             if (item == null)
-                return RedirectToAction("Index");
+                return Json(new { success = false });
 
             _context.CartItems.Remove(item);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index");
+            var newTotal = await _context.CartItems
+                .Where(c => c.UserId == user.Id)
+                .SumAsync(c => c.Quantity * c.Offer.DiscountedPrice);
+
+            return Json(new
+            {
+                success = true,
+                cartTotal = newTotal
+            });
         }
 
         // ==============================================================
@@ -201,7 +230,8 @@ namespace FoodLoop.Controllers
         // ==============================================================
 
         [HttpPost]
-        public async Task<IActionResult> Checkout(string deliveryType)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Checkout(string deliveryType, bool IsForSomeoneElse, string? RecipientFullName,   string? RecipientPhone)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -215,24 +245,20 @@ namespace FoodLoop.Controllers
             if (!cartItems.Any())
                 return RedirectToAction("Index");
 
-            // Validate stock BEFORE creating reservation
-            foreach (var item in cartItems)
+            // VALIDATE recipient if needed
+            if (IsForSomeoneElse)
             {
-                if (item.Offer == null)
+                if (string.IsNullOrWhiteSpace(RecipientFullName))
                 {
-                    TempData["Error"] = "Some items are no longer available.";
+                    TempData["Error"] = "Recipient name is required.";
                     return RedirectToAction("Index");
                 }
 
-                if (item.Quantity <= 0)
+                if (string.IsNullOrWhiteSpace(RecipientPhone) ||
+                    RecipientPhone.Length != 10 ||
+                    !RecipientPhone.All(char.IsDigit))
                 {
-                    TempData["Error"] = "Invalid quantity in cart.";
-                    return RedirectToAction("Index");
-                }
-
-                if (item.Offer.QuantityAvailable < item.Quantity)
-                {
-                    TempData["Error"] = $"Not enough stock for: {item.Offer.Title}";
+                    TempData["Error"] = "Phone must be exactly 10 digits.";
                     return RedirectToAction("Index");
                 }
             }
@@ -247,12 +273,21 @@ namespace FoodLoop.Controllers
                     CreatedAt = DateTime.UtcNow,
                     Status = ReservationStatus.Pending,
                     DeliveryType = deliveryType,
-                    TotalPrice = 0
+                    TotalPrice = 0,
+
+                    IsForSomeoneElse = IsForSomeoneElse,
+                    RecipientFullName = IsForSomeoneElse ? RecipientFullName : null,
+                    RecipientPhone = IsForSomeoneElse ? RecipientPhone : null
                 };
 
                 foreach (var item in cartItems)
                 {
-                    // decrease stock
+                    if (item.Offer.QuantityAvailable < item.Quantity)
+                    {
+                        TempData["Error"] = $"Not enough stock for {item.Offer.Title}";
+                        return RedirectToAction("Index");
+                    }
+
                     item.Offer.QuantityAvailable -= item.Quantity;
 
                     reservation.Items.Add(new ReservationItem
@@ -264,6 +299,11 @@ namespace FoodLoop.Controllers
 
                     reservation.TotalPrice += item.Quantity * item.Offer.DiscountedPrice;
                 }
+                // Adds additional delivery fee of 2 Euro
+                if (deliveryType == "Delivery")
+                {
+                    reservation.TotalPrice += 2m;
+                }
 
                 _context.Reservations.Add(reservation);
                 _context.CartItems.RemoveRange(cartItems);
@@ -271,13 +311,13 @@ namespace FoodLoop.Controllers
                 await _context.SaveChangesAsync();
                 await tx.CommitAsync();
 
-                TempData["Success"] = "Order placed!";
+                TempData["Success"] = "Order placed successfully!";
                 return RedirectToAction("Index");
             }
             catch
             {
                 await tx.RollbackAsync();
-                TempData["Error"] = "Something went wrong while placing the order.";
+                TempData["Error"] = "Something went wrong.";
                 return RedirectToAction("Index");
             }
         }

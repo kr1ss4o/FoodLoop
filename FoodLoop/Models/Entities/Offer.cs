@@ -14,15 +14,16 @@
 
         // FK to Restaurant
         public Guid RestaurantId { get; set; }
-        public Restaurant? Restaurant { get; set; }   // ✅ nullable
+        public Restaurant? Restaurant { get; set; }
 
         // FK to Category
         public Guid CategoryId { get; set; }
-        public Category? Category { get; set; }       // ✅ nullable
+        public Category? Category { get; set; }
 
         // Many-to-Many
         public ICollection<OfferTag>? OfferTags { get; set; } = new List<OfferTag>();
 
         public ICollection<Reservation>? Reservations { get; set; }
+        public bool IsLowStock => QuantityAvailable <= 3;
     }
 }

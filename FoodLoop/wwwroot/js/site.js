@@ -4,9 +4,8 @@
     const miniCart = document.getElementById("miniCartDropdown");
     const cartLink = document.getElementById("cartLink");
 
-    /* ==============================================
-       EVENT-BASED BADGE UPDATE
-    ============================================== */
+    
+    //EVENT-BASED BADGE UPDATE
 
     document.addEventListener("cartUpdated", function (e) {
 
@@ -22,11 +21,10 @@
             cartBadge.classList.add("d-none");
     });
 
-    /* ==============================================
-       MINI CART LOAD
-    ============================================== */
+    
+    //MINI CART LOAD
 
-    window.loadMiniCart = async function () {
+    async function loadMiniCart() {
 
         if (!miniCart) return;
 
@@ -36,21 +34,36 @@
         const html = await response.text();
 
         content.innerHTML = html;
-    };
+    }
 
-    /* ==============================================
-       MINI CART HOVER
-    ============================================== */
+    //MINI CART STABLE HOVER
 
-    if (cartLink && miniCart) {
+    if (miniCart) {
 
-        cartLink.addEventListener("mouseenter", async function () {
+        const wrapper = miniCart.closest(".nav-item.position-relative");
+
+        let hideTimeout;
+
+        wrapper.addEventListener("mouseenter", async function () {
+
+            clearTimeout(hideTimeout);
+
             miniCart.classList.remove("d-none");
+
+            setTimeout(() => {
+                miniCart.classList.add("show");
+            }, 10);
+
             await loadMiniCart();
         });
 
-        miniCart.addEventListener("mouseleave", function () {
-            miniCart.classList.add("d-none");
+        wrapper.addEventListener("mouseleave", function () {
+
+            miniCart.classList.remove("show");
+
+            hideTimeout = setTimeout(() => {
+                miniCart.classList.add("d-none");
+            }, 200);
         });
     }
 

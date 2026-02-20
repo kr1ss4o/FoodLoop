@@ -39,10 +39,35 @@ namespace FoodLoop.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
+            // LOW STOCK ALERT
+            var lowStockOffers = await _context.Offers
+                .Where(o => o.RestaurantId == restaurant.Id && o.QuantityAvailable <= 3)
+                .ToListAsync();
+
+            ViewBag.LowStockCount = lowStockOffers.Count;
+
+            var expirationTime = DateTime.UtcNow.AddMinutes(-30);
+
+            var expiredReservations = await _context.Reservations
+                .Where(r =>
+                    r.Status == ReservationStatus.Pending &&
+                    r.CreatedAt <= expirationTime &&
+                    r.Items.Any(i => i.Offer.RestaurantId == restaurant.Id))
+                .ToListAsync();
+
+            foreach (var reservation in expiredReservations)
+            {
+                reservation.Status = ReservationStatus.Canceled;
+            }
+
+            if (expiredReservations.Any())
+                await _context.SaveChangesAsync();
+
             var reservations = await _context.Reservations
                 .Include(r => r.User)
                 .Include(r => r.Items)
                     .ThenInclude(i => i.Offer)
+                .Include(r => r.StatusLogs)
                 .Where(r => r.Items.Any(i => i.Offer.RestaurantId == restaurant.Id))
                 .OrderByDescending(r => r.CreatedAt)
                 .ToListAsync();
@@ -51,7 +76,7 @@ namespace FoodLoop.Controllers
         }
 
         // =========================================================
-        // ACTIONS (status transitions + ownership guard)
+        // ACTIONS
         // =========================================================
 
         [HttpPost]
@@ -114,7 +139,18 @@ namespace FoodLoop.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            var oldStatus = reservation.Status;
+
             reservation.Status = newStatus;
+
+            _context.ReservationStatusLogs.Add(new ReservationStatusLog
+            {
+                ReservationId = reservation.Id,
+                OldStatus = oldStatus,
+                NewStatus = newStatus,
+                ChangedByUserId = user.Id
+            });
+
             await _context.SaveChangesAsync();
 
             TempData["Success"] = newStatus switch

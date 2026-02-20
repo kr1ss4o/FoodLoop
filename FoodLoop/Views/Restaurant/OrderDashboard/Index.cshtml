@@ -1,21 +1,23 @@
 ﻿@using FoodLoop.Models.Enums
+@using FoodLoop.Models.Entities
 @model List<FoodLoop.Models.Entities.Reservation>
 
 @{
-
     ViewData["Title"] = "Order Manager";
     ViewData["BodyClass"] = "profile-body";
 
-    var pending = Model.Where(r => r.Status == ReservationStatus.Pending).ToList();
+    var pending = Model
+        .Where(r => r.Status == ReservationStatus.Pending)
+        .ToList();
 
-    var confirmed = Model.Where(r =>
-
-    r.Status == ReservationStatus.Confirmed ||
-
-    r.Status == ReservationStatus.OutForDelivery);
+    var confirmed = Model
+        .Where(r => r.Status == ReservationStatus.Confirmed ||
+                    r.Status == ReservationStatus.OutForDelivery)
+        .ToList();
 
     var history = Model
-        .Where(r => r.Status == ReservationStatus.Finished || r.Status == ReservationStatus.Canceled)
+        .Where(r => r.Status == ReservationStatus.Finished ||
+                    r.Status == ReservationStatus.Canceled)
         .ToList();
 }
 
@@ -38,6 +40,15 @@
             _ => ""
         };
     }
+
+    private bool HasReachedStatus(Reservation order, ReservationStatus status)
+    {
+        if (status == ReservationStatus.Pending)
+            return true;
+
+        return order.StatusLogs.Any(l => l.NewStatus == status)
+               || order.Status == status;
+    }
 }
 
 <link rel="stylesheet" href="~/css/order-manager.css" />
@@ -45,6 +56,12 @@
 <div class="order-manager-wrapper">
 
     <h2 class="dashboard-title">Order Manager</h2>
+    @if (ViewBag.LowStockCount != null && (int)ViewBag.LowStockCount > 0)
+    {
+        <div class="low-stock-alert">
+            Note: You have @ViewBag.LowStockCount offers running low on stock.
+        </div>
+    }
 
     <!-- ================= PENDING ================= -->
 
@@ -175,6 +192,39 @@
                     }
                 </div>
 
+                <div class="client-timeline modern">
+
+                    @{
+                        var current = order.Status;
+                    }
+
+                    @foreach (var step in new[] {
+                        ReservationStatus.Pending,
+                        ReservationStatus.Confirmed,
+                        ReservationStatus.OutForDelivery,
+                        ReservationStatus.Finished
+                        })
+                    {
+                        if (step == ReservationStatus.OutForDelivery && order.DeliveryType != "Delivery")
+                        {
+                            continue;
+                        }
+
+                        var reached = HasReachedStatus(order, step);
+                        var active = current == step;
+
+                        <div class="timeline-step @(reached ? "done" : "") @(active ? "active" : "")">
+                            <div class="circle"></div>
+                            <span>@FormatStatus(step)</span>
+                        </div>
+
+                        if (step != ReservationStatus.Finished)
+                        {
+                            <div class="timeline-line @(reached ? "done-line" : "")"></div>
+                        }
+                    }
+                </div>
+
                 <div class="card-footer-row">
                     <div class="order-total">
                         Total: @order.TotalPrice EUR
@@ -265,6 +315,39 @@
                             @item.Offer.Title (Quantity: @item.Quantity)
                         </div>
                     }
+                </div>
+
+                <div class="order-timeline">
+
+                    <div class="timeline-step @(HasReachedStatus(order, ReservationStatus.Pending) ? "done" : "")">
+                        <div class="circle"></div>
+                        <span>Pending</span>
+                    </div>
+
+                    <div class="timeline-line"></div>
+
+                    <div class="timeline-step @(HasReachedStatus(order, ReservationStatus.Confirmed) ? "done" : "")">
+                        <div class="circle"></div>
+                        <span>Confirmed</span>
+                    </div>
+
+                    <div class="timeline-line"></div>
+
+                    @if (order.DeliveryType == "Delivery")
+                    {
+                        <div class="timeline-step @(HasReachedStatus(order, ReservationStatus.OutForDelivery) ? "done" : "")">
+                            <div class="circle"></div>
+                            <span>Out For Delivery</span>
+                        </div>
+
+                        <div class="timeline-line"></div>
+                    }
+
+                    <div class="timeline-step @(HasReachedStatus(order, ReservationStatus.Finished) ? "done" : "")">
+                        <div class="circle"></div>
+                        <span>Finished</span>
+                    </div>
+
                 </div>
 
                 <div class="card-footer-row">

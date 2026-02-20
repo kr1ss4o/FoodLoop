@@ -17,7 +17,7 @@ namespace FoodLoop.Data
         public DbSet<OfferTag> OfferTags { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<ReservationItem> ReservationItems { get; set; }
-
+        public DbSet<ReservationStatusLog> ReservationStatusLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -36,6 +36,18 @@ namespace FoodLoop.Data
                 .HasOne(o => o.Tag)
                 .WithMany(t => t.OfferTags)
                 .HasForeignKey(o => o.TagId);
+
+            builder.Entity<ReservationStatusLog>()
+                .HasOne(r => r.Reservation)
+                .WithMany(r => r.StatusLogs)
+                .HasForeignKey(r => r.ReservationId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<ReservationStatusLog>()
+                .HasOne(r => r.ChangedByUser)
+                .WithMany()
+                .HasForeignKey(r => r.ChangedByUserId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

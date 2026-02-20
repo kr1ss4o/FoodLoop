@@ -1,11 +1,12 @@
 ﻿@using FoodLoop.Models.Enums
+@using FoodLoop.Models.Entities
 @model FoodLoop.Models.ViewModels.CartPageViewModel
 
 @{
     ViewData["Title"] = "My Orders";
 
-    var cart = Model.CartItems ?? new List<FoodLoop.Models.Entities.CartItem>();
-    var reservations = Model.Reservations ?? new List<FoodLoop.Models.Entities.Reservation>();
+    var cart = Model.CartItems ?? new List<CartItem>();
+    var reservations = Model.Reservations ?? new List<Reservation>();
 
     var ongoing = reservations
         .Where(r => r.Status == ReservationStatus.Pending ||
@@ -21,6 +22,33 @@
     decimal total = cart.Sum(c => c.Offer.DiscountedPrice * c.Quantity);
 }
 
+@functions {
+    private bool HasReachedStatus(Reservation order, ReservationStatus status)
+    {
+        if (status == ReservationStatus.Pending)
+            return true;
+
+        return order.StatusLogs.Any(l => l.NewStatus == status)
+               || order.Status == status;
+    }
+
+    private DateTime? GetStatusTime(Reservation order, ReservationStatus status)
+    {
+        if (status == ReservationStatus.Pending)
+            return order.CreatedAt;
+
+        return order.StatusLogs
+            .Where(l => l.NewStatus == status)
+            .OrderBy(l => l.ChangedAt)
+            .Select(l => (DateTime?)l.ChangedAt)
+            .FirstOrDefault();
+    }
+    private ReservationStatus GetCurrentStep(Reservation order)
+    {
+        return order.Status;
+    }
+}
+
 <link rel="stylesheet" href="~/css/cart.css" />
 
 <div class="orders-wrapper">
@@ -32,74 +60,75 @@
 
     <ul class="nav nav-pills mb-4 gap-2">
         <li class="nav-item">
-            <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#cart-tab">
-                <i class="bi bi-bag"></i> Cart
-            </button>
+            <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#cart-tab">Cart</button>
         </li>
-
         <li class="nav-item">
-            <button class="nav-link" data-bs-toggle="pill" data-bs-target="#ongoing-tab">
-                <i class="bi bi-clock-history"></i> Ongoing
-            </button>
+            <button class="nav-link" data-bs-toggle="pill" data-bs-target="#ongoing-tab">Ongoing</button>
         </li>
-
         <li class="nav-item">
-            <button class="nav-link" data-bs-toggle="pill" data-bs-target="#history-tab">
-                <i class="bi bi-check-circle"></i> History
-            </button>
+            <button class="nav-link" data-bs-toggle="pill" data-bs-target="#history-tab">History</button>
         </li>
     </ul>
 
     <div class="tab-content">
 
-        <!-- ================= CART TAB ================= -->
+        <!-- ================= CART ================= -->
         <div class="tab-pane fade show active" id="cart-tab">
 
             @if (!cart.Any())
             {
                 <div class="empty-state text-center">
-                    <i class="bi bi-bag-x fs-1 text-muted"></i>
-                    <p class="mt-3">Your cart is empty.</p>
+                    <p>Your cart is empty.</p>
                 </div>
             }
             else
             {
                 @foreach (var item in cart)
                 {
-                    <div class="app-card mb-3">
+                    <div class="cart-item-card">
 
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <div class="fw-semibold">@item.Offer?.Title</div>
-                                <small class="text-muted">@item.Offer?.Restaurant?.Name</small>
+                        <div class="cart-left">
+
+                            <div class="cart-image-wrapper">
+                                <img src="@item.Offer?.ImageUrl" class="cart-item-image" />
                             </div>
 
-                            <div class="text-end">
-                                <div class="fw-bold">
-                                    @(item.Offer.DiscountedPrice* item.Quantity) EUR
+                            <div class="cart-info">
+                                <div class="item-title">@item.Offer?.Title</div>
+                                <div class="item-restaurant">@item.Offer?.Restaurant?.Name</div>
+
+                                <div class="quantity-controls mt-2">
+
+                                    <button type="button"
+                                            class="qty-btn"
+                                            onclick="updateQuantity('@item.Id','Decrease', this)">
+                                        -
+                                    </button>
+
+                                    <span class="qty-number">@item.Quantity</span>
+
+                                    <button type="button"
+                                            class="qty-btn"
+                                            onclick="updateQuantity('@item.Id','Increase', this)">
+                                        +
+                                    </button>
+
                                 </div>
-                                <small>x @item.Quantity</small>
                             </div>
+
                         </div>
 
-                        <div class="d-flex gap-2 mt-3">
+                        <div class="cart-right">
 
-                            <form asp-controller="Cart" asp-action="Decrease" method="post">
-                                <input type="hidden" name="itemId" value="@item.Id" />
-                                <button class="btn btn-sm btn-outline-secondary">-</button>
-                            </form>
+                            <div class="item-price">
+                                @((item.Offer.DiscountedPrice * item.Quantity).ToString("F2")) EUR
+                            </div>
 
-                            <form asp-controller="Cart" asp-action="Increase" method="post">
-                                <input type="hidden" name="itemId" value="@item.Id" />
-                                <button class="btn btn-sm btn-outline-secondary">+</button>
-                            </form>
-
-                            <form asp-controller="Cart" asp-action="Remove" method="post" class="ms-auto">
-                                <input type="hidden" name="id" value="@item.Id" />
-                                <button class="btn btn-sm btn-outline-danger">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </form>
+                            <button type="button"
+                                    class="remove-btn"
+                                    onclick="removeItem('@item.Id', this)">
+                                Remove
+                            </button>
 
                         </div>
 
@@ -107,64 +136,82 @@
                 }
 
                 <div class="checkout-panel mt-4">
-
                     <div class="d-flex justify-content-between mb-3">
                         <span>Total</span>
-                        <span class="fw-bold fs-5">@total EUR</span>
+                        <span class="fw-bold fs-5"
+                              id="cartTotal"
+                              data-base-total="@total.ToString("F2")">
+                            @total.ToString("F2") EUR
+                        </span>
                     </div>
 
-                    <form asp-controller="Cart" asp-action="Checkout" method="post">
+                    <form asp-controller="Cart" asp-action="Checkout" method="post" class="checkout-form">
 
-                        <div class="mb-3">
-                            <label class="form-label">Delivery Type</label>
-                            <select name="deliveryType" class="form-select">
-                                <option value="Pickup">Pickup</option>
-                                <option value="Delivery">Delivery</option>
-                            </select>
+                        <div class="checkout-section">
+
+                            <!-- DELIVERY TYPE -->
+                            <div class="checkout-group">
+                                <label class="form-label">Delivery Type</label>
+
+                                <select name="deliveryType"
+                                        class="form-select"
+                                        id="deliveryTypeSelect">
+                                    <option value="Pickup">Pickup</option>
+                                    <option value="Delivery">Delivery (+2.00 EUR)</option>
+                                </select>
+
+                                <div id="deliveryInfo" class="delivery-fee-info"></div>
+                            </div>
+
+
+                            <!-- ORDER FOR SOMEONE -->
+                            <div class="checkout-group mt-3">
+
+                                <div class="form-check">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           id="orderForSomeone"
+                                           name="IsForSomeoneElse"
+                                           value="true" />
+
+                                    <label class="form-check-label" for="orderForSomeone">
+                                        Order for someone else
+                                    </label>
+                                </div>
+
+                                <input type="hidden" name="IsForSomeoneElse" value="false" />
+
+                                <div id="recipientFields" class="recipient-fields">
+
+                                    <label class="form-label mt-3">Recipient full name:</label>
+                                    <input type="text"
+                                           name="RecipientFullName"
+                                           class="form-control mb-3"
+                                           maxlength="60"
+                                           placeholder="Full name" />
+
+                                    <label class="form-label">Recipient phone:</label>
+                                    <input type="text"
+                                           name="RecipientPhone"
+                                           class="form-control"
+                                           maxlength="10"
+                                           inputmode="numeric"
+                                           pattern="\d{10}"
+                                           placeholder="08XXXXXXXX"
+                                           oninput="this.value = this.value.replace(/[^0-9]/g,'').slice(0,10)" />
+                                </div>
+
+                            </div>
+
                         </div>
 
-                        <!-- RECIPIENT SECTION -->
-                        <div class="form-check mb-2">
-                            <input class="form-check-input"
-                                   type="checkbox"
-                                   id="orderForSomeone"
-                                   name="IsForSomeoneElse"
-                                   value="true"
-                                   onchange="toggleRecipientFields()" />
-
-                            <input type="hidden"
-                                   name="IsForSomeoneElse"
-                                   value="false" />
-
-                            <label class="form-check-label" for="orderForSomeone">
-                                Order for someone else
-                            </label>
-                        </div>
-
-                        <div id="recipientFields" style="display:none;">
-
-                            <input type="text"
-                                   name="RecipientFullName"
-                                   class="form-control mb-2"
-                                   placeholder="Recipient full name" />
-
-                            <input type="text"
-                                   name="RecipientPhone"
-                                   class="form-control"
-                                   maxlength="10"
-                                   pattern="\d{10}"
-                                   inputmode="numeric"
-                                   placeholder="Recipient phone (10 digits)" />
-                        </div>
-
-                        <button class="btn btn-primary-custom w-100 mt-3">
+                        <button class="btn btn-primary-custom w-100 mt-4">
                             Confirm Reservation
                         </button>
 
                     </form>
                 </div>
             }
-
         </div>
 
         <!-- ================= ONGOING ================= -->
@@ -173,41 +220,92 @@
             @if (!ongoing.Any())
             {
                 <div class="empty-state text-center">
-                    <i class="bi bi-hourglass-split fs-1 text-muted"></i>
-                    <p class="mt-3">No ongoing orders.</p>
+                    <p>No ongoing orders.</p>
                 </div>
             }
             else
             {
                 @foreach (var o in ongoing)
                 {
-                    <div class="app-card mb-3">
+                    <div class="app-card mb-4">
 
-                        <div class="d-flex justify-content-between mb-2">
+                        <div class="d-flex justify-content-between mb-3">
                             <span class="fw-semibold">
                                 Order #@o.Id.ToString().Substring(0, 6)
                             </span>
-
-                            <span class="badge bg-warning">
+                            <span class="badge bg-warning text-dark">
                                 @o.Status
                             </span>
                         </div>
 
-                        @foreach (var item in o.Items ?? new List<FoodLoop.Models.Entities.ReservationItem>())
-                        {
-                            <div class="small text-muted">
-                                @item.Offer?.Title (x @item.Quantity)
-                            </div>
+                        <!-- Timeline -->
+                        <div class="client-timeline modern">
+
+                            @{
+                                var current = GetCurrentStep(o);
+                            }
+
+                            @foreach (var step in new[] {
+                                        ReservationStatus.Pending,
+                                        ReservationStatus.Confirmed,
+                                        ReservationStatus.OutForDelivery,
+                                        ReservationStatus.Finished
+                                        })
+                            {
+                                if (step == ReservationStatus.OutForDelivery && o.DeliveryType != "Delivery")
+                                {
+                                    continue;
+                                }
+
+                                var reached = HasReachedStatus(o, step);
+                                var active = current == step;
+
+                                <div class="timeline-step @(reached ? "done" : "") @(active ? "active" : "")">
+                                    <div class="circle"></div>
+                                    <span>@step</span>
+                                </div>
+
+                                if (step != ReservationStatus.Finished)
+                                {
+                                    <div class="timeline-line @(reached ? "done-line" : "")"></div>
+                                }
+                            }
+                        </div>
+
+                        @{
+                            var last = o.StatusLogs
+                            .OrderByDescending(l => l.ChangedAt)
+                            .FirstOrDefault();
+
+                            var lastUpdate = last != null
+                            ? last.ChangedAt.ToLocalTime()
+                            : o.CreatedAt.ToLocalTime();
+
+                            var remainingMinutes = 30 - (int)(DateTime.UtcNow - o.CreatedAt).TotalMinutes;
                         }
 
-                        <div class="fw-bold mt-2">
+                        <div class="order-meta mt-2 d-flex justify-content-between small">
+
+                            <span class="text-muted">
+                                Updated: @lastUpdate.ToString("g")
+                            </span>
+
+                            @if (o.Status == ReservationStatus.Pending && remainingMinutes > 0)
+                            {
+                                <span class="text-warning">
+                                    ⏳ @remainingMinutes min left
+                                </span>
+                            }
+
+                        </div>
+
+                        <div class="fw-bold mt-3">
                             Total: @o.TotalPrice EUR
                         </div>
 
                     </div>
                 }
             }
-
         </div>
 
         <!-- ================= HISTORY ================= -->
@@ -216,17 +314,16 @@
             @if (!history.Any())
             {
                 <div class="empty-state text-center">
-                    <i class="bi bi-check-circle fs-1 text-muted"></i>
-                    <p class="mt-3">No past orders.</p>
+                    <p>No past orders.</p>
                 </div>
             }
             else
             {
                 @foreach (var h in history)
                 {
-                    <div class="app-card mb-3">
+                    <div class="app-card mb-4">
 
-                        <div class="d-flex justify-content-between mb-2">
+                        <div class="d-flex justify-content-between mb-3">
                             <span class="fw-semibold">
                                 Order #@h.Id.ToString().Substring(0, 6)
                             </span>
@@ -236,32 +333,167 @@
                             </span>
                         </div>
 
-                        @foreach (var item in h.Items ?? new List<FoodLoop.Models.Entities.ReservationItem>())
-                        {
-                            <div class="small text-muted">
-                                @item.Offer?.Title (x @item.Quantity)
-                            </div>
-                        }
+                        <!-- Timeline with timestamps -->
+                        <div class="client-timeline">
 
-                        <div class="fw-bold mt-2">
-                            Total: @h.TotalPrice EUR
+                            @foreach (ReservationStatus step in Enum.GetValues(typeof(ReservationStatus)))
+                            {
+                                if (step == ReservationStatus.Canceled && h.Status != ReservationStatus.Canceled)
+                                {
+                                    continue;
+                                }
+
+                                var reached = HasReachedStatus(h, step);
+                                var time = GetStatusTime(h, step);
+
+                                <div class="timeline-step @(reached ? "done" : "")">
+                                    <div class="circle"></div>
+                                    <span>@step</span>
+                                    @if (time != null)
+                                    {
+                                        <small class="text-muted">
+                                            @time.Value.ToLocalTime().ToString("HH:mm")
+                                        </small>
+                                    }
+                                </div>
+
+                                if (step != ReservationStatus.Finished &&
+                                step != ReservationStatus.Canceled)
+                                {
+                                    <div class="timeline-line"></div>
+                                }
+                            }
+
+                        </div>
+
+                        <div class="fw-bold mt-3">
+                            Total: @h.TotalPrice.ToString("F2") EUR
                         </div>
 
                     </div>
                 }
             }
-
         </div>
 
     </div>
 </div>
+
 @section Scripts {
     <script>
-        function toggleRecipientFields() {
-            const checkbox = document.getElementById("orderForSomeone");
-            const fields = document.getElementById("recipientFields");
 
-            fields.style.display = checkbox.checked ? "block" : "none";
-        }
+        let deliveryFee = 0;
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const totalEl = document.getElementById("cartTotal");
+            const deliverySelect = document.getElementById("deliveryTypeSelect");
+            const deliveryInfo = document.getElementById("deliveryInfo");
+            const checkbox = document.getElementById("orderForSomeone");
+            const recipientFields = document.getElementById("recipientFields");
+            const checkoutForm = document.querySelector(".checkout-form");
+
+            if (!totalEl) return;
+
+            function recalculateTotal() {
+
+                let base = parseFloat(totalEl.dataset.baseTotal || 0);
+                let final = base + deliveryFee;
+
+                totalEl.textContent = final.toFixed(2) + " EUR";
+
+                if (deliveryInfo) {
+                    deliveryInfo.textContent =
+                        deliveryFee === 2 ? "+2.00 EUR delivery fee applied" : "";
+                }
+            }
+
+            // DELIVERY SELECT
+            if (deliverySelect) {
+                deliverySelect.addEventListener("change", function () {
+                    deliveryFee = this.value === "Delivery" ? 2 : 0;
+                    recalculateTotal();
+                });
+            }
+
+            // CHECKBOX TOGGLE
+            if (checkbox && recipientFields) {
+                function toggleRecipientFields() {
+                    recipientFields.style.display = checkbox.checked ? "block" : "none";
+                }
+
+                checkbox.addEventListener("change", toggleRecipientFields);
+                toggleRecipientFields();
+            }
+
+            // PREVENT EMPTY CHECKOUT
+            if (checkoutForm) {
+                checkoutForm.addEventListener("submit", function (e) {
+
+                    let base = parseFloat(totalEl.dataset.baseTotal || 0);
+
+                    if (base <= 0) {
+                        e.preventDefault();
+                        alert("Your cart is empty.");
+                    }
+                });
+            }
+
+            recalculateTotal();
+
+            // UPDATE QUANTITY
+            window.updateQuantity = async function (itemId, action, btn) {
+
+                const card = btn.closest(".cart-item-card");
+                const qtyEl = card.querySelector(".qty-number");
+                const priceEl = card.querySelector(".item-price");
+
+                const response = await fetch(`/Cart/${action}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `itemId=${itemId}`
+                });
+
+                const data = await response.json();
+
+                if (!data.success) return;
+
+                qtyEl.textContent = data.quantity;
+                priceEl.textContent = parseFloat(data.itemTotal).toFixed(2) + " EUR";
+
+                totalEl.dataset.baseTotal =
+                    parseFloat(data.cartTotal).toFixed(2);
+
+                recalculateTotal();
+            }
+
+            // REMOVE ITEM
+            window.removeItem = async function (id, btn) {
+
+                const card = btn.closest(".cart-item-card");
+
+                const response = await fetch(`/Cart/Remove`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `id=${id}`
+                });
+
+                const data = await response.json();
+
+                if (!data.success) return;
+
+                card.remove();
+
+                totalEl.dataset.baseTotal =
+                    parseFloat(data.cartTotal).toFixed(2);
+
+                if (parseFloat(data.cartTotal) === 0) {
+                    deliveryFee = 0;
+                }
+
+                recalculateTotal();
+            }
+
+        });
+
     </script>
 }

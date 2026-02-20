@@ -31,7 +31,14 @@ else
                     <span class="old-price">@offer.OriginalPrice EUR</span>
                 </div>
 
-                <p class="small-info">Quantity: @offer.QuantityAvailable</p>
+                <p class="small-info">
+                    Quantity: @offer.QuantityAvailable
+
+                    @if (offer.IsLowStock)
+                    {
+                        <span class="low-stock-badge">Low Stock</span>
+                    }
+                </p>
                 <p class="small-info">Ends: @offer.EndsAt.ToShortDateString()</p>
 
                 <div class="actions">

@@ -358,3 +358,16 @@ img {
     border-radius: 12px;
     background: linear-gradient(135deg, #16a34a, #15803d);
 }
+
+/* MINI CART FADE ANIMATION */
+
+.mini-cart {
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+    .mini-cart.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
