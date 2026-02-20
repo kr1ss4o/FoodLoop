@@ -17,6 +17,20 @@
     var history = Model
         .Where(r => r.Status == ReservationStatus.Finished || r.Status == ReservationStatus.Canceled)
         .ToList();
+
+    string FormatStatus(ReservationStatus status)
+        => System.Text.RegularExpressions.Regex.Replace(status.ToString(), "([a-z])([A-Z])", "$1 $2");
+
+    string StatusClass(ReservationStatus status)
+        => status switch
+        {
+            ReservationStatus.Pending => "pending",
+            ReservationStatus.Confirmed => "confirmed",
+            ReservationStatus.OutForDelivery => "outfordelivery",
+            ReservationStatus.Finished => "finished",
+            ReservationStatus.Canceled => "canceled",
+            _ => ""
+        };
 }
 
 <link rel="stylesheet" href="~/css/order-manager.css" />
@@ -64,8 +78,8 @@
                         </div>
                     </div>
 
-                    <span class="status-badge pending">
-                        @order.Status
+                    <span class="status-badge @StatusClass(order.Status)">
+                        @FormatStatus(order.Status)
                     </span>
                 </div>
 
@@ -140,8 +154,8 @@
                         </div>
                     </div>
 
-                    <span class="status-badge confirmed">
-                        @order.Status
+                    <span class="status-badge @StatusClass(order.Status)">
+                        @FormatStatus(order.Status)
                     </span>
                 </div>
 
@@ -232,8 +246,8 @@
                     </div>
 
 
-                    <span class="status-badge @(order.Status == ReservationStatus.Finished ? "finished" : "canceled")">
-                        @order.Status
+                    <span class="status-badge @StatusClass(order.Status)">
+                        @FormatStatus(order.Status)
                     </span>
                 </div>
 

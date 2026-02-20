@@ -201,7 +201,11 @@ namespace FoodLoop.Controllers
         // ==============================================================
 
         [HttpPost]
-        public async Task<IActionResult> Checkout(string deliveryType)
+        public async Task<IActionResult> Checkout(
+            string deliveryType,
+            bool isForSomeoneElse,
+            string? recipientFullName,
+            string? recipientPhone)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -215,12 +219,26 @@ namespace FoodLoop.Controllers
             if (!cartItems.Any())
                 return RedirectToAction("Index");
 
+            // If the order is for someone else, recipient fields are required.
+            // If not, ignore anything posted in recipientFullName/recipientPhone.
+            if (isForSomeoneElse)
+            {
+                if (string.IsNullOrWhiteSpace(recipientFullName) || string.IsNullOrWhiteSpace(recipientPhone))
+                {
+                    TempData["Error"] = "Recipient name and phone are required when ordering for someone else.";
+                    return RedirectToAction("Index");
+                }
+            }
+
             var reservation = new Reservation
             {
                 UserId = user.Id,
                 CreatedAt = DateTime.UtcNow,
                 Status = ReservationStatus.Pending,
                 DeliveryType = deliveryType,
+                IsForSomeoneElse = isForSomeoneElse,
+                RecipientFullName = isForSomeoneElse ? recipientFullName?.Trim() : null,
+                RecipientPhone = isForSomeoneElse ? recipientPhone?.Trim() : null,
                 TotalPrice = 0
             };
 

@@ -9,7 +9,6 @@
   <ItemGroup>
     <Folder Include="Views\Admin\" />
     <Folder Include="Views\Restaurant\OfferManager\" />
-    <Folder Include="Views\Restaurants\" />
   </ItemGroup>
 
   <ItemGroup>
