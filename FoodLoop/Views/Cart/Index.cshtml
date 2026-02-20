@@ -467,65 +467,93 @@
 
 @section Scripts {
     <script>
+        // ====== Cart page script (NO refresh) ======
+        // Requires CartController actions Increase/Decrease/Remove to return JSON:
+        // { success: true, quantity: n, itemTotal: number, cartTotal: number }
 
         let deliveryFee = 0;
+
         document.addEventListener("DOMContentLoaded", function () {
-
-            const addressField = document.getElementById("addressField");
-
-            if (deliverySelect && addressField) {
-                deliverySelect.addEventListener("change", function () {
-                addressField.style.display = this.value === "Delivery" ? "block" : "none"; });
-                addressField.style.display =
-                deliverySelect.value === "Delivery" ? "block" : "none";
-            }
 
             const totalEl = document.getElementById("cartTotal");
             const deliverySelect = document.getElementById("deliveryTypeSelect");
+            const addressField = document.getElementById("addressField");
             const deliveryInfo = document.getElementById("deliveryInfo");
             const checkbox = document.getElementById("orderForSomeone");
             const recipientFields = document.getElementById("recipientFields");
             const checkoutForm = document.querySelector(".checkout-form");
 
+            // nothing to do if cart tab isn't rendered
             if (!totalEl) return;
 
-            function recalculateTotal() {
+            // ------- helpers -------
+            function getBaseTotal() {
+                const raw = totalEl.dataset.baseTotal ?? "0";
+                const val = parseFloat(raw);
+                return isNaN(val) ? 0 : val;
+            }
 
-                let base = parseFloat(totalEl.dataset.baseTotal || 0);
-                let final = base + deliveryFee;
+            function setBaseTotal(v) {
+                const num = parseFloat(v);
+                totalEl.dataset.baseTotal = (isNaN(num) ? 0 : num).toFixed(2);
+            }
+
+            function recalculateTotal() {
+                const base = getBaseTotal();
+                const final = base + deliveryFee;
 
                 totalEl.textContent = final.toFixed(2) + " EUR";
 
                 if (deliveryInfo) {
-                    deliveryInfo.textContent =
-                        deliveryFee === 2 ? "+2.00 EUR delivery fee applied" : "";
+                    deliveryInfo.textContent = deliveryFee === 2
+                        ? "+2.00 EUR delivery fee applied"
+                        : "";
                 }
             }
 
-            // DELIVERY SELECT
+            function syncDeliveryFeeFromSelect() {
+                if (!deliverySelect) {
+                    deliveryFee = 0;
+                    return;
+                }
+                deliveryFee = (deliverySelect.value === "Delivery") ? 2 : 0;
+            }
+
+            // ------- delivery address toggle -------
+            if (deliverySelect && addressField) {
+                deliverySelect.addEventListener("change", function () {
+                    addressField.style.display = (this.value === "Delivery") ? "block" : "none";
+                });
+
+                // initial state
+                addressField.style.display = (deliverySelect.value === "Delivery") ? "block" : "none";
+            }
+
+            // ------- delivery fee -------
             if (deliverySelect) {
                 deliverySelect.addEventListener("change", function () {
-                    deliveryFee = this.value === "Delivery" ? 2 : 0;
+                    syncDeliveryFeeFromSelect();
                     recalculateTotal();
                 });
             }
 
-            // CHECKBOX TOGGLE
+            // initial totals
+            syncDeliveryFeeFromSelect();
+            recalculateTotal();
+
+            // ------- recipient fields toggle -------
             if (checkbox && recipientFields) {
                 function toggleRecipientFields() {
                     recipientFields.style.display = checkbox.checked ? "block" : "none";
                 }
-
                 checkbox.addEventListener("change", toggleRecipientFields);
                 toggleRecipientFields();
             }
 
-            // PREVENT EMPTY CHECKOUT
+            // ------- prevent empty checkout -------
             if (checkoutForm) {
                 checkoutForm.addEventListener("submit", function (e) {
-
-                    let base = parseFloat(totalEl.dataset.baseTotal || 0);
-
+                    const base = getBaseTotal();
                     if (base <= 0) {
                         e.preventDefault();
                         alert("Your cart is empty.");
@@ -533,62 +561,68 @@
                 });
             }
 
-            recalculateTotal();
-
-            // UPDATE QUANTITY
+            // ------- ajax quantity updates -------
             window.updateQuantity = async function (itemId, action, btn) {
+                try {
+                    const card = btn.closest(".cart-item-card");
+                    if (!card) return;
 
-                const card = btn.closest(".cart-item-card");
-                const qtyEl = card.querySelector(".qty-number");
-                const priceEl = card.querySelector(".item-price");
+                    const qtyEl = card.querySelector(".qty-number");
+                    const priceEl = card.querySelector(".item-price");
 
-                const response = await fetch(`/Cart/${action}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: `itemId=${itemId}`
-                });
+                    const response = await fetch(`/Cart/${action}`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
+                        body: `itemId=${encodeURIComponent(itemId)}`
+                    });
 
-                const data = await response.json();
+                    if (!response.ok) return;
 
-                if (!data.success) return;
+                    const data = await response.json();
+                    if (!data || data.success !== true) return;
 
-                qtyEl.textContent = data.quantity;
-                priceEl.textContent = parseFloat(data.itemTotal).toFixed(2) + " EUR";
+                    if (qtyEl) qtyEl.textContent = data.quantity;
+                    if (priceEl) priceEl.textContent = parseFloat(data.itemTotal).toFixed(2) + " EUR";
 
-                totalEl.dataset.baseTotal =
-                    parseFloat(data.cartTotal).toFixed(2);
-
-                recalculateTotal();
-            }
-
-            // REMOVE ITEM
-            window.removeItem = async function (id, btn) {
-
-                const card = btn.closest(".cart-item-card");
-
-                const response = await fetch(`/Cart/Remove`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: `id=${id}`
-                });
-
-                const data = await response.json();
-
-                if (!data.success) return;
-
-                card.remove();
-
-                totalEl.dataset.baseTotal =
-                    parseFloat(data.cartTotal).toFixed(2);
-
-                if (parseFloat(data.cartTotal) === 0) {
-                    deliveryFee = 0;
+                    setBaseTotal(data.cartTotal);
+                    recalculateTotal();
+                } catch (err) {
+                    console.error(err);
                 }
+            };
 
-                recalculateTotal();
-            }
+            // ------- ajax remove item -------
+            window.removeItem = async function (id, btn) {
+                try {
+                    const card = btn.closest(".cart-item-card");
 
+                    const response = await fetch(`/Cart/Remove`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
+                        body: `id=${encodeURIComponent(id)}`
+                    });
+
+                    if (!response.ok) return;
+
+                    const data = await response.json();
+                    if (!data || data.success !== true) return;
+
+                    if (card) card.remove();
+
+                    setBaseTotal(data.cartTotal);
+
+                    // if cart is empty, also reset delivery fee UI/state
+                    if (getBaseTotal() <= 0) {
+                        deliveryFee = 0;
+                        if (deliverySelect) deliverySelect.value = "Pickup";
+                        if (addressField) addressField.style.display = "none";
+                    }
+
+                    recalculateTotal();
+                } catch (err) {
+                    console.error(err);
+                }
+            };
         });
-
     </script>
 }

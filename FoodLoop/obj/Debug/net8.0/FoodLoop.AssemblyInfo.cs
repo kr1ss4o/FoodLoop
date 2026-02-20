@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FoodLoop")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a7ca966e4c6faa18741c9399cf903a0c66d7ab6f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b982aae5e145f9ab9bc69bcd349425e9df81c020")]
 [assembly: System.Reflection.AssemblyProductAttribute("FoodLoop")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FoodLoop")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

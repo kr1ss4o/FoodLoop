@@ -101,6 +101,12 @@
                         <div class="small-text">
                             Delivery: @order.DeliveryType
                         </div>
+                        @if (order.DeliveryType == "Delivery" && !string.IsNullOrEmpty(order.DeliveryAddress))
+                        {
+                            <div class="small-text">
+                                <strong>Address:</strong> @order.DeliveryAddress
+                            </div>
+                        }
                     </div>
 
                     <span class="status-badge @StatusClass(order.Status)">
@@ -177,6 +183,12 @@
                         <div class="small-text">
                             Delivery: @order.DeliveryType
                         </div>
+                        @if (order.DeliveryType == "Delivery" && !string.IsNullOrEmpty(order.DeliveryAddress))
+                        {
+                            <div class="small-text">
+                                <strong>Address:</strong> @order.DeliveryAddress
+                            </div>
+                        }
                     </div>
 
                     <span class="status-badge @StatusClass(order.Status)">
@@ -310,6 +322,12 @@
                         <div class="small-text">
                             Delivery: @order.DeliveryType
                         </div>
+                        @if (order.DeliveryType == "Delivery" && !string.IsNullOrEmpty(order.DeliveryAddress))
+                        {
+                            <div class="small-text">
+                                <strong>Address:</strong> @order.DeliveryAddress
+                            </div>
+                        }
                     </div>
 
 
