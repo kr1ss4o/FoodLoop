@@ -17,12 +17,18 @@
     var history = Model
         .Where(r => r.Status == ReservationStatus.Finished || r.Status == ReservationStatus.Canceled)
         .ToList();
+}
 
-    string FormatStatus(ReservationStatus status)
-        => System.Text.RegularExpressions.Regex.Replace(status.ToString(), "([a-z])([A-Z])", "$1 $2");
 
-    string StatusClass(ReservationStatus status)
-        => status switch
+@functions {
+    private string FormatStatus(ReservationStatus status)
+    {
+        return System.Text.RegularExpressions.Regex.Replace(status.ToString(), "([a-z])([A-Z])", "$1 $2");
+    }
+
+    private string StatusClass(ReservationStatus status)
+    {
+        return status switch
         {
             ReservationStatus.Pending => "pending",
             ReservationStatus.Confirmed => "confirmed",
@@ -31,6 +37,7 @@
             ReservationStatus.Canceled => "canceled",
             _ => ""
         };
+    }
 }
 
 <link rel="stylesheet" href="~/css/order-manager.css" />

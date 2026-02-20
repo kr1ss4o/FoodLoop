@@ -1,4 +1,4 @@
-﻿using FoodLoop.Data;
+using FoodLoop.Data;
 using FoodLoop.Models.Entities;
 using FoodLoop.Models.Enums;
 using Microsoft.AspNetCore.Authorization;
@@ -26,94 +26,125 @@ namespace FoodLoop.Controllers
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return RedirectToAction("Login", "Account");
 
             var restaurant = await _context.Restaurants
+                .AsNoTracking()
                 .FirstOrDefaultAsync(r => r.OwnerUserId == user.Id);
 
             if (restaurant == null)
             {
                 TempData["Error"] = "Restaurant not found.";
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Login", "Account");
             }
 
-            // NEW MULTI-ITEM STRUCTURE
             var reservations = await _context.Reservations
-            .Include(r => r.User)
-            .Include(r => r.Items)
-            .ThenInclude(i => i.Offer)
-            .Where(r => r.Items.Any(i => i.Offer.RestaurantId == restaurant.Id))
-            .OrderByDescending(r => r.CreatedAt)
-            .ToListAsync();
+                .Include(r => r.User)
+                .Include(r => r.Items)
+                    .ThenInclude(i => i.Offer)
+                .Where(r => r.Items.Any(i => i.Offer.RestaurantId == restaurant.Id))
+                .OrderByDescending(r => r.CreatedAt)
+                .ToListAsync();
 
             return View("/Views/Restaurant/OrderDashboard/Index.cshtml", reservations);
         }
 
         // =========================================================
-        // CONFIRM
+        // ACTIONS (status transitions + ownership guard)
         // =========================================================
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Confirm(Guid id)
-        {
-            var reservation = await _context.Reservations.FindAsync(id);
-            if (reservation == null)
-                return RedirectToAction("Index");
+            => await ChangeStatus(id, ReservationStatus.Confirmed);
 
-            reservation.Status = ReservationStatus.Confirmed;
-            await _context.SaveChangesAsync();
-
-            TempData["Success"] = "Order confirmed!";
-            return RedirectToAction("Index");
-        }
-
-        // =========================================================
-        // CANCEL
-        // =========================================================
         [HttpPost]
-        public async Task<IActionResult> Cancel(Guid id)
-        {
-            var reservation = await _context.Reservations.FindAsync(id);
-            if (reservation == null)
-                return RedirectToAction("Index");
-
-            reservation.Status = ReservationStatus.Canceled;
-            await _context.SaveChangesAsync();
-
-            TempData["Success"] = "Order canceled!";
-            return RedirectToAction("Index");
-        }
-
-        // =========================================================
-        // FINISH
-        // =========================================================
-        [HttpPost]
-        public async Task<IActionResult> Finish(Guid id)
-        {
-            var reservation = await _context.Reservations.FindAsync(id);
-            if (reservation == null)
-                return RedirectToAction("Index");
-
-            reservation.Status = ReservationStatus.Finished;
-            await _context.SaveChangesAsync();
-
-            TempData["Success"] = "Order finished!";
-            return RedirectToAction("Index");
-        }
-
-        // -------------------------------
-        // Mark as Out For Delivery
-        // -------------------------------
-        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> OutForDelivery(Guid id)
-        {
-            var reservation = await _context.Reservations.FindAsync(id);
-            if (reservation == null) return RedirectToAction("Index");
+            => await ChangeStatus(id, ReservationStatus.OutForDelivery);
 
-            reservation.Status = ReservationStatus.OutForDelivery;
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Finish(Guid id)
+            => await ChangeStatus(id, ReservationStatus.Finished);
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Cancel(Guid id)
+            => await ChangeStatus(id, ReservationStatus.Canceled);
+
+        // -------------------------------
+        // Shared transition logic
+        // -------------------------------
+        private async Task<IActionResult> ChangeStatus(Guid reservationId, ReservationStatus newStatus)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return RedirectToAction("Login", "Account");
+
+            var restaurant = await _context.Restaurants
+                .AsNoTracking()
+                .FirstOrDefaultAsync(r => r.OwnerUserId == user.Id);
+
+            if (restaurant == null)
+            {
+                TempData["Error"] = "Restaurant not found.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var reservation = await _context.Reservations
+                .Include(r => r.Items)
+                    .ThenInclude(i => i.Offer)
+                .FirstOrDefaultAsync(r => r.Id == reservationId);
+
+            if (reservation == null)
+            {
+                TempData["Error"] = "Order not found.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var belongsToRestaurant = reservation.Items.Any(i => i.Offer.RestaurantId == restaurant.Id);
+            if (!belongsToRestaurant)
+                return Forbid();
+
+            if (!CanTransition(reservation, newStatus))
+            {
+                TempData["Error"] = "Invalid status transition.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            reservation.Status = newStatus;
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Order is now out for delivery!";
-            return RedirectToAction("Index");
+            TempData["Success"] = newStatus switch
+            {
+                ReservationStatus.Confirmed => "Order confirmed!",
+                ReservationStatus.OutForDelivery => "Order is now out for delivery!",
+                ReservationStatus.Finished => "Order finished!",
+                ReservationStatus.Canceled => "Order canceled!",
+                _ => "Updated."
+            };
+
+            return RedirectToAction(nameof(Index));
         }
 
+        private static bool CanTransition(Reservation reservation, ReservationStatus newStatus)
+        {
+            // Delivery-specific rule: OutForDelivery makes sense only for Delivery orders
+            if (newStatus == ReservationStatus.OutForDelivery &&
+                !string.Equals(reservation.DeliveryType, "Delivery", StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            return reservation.Status switch
+            {
+                ReservationStatus.Pending => newStatus is ReservationStatus.Confirmed or ReservationStatus.Canceled,
+                ReservationStatus.Confirmed => newStatus is ReservationStatus.OutForDelivery or ReservationStatus.Finished or ReservationStatus.Canceled,
+                ReservationStatus.OutForDelivery => newStatus is ReservationStatus.Finished,
+                ReservationStatus.Finished => false,
+                ReservationStatus.Canceled => false,
+                _ => false
+            };
+        }
     }
 }

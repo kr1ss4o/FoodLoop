@@ -139,6 +139,67 @@ img {
     }
 
 /* =========================
+   LEGACY NAVBAR (IF ANY PAGES STILL USE IT)
+========================= */
+.cart-navbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+    .cart-navbar .icon-btn {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        text-decoration: none;
+        transition: background-color .15s ease, transform .05s ease;
+    }
+
+        .cart-navbar .icon-btn:hover {
+            background: rgba(22, 163, 74, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .cart-navbar .icon-btn.active {
+            background: rgba(22, 163, 74, 0.12);
+        }
+
+    .cart-navbar .nav-icon {
+        width: 22px;
+        height: 22px;
+    }
+
+    .cart-navbar .right-icons {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+.cart-bubble {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: var(--primary);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* =========================
    BUTTONS (OPTIONAL HELPERS)
 ========================= */
 .btn-primary-custom {

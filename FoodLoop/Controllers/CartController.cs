@@ -201,11 +201,7 @@ namespace FoodLoop.Controllers
         // ==============================================================
 
         [HttpPost]
-        public async Task<IActionResult> Checkout(
-            string deliveryType,
-            bool isForSomeoneElse,
-            string? recipientFullName,
-            string? recipientPhone)
+        public async Task<IActionResult> Checkout(string deliveryType)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -219,50 +215,71 @@ namespace FoodLoop.Controllers
             if (!cartItems.Any())
                 return RedirectToAction("Index");
 
-            // If the order is for someone else, recipient fields are required.
-            // If not, ignore anything posted in recipientFullName/recipientPhone.
-            if (isForSomeoneElse)
+            // Validate stock BEFORE creating reservation
+            foreach (var item in cartItems)
             {
-                if (string.IsNullOrWhiteSpace(recipientFullName) || string.IsNullOrWhiteSpace(recipientPhone))
+                if (item.Offer == null)
                 {
-                    TempData["Error"] = "Recipient name and phone are required when ordering for someone else.";
+                    TempData["Error"] = "Some items are no longer available.";
+                    return RedirectToAction("Index");
+                }
+
+                if (item.Quantity <= 0)
+                {
+                    TempData["Error"] = "Invalid quantity in cart.";
+                    return RedirectToAction("Index");
+                }
+
+                if (item.Offer.QuantityAvailable < item.Quantity)
+                {
+                    TempData["Error"] = $"Not enough stock for: {item.Offer.Title}";
                     return RedirectToAction("Index");
                 }
             }
 
-            var reservation = new Reservation
-            {
-                UserId = user.Id,
-                CreatedAt = DateTime.UtcNow,
-                Status = ReservationStatus.Pending,
-                DeliveryType = deliveryType,
-                IsForSomeoneElse = isForSomeoneElse,
-                RecipientFullName = isForSomeoneElse ? recipientFullName?.Trim() : null,
-                RecipientPhone = isForSomeoneElse ? recipientPhone?.Trim() : null,
-                TotalPrice = 0
-            };
+            await using var tx = await _context.Database.BeginTransactionAsync();
 
-            foreach (var item in cartItems)
+            try
             {
-                item.Offer.QuantityAvailable -= item.Quantity;
-
-                reservation.Items.Add(new ReservationItem
+                var reservation = new Reservation
                 {
-                    OfferId = item.OfferId,
-                    Quantity = item.Quantity,
-                    PriceSnapshot = item.Offer.DiscountedPrice
-                });
+                    UserId = user.Id,
+                    CreatedAt = DateTime.UtcNow,
+                    Status = ReservationStatus.Pending,
+                    DeliveryType = deliveryType,
+                    TotalPrice = 0
+                };
 
-                reservation.TotalPrice +=
-                    item.Quantity * item.Offer.DiscountedPrice;
+                foreach (var item in cartItems)
+                {
+                    // decrease stock
+                    item.Offer.QuantityAvailable -= item.Quantity;
+
+                    reservation.Items.Add(new ReservationItem
+                    {
+                        OfferId = item.OfferId,
+                        Quantity = item.Quantity,
+                        PriceSnapshot = item.Offer.DiscountedPrice
+                    });
+
+                    reservation.TotalPrice += item.Quantity * item.Offer.DiscountedPrice;
+                }
+
+                _context.Reservations.Add(reservation);
+                _context.CartItems.RemoveRange(cartItems);
+
+                await _context.SaveChangesAsync();
+                await tx.CommitAsync();
+
+                TempData["Success"] = "Order placed!";
+                return RedirectToAction("Index");
             }
-
-            _context.Reservations.Add(reservation);
-            _context.CartItems.RemoveRange(cartItems);
-
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("Index");
+            catch
+            {
+                await tx.RollbackAsync();
+                TempData["Error"] = "Something went wrong while placing the order.";
+                return RedirectToAction("Index");
+            }
         }
     }
 }
