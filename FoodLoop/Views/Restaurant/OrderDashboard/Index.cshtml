@@ -302,6 +302,9 @@
                 <div class="card-header-row">
                     <div>
                         <strong>Order #@order.Id.ToString().Substring(0, 6)</strong>
+                        <div class="order-date">
+                            @order.CreatedAt.ToLocalTime().ToString("dd MMM yyyy • HH:mm")
+                        </div>
 
                         @if (order.IsForSomeoneElse)
                         {

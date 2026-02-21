@@ -146,3 +146,10 @@
 .history-hidden {
     display: none;
 }
+
+/* Order date heading style */
+.order-date {
+    font-size: 12px;
+    color: #7a8a99;
+    margin-top: 2px;
+}

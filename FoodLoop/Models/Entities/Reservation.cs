@@ -14,6 +14,7 @@ namespace FoodLoop.Models.Entities
         public bool IsForSomeoneElse { get; set; }
         public string? RecipientFullName { get; set; }
         public string? RecipientPhone { get; set; }
+        public Review? Review { get; set; }
         public ICollection<ReservationStatusLog> StatusLogs { get; set; } = new List<ReservationStatusLog>();
         public ICollection<ReservationItem> Items { get; set; } = new List<ReservationItem>();
     }

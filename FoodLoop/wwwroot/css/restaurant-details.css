@@ -1,0 +1,281 @@
+﻿/* ===== Restaurant Details (public) ===== */
+
+.rdt-wrapper {
+    max-width: 1100px;
+    margin: 34px auto;
+    padding: 0 14px;
+}
+
+/* HERO */
+.rdt-hero {
+    display: grid;
+    grid-template-columns: 1.25fr 0.75fr;
+    gap: 18px;
+    background: #fff;
+    border: 1px solid #eef2f3;
+    border-radius: 20px;
+    padding: 18px;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.06);
+    margin-bottom: 22px;
+}
+
+.rdt-title {
+    margin: 0 0 10px;
+    font-weight: 900;
+    letter-spacing: .2px;
+    font-size: 30px;
+}
+
+.rdt-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.rdt-rating {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rdt-rating-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #f5f7f8;
+    border: 1px solid #eef2f3;
+    font-weight: 900;
+}
+
+.rdt-rating-count {
+    color: #6b7a88;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.rdt-address {
+    color: #445566;
+    font-weight: 700;
+}
+
+.rdt-actions {
+    margin-top: 14px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.rdt-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 14px;
+    border-radius: 14px;
+    text-decoration: none;
+    font-weight: 800;
+    border: 1px solid transparent;
+}
+
+.rdt-btn-primary {
+    background: linear-gradient(135deg,#00a86b,#008b5a);
+    color: #fff;
+}
+
+.rdt-btn-outline {
+    background: #fff;
+    border-color: #dfe6ea;
+    color: #003b55;
+}
+
+.rdt-image {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 16px;
+    border: 1px solid #eef2f3;
+}
+
+/* SECTIONS */
+.rdt-section {
+    margin-top: 22px;
+}
+
+.rdt-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+    .rdt-section-header h2 {
+        margin: 0;
+        font-weight: 900;
+        font-size: 20px;
+    }
+
+.rdt-muted {
+    color: #7a8a99;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.rdt-empty {
+    background: #fff;
+    border: 1px dashed #d7dde2;
+    border-radius: 14px;
+    padding: 16px;
+    color: #6b7a88;
+    font-weight: 700;
+}
+
+/* OFFERS GRID */
+.rdt-offers-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.rdt-offer-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.rdt-offer-card {
+    background: #fff;
+    border: 1px solid #eef2f3;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.05);
+    transition: 0.18s ease;
+}
+
+    .rdt-offer-card:hover {
+        transform: translateY(-3px);
+    }
+
+.rdt-offer-img {
+    width: 100%;
+    height: 155px;
+    object-fit: cover;
+    display: block;
+}
+
+.rdt-offer-body {
+    padding: 14px;
+}
+
+.rdt-offer-title {
+    font-weight: 900;
+    margin-bottom: 6px;
+}
+
+.rdt-offer-price {
+    font-weight: 900;
+    color: #003b55;
+}
+
+.rdt-offer-stock {
+    margin-top: 8px;
+}
+
+.rdt-stock-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: 12px;
+    border: 1px solid transparent;
+}
+
+    .rdt-stock-badge.low {
+        background: #fff1d6;
+        border-color: #ffe6b5;
+        color: #b26a00;
+    }
+
+    .rdt-stock-badge.urgent {
+        background: #ffe2e2;
+        border-color: #ffc2c2;
+        color: #b40000;
+    }
+
+/* REVIEWS */
+.rdt-reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.rdt-review-card {
+    background: #fff;
+    border: 1px solid #eef2f3;
+    border-radius: 18px;
+    padding: 14px;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.05);
+}
+
+.rdt-review-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.rdt-review-author {
+    font-weight: 900;
+    color: #003b55;
+}
+
+.rdt-review-date {
+    color: #7a8a99;
+    font-weight: 700;
+    font-size: 12px;
+}
+
+.rdt-stars {
+    margin-bottom: 8px;
+}
+
+.rdt-star {
+    color: #ddd;
+    font-size: 16px;
+}
+
+    .rdt-star.filled {
+        color: #ffb400;
+    }
+
+.rdt-review-text {
+    color: #445566;
+    font-weight: 700;
+    line-height: 1.55;
+}
+
+/* RESPONSIVE */
+@media (max-width: 950px) {
+    .rdt-hero {
+        grid-template-columns: 1fr;
+    }
+
+    .rdt-image {
+        height: 200px;
+    }
+
+    .rdt-offers-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .rdt-reviews-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .rdt-offers-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -44,6 +44,7 @@ namespace FoodLoop.Controllers
                 .Include(r => r.Items)
                     .ThenInclude(i => i.Offer)
                 .Include(r => r.StatusLogs)
+                .Include(r => r.Review)
                 .OrderByDescending(r => r.CreatedAt)
                 .ToListAsync();
 

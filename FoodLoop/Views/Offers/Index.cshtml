@@ -13,7 +13,7 @@
 
     <!-- FILTERS -->
     <div class="filters-wrapper">
-        <form method="get" asp-action="Index" class="marketplace-filters">
+        <form method="get" asp-controller="Offers" asp-action="Index" class="marketplace-filters">
 
             <input type="text"
                    name="search"
@@ -41,7 +41,7 @@
                 Apply
             </button>
 
-            <a asp-action="Index" class="clear-btn">
+            <a asp-controller="Offers" asp-action="Index" class="clear-btn">
                 Clear
             </a>
 
@@ -66,51 +66,44 @@
 
                 <div class="store-card">
 
-                    <img src="@(string.IsNullOrEmpty(offer.ImageUrl)
-                                                                      ? "/images/no-image.png"
-                                                                      : offer.ImageUrl)"
-                     class="store-image" />
+                    <img src="@(string.IsNullOrEmpty(offer.ImageUrl) ? "/images/no-image.png" : offer.ImageUrl)"
+                         class="store-image"
+                         alt="@offer.Title" />
 
                     <div class="store-body">
 
-                        <div class="store-title-small">
-                            @offer.Title
-                        </div>
+                        <div class="store-title-small">@offer.Title</div>
 
                         <div class="store-restaurant">
-                            @offer.Restaurant.Name
+                            <button type="button"
+                                    class="restaurant-link-btn"
+                                    onclick="event.preventDefault(); event.stopPropagation(); window.location.href='@Url.Action("Details", "Restaurant", new { id = offer.Restaurant.Id })'">
+                                @offer.Restaurant.Name
+                            </button>
                         </div>
 
                         <div class="store-price">
-                            @offer.DiscountedPrice EUR
+                            @offer.DiscountedPrice.ToString("F2") EUR
                         </div>
 
                         <div class="store-stock">
-                            @if (offer.QuantityAvailable <= 5)
+                            @if (offer.QuantityAvailable <= 3)
                             {
-                                <span class="low-stock">
-                                    Only @offer.QuantityAvailable left
-                                </span>
+                                <span class="urgent-badge">🔥 Almost gone</span>
                             }
-                            else if (offer.QuantityAvailable <= 3)
+                            else if (offer.QuantityAvailable <= 5)
                             {
-                                <div class="urgent-badge">
-                                    🔥 Almost gone
-                                </div>
+                                <span class="low-stock">Only @offer.QuantityAvailable left</span>
                             }
                             else
                             {
-                                <span>
-                                    @offer.QuantityAvailable available
-                                </span>
+                                <span class="muted-stock">@offer.QuantityAvailable available</span>
                             }
                         </div>
+
                     </div>
                 </div>
-
             </a>
-
-            
         }
 
     </div>

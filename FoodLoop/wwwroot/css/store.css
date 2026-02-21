@@ -227,3 +227,56 @@
     margin-top: 6px;
     font-weight: 600;
 }
+.store-card {
+    position: relative;
+}
+
+.store-card-stretch {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    text-decoration: none;
+}
+
+.store-image,
+.store-body {
+    position: relative;
+    z-index: 2;
+}
+
+.restaurant-link {
+    position: relative;
+    z-index: 3;
+    text-decoration: none;
+    color: inherit;
+    font-weight: 600;
+}
+
+.restaurant-link:hover {
+    opacity: 0.7;
+}
+
+.restaurant-link-btn {
+    all: unset;
+    cursor: pointer;
+    font-weight: 600;
+    color: inherit;
+}
+
+.restaurant-link-btn:hover {
+    opacity: 0.7;
+}
+
+.muted-stock {
+    color: #7a8a99;
+    font-weight: 600;
+}
+
+.marketplace-filters {
+    width: 100%;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 0;
+}

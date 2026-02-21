@@ -23,7 +23,13 @@
         <div class="details-info">
 
             <div class="details-restaurant">
-                by @Model.Restaurant.Name
+                by
+                <a asp-controller="Restaurant"
+                   asp-action="Details"
+                   asp-route-id="@Model.Restaurant.Id"
+                   class="restaurant-link">
+                    @Model.Restaurant.Name
+                </a>
             </div>
 
             <h1 class="details-title">

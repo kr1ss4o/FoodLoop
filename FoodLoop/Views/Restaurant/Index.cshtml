@@ -1,0 +1,59 @@
+﻿@model List<FoodLoop.Models.ViewModels.RestaurantCardViewModel>
+
+@{
+    ViewData["Title"] = "Restaurants";
+}
+
+<link rel="stylesheet" href="~/css/restaurant.css" />
+
+<div class="rd-wrapper">
+
+    <div class="rd-header">
+        <div>
+            <h2 class="rd-title">Restaurants</h2>
+            <div class="rd-subtitle">Explore all available restaurants</div>
+        </div>
+    </div>
+
+    <div class="rd-grid">
+
+        @if (!Model.Any())
+        {
+            <div class="rd-card">No restaurants found.</div>
+        }
+
+        @foreach (var r in Model)
+        {
+            <a asp-controller="Restaurant"
+               asp-action="Details"
+               asp-route-id="@r.Id"
+               style="text-decoration:none; color:inherit;">
+
+                <div class="rd-card">
+
+                    <div class="rd-top-title">@r.Name</div>
+
+                    <div class="rd-kpi-label">Rating</div>
+                    <div class="rd-kpi-value">
+                        @(r.ReviewsCount == 0 ? "—" : $"{r.AvgRating:0.0}/5")
+                    </div>
+
+                    <div class="rd-kpi-meta">
+                        @r.ReviewsCount review(s)
+                    </div>
+
+                    <hr />
+
+                    <div class="rd-kpi-label">Active offers</div>
+                    <div class="rd-kpi-meta">
+                        @r.ActiveOffersCount available
+                    </div>
+
+                </div>
+
+            </a>
+        }
+
+    </div>
+
+</div>

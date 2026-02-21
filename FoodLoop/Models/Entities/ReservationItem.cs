@@ -7,9 +7,7 @@
 
         public Guid OfferId { get; set; }
         public Offer Offer { get; set; } = null!;
-
         public int Quantity { get; set; }
-
         public decimal PriceSnapshot { get; set; }
     }
 }

@@ -18,6 +18,7 @@ namespace FoodLoop.Data
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<ReservationItem> ReservationItems { get; set; }
         public DbSet<ReservationStatusLog> ReservationStatusLogs { get; set; }
+        public DbSet<Review> Reviews { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -48,6 +49,12 @@ namespace FoodLoop.Data
                 .WithMany()
                 .HasForeignKey(r => r.ChangedByUserId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Review>()
+                .HasOne(r => r.Reservation)
+                .WithOne(r => r.Review)
+                .HasForeignKey<Review>(r => r.ReservationId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

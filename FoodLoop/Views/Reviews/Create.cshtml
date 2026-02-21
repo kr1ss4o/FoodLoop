@@ -1,0 +1,32 @@
+﻿@{
+    ViewData["Title"] = "Leave Review";
+    var reservationId = (Guid)ViewBag.ReservationId;
+}
+
+<h2>Leave a Review</h2>
+
+<form asp-action="Create" method="post">
+    <input type="hidden" name="reservationId" value="@reservationId" />
+
+    <div>
+        <label>Rating</label>
+        <select name="rating" required>
+            <option value="5">5 ⭐</option>
+            <option value="4">4 ⭐</option>
+            <option value="3">3 ⭐</option>
+            <option value="2">2 ⭐</option>
+            <option value="1">1 ⭐</option>
+        </select>
+    </div>
+
+    <div style="margin-top:10px;">
+        <label>Comment (optional)</label>
+        <textarea name="comment" maxlength="1000" rows="4"></textarea>
+    </div>
+
+    <div style="margin-top:15px;">
+        <button type="submit" class="btn btn-primary">
+            Submit Review
+        </button>
+    </div>
+</form>

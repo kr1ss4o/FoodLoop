@@ -1,11 +1,13 @@
 wwwroot\css\auth.css
 wwwroot\css\business-profile.css
+wwwroot\css\cart.css
 wwwroot\css\dashboard.css
 wwwroot\css\edit-profile-modal.css
 wwwroot\css\offer-details.css
 wwwroot\css\offers-manage.css
 wwwroot\css\order-manager.css
 wwwroot\css\profile.css
+wwwroot\css\restaurant-details.css
 wwwroot\css\restaurant.css
 wwwroot\css\site.css
 wwwroot\css\store.css
@@ -116,4 +118,3 @@ wwwroot\lib\jquery\dist\jquery.js
 wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
-wwwroot\css\cart.css
