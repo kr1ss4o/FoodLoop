@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FoodLoop.Controllers
 {
-    [Authorize(Roles = "Restaurant")]
+    [Authorize(Roles = "Restaurant,Admin")]
     public class OfferManagerController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -26,11 +26,20 @@ namespace FoodLoop.Controllers
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user == null) return RedirectToAction("Login", "Account");
+
+            if (User.IsInRole("Admin"))
+            {
+                var allOffers = await _context.Offers
+                    .Include(o => o.Restaurant)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                return View("/Views/Restaurant/OfferManager/Index.cshtml", allOffers);
+            }
 
             var restaurant = await _context.Restaurants
                 .AsNoTracking()
-                .FirstOrDefaultAsync(r => r.OwnerUserId == user.Id);
+                .FirstOrDefaultAsync(r => r.OwnerUserId == user!.Id);
 
             if (restaurant == null)
                 return Unauthorized();
@@ -59,7 +68,6 @@ namespace FoodLoop.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(OfferFormViewModel model, IFormFile? ImageUpload)
         {
-            // 🔥 Remove navigation validation issues
             ModelState.Remove("Offer.Restaurant");
             ModelState.Remove("Offer.Category");
             ModelState.Remove("Offer.OfferTags");
@@ -69,16 +77,18 @@ namespace FoodLoop.Controllers
                     await RebuildViewModel(model));
 
             var user = await _userManager.GetUserAsync(User);
+
             var restaurant = await _context.Restaurants
                 .FirstOrDefaultAsync(r => r.OwnerUserId == user!.Id);
 
-            if (restaurant == null)
+            if (restaurant == null && !User.IsInRole("Admin"))
                 return Unauthorized();
 
             if (ImageUpload != null)
                 model.Offer.ImageUrl = await SaveImage(ImageUpload);
 
-            model.Offer.RestaurantId = restaurant.Id;
+            if (!User.IsInRole("Admin"))
+                model.Offer.RestaurantId = restaurant!.Id;
 
             _context.Offers.Add(model.Offer);
             await _context.SaveChangesAsync();
@@ -97,17 +107,16 @@ namespace FoodLoop.Controllers
             var user = await _userManager.GetUserAsync(User);
 
             var offer = await _context.Offers
+                .Include(o => o.Restaurant)
                 .Include(o => o.OfferTags)
                 .FirstOrDefaultAsync(o => o.Id == id);
 
             if (offer == null)
                 return NotFound();
 
-            var restaurant = await _context.Restaurants
-                .FirstOrDefaultAsync(r => r.OwnerUserId == user!.Id);
-
-            if (restaurant == null || offer.RestaurantId != restaurant.Id)
-                return Unauthorized();
+            if (!User.IsInRole("Admin") &&
+                offer.Restaurant.OwnerUserId != user!.Id)
+                return Forbid();
 
             return View("/Views/Restaurant/OfferManager/Edit.cshtml",
                 await BuildFormViewModel(offer));
@@ -131,19 +140,17 @@ namespace FoodLoop.Controllers
             var user = await _userManager.GetUserAsync(User);
 
             var offer = await _context.Offers
+                .Include(o => o.Restaurant)
                 .Include(o => o.OfferTags)
                 .FirstOrDefaultAsync(o => o.Id == model.Offer.Id);
 
             if (offer == null)
                 return NotFound();
 
-            var restaurant = await _context.Restaurants
-                .FirstOrDefaultAsync(r => r.OwnerUserId == user!.Id);
+            if (!User.IsInRole("Admin") &&
+                offer.Restaurant.OwnerUserId != user!.Id)
+                return Forbid();
 
-            if (restaurant == null || offer.RestaurantId != restaurant.Id)
-                return Unauthorized();
-
-            // Update fields
             offer.Title = model.Offer.Title;
             offer.Description = model.Offer.Description;
             offer.OriginalPrice = model.Offer.OriginalPrice;
@@ -173,17 +180,16 @@ namespace FoodLoop.Controllers
             var user = await _userManager.GetUserAsync(User);
 
             var offer = await _context.Offers
+                .Include(o => o.Restaurant)
                 .Include(o => o.OfferTags)
                 .FirstOrDefaultAsync(o => o.Id == id);
 
             if (offer == null)
                 return NotFound();
 
-            var restaurant = await _context.Restaurants
-                .FirstOrDefaultAsync(r => r.OwnerUserId == user!.Id);
-
-            if (restaurant == null || offer.RestaurantId != restaurant.Id)
-                return Unauthorized();
+            if (!User.IsInRole("Admin") &&
+                offer.Restaurant.OwnerUserId != user!.Id)
+                return Forbid();
 
             _context.OfferTags.RemoveRange(offer.OfferTags);
             _context.Offers.Remove(offer);
@@ -195,7 +201,7 @@ namespace FoodLoop.Controllers
         }
 
         // ============================================================
-        // 🔧 HELPERS
+        // HELPERS
         // ============================================================
 
         private async Task<string> SaveImage(IFormFile file)

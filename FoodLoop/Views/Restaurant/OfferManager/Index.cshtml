@@ -53,17 +53,3 @@ else
         }
     </div>
 }
-
-@section Scripts {
-    <script>
-        @if (TempData["Success"] != null)
-        {
-                    <text>showToast("@TempData["Success"]", "success");</text>
-        }
-
-        @if (TempData["Error"] != null)
-        {
-                    <text>showToast("@TempData["Error"]", "error");</text>
-        }
-    </script>
-}

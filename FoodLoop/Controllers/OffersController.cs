@@ -1,10 +1,12 @@
 ﻿using FoodLoop.Data;
 using FoodLoop.Models.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodLoop.Controllers
 {
+    [Authorize]
     public class OffersController : Controller
     {
         private readonly ApplicationDbContext _context;

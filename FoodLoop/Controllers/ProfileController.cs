@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FoodLoop.Controllers
 {
-    [Authorize]
+    [Authorize (Roles="Client, Admin")]
     public class ProfileController : Controller
     {
         private readonly UserManager<User> _userManager;

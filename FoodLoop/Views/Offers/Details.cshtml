@@ -1,4 +1,5 @@
 ﻿@model FoodLoop.Models.Entities.Offer
+@using Microsoft.AspNetCore.Identity
 
 @{
     ViewData["Title"] = Model.Title;
@@ -114,31 +115,48 @@
             <!-- ADD TO CART -->
             @if (User.Identity.IsAuthenticated)
             {
-                if (isExpired || isOutOfStock)
+                @if (User.IsInRole("Client"))
                 {
-                    <button class="add-btn disabled-btn" disabled>
-                        Not available
-                    </button>
-                }
-                else
-                {
-                    <form id="addToCartForm" method="post">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="offerId" value="@Model.Id" />
-
-                        <input type="number"
-                               name="quantity"
-                               value="1"
-                               min="1"
-                               max="@Model.QuantityAvailable"
-                               class="quantity-input" />
-
-                        <button type="submit" class="add-btn">
-                            Add to cart
+                    if (isExpired || isOutOfStock)
+                    {
+                        <button class="add-btn disabled-btn" disabled>
+                            Not available
                         </button>
-                    </form>
+                    }
+                    else
+                    {
+                        <form id="addToCartForm" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="offerId" value="@Model.Id" />
 
+                            <input type="number"
+                                   name="quantity"
+                                   value="1"
+                                   min="1"
+                                   max="@Model.QuantityAvailable"
+                                   class="quantity-input" />
+
+                            <button type="submit" class="add-btn">
+                                Add to cart
+                            </button>
+                        </form>
+                    }
                 }
+                else if (User.IsInRole("Restaurant"))
+                {
+                    <div class="add-btn disabled-btn" style="text-align:center;">
+                        Restaurant accounts cannot place orders
+                    </div>
+                }
+            }
+            else
+            {
+                <a asp-controller="Account"
+                   asp-action="Login"
+                   class="add-btn"
+                   style="text-align:center; display:block;">
+                    Login to order
+                </a>
             }
 
             <!-- COUNTDOWN -->
