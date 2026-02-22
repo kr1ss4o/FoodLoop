@@ -1,6 +1,8 @@
 ﻿using FoodLoop.Data;
 using FoodLoop.Data.Seed;
 using FoodLoop.Models.Entities;
+using FoodLoop.Services.Implementations;
+using FoodLoop.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,7 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // MVC
 builder.Services.AddControllersWithViews();
-
+// Dashboard service
+builder.Services.AddScoped<IDashboardAnalyticsService, DashboardAnalyticsService>();
 // DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
