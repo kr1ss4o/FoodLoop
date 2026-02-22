@@ -143,6 +143,19 @@ namespace FoodLoop.Controllers
 
             reservation.Status = newStatus;
 
+            // Restore stock ONLY when canceling
+            if (newStatus == ReservationStatus.Canceled &&
+                oldStatus != ReservationStatus.Canceled)
+            {
+                foreach (var item in reservation.Items)
+                {
+                    if (item.Offer != null)
+                    {
+                        item.Offer.QuantityAvailable += item.Quantity;
+                    }
+                }
+            }
+
             _context.ReservationStatusLogs.Add(new ReservationStatusLog
             {
                 ReservationId = reservation.Id,

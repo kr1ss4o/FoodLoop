@@ -1,4 +1,6 @@
-﻿namespace FoodLoop.Models.ViewModels
+﻿using FoodLoop.Models.Entities;
+
+namespace FoodLoop.Models.ViewModels
 {
     public class RestaurantDashboardViewModel
     {
@@ -16,9 +18,16 @@
         public int PickupOrders { get; set; }
         public int OrdersForOthers { get; set; }
         public int PendingOrders { get; set; }
-
+        public List<Reservation> DailyReservations { get; set; } = new();
+        public DateTime SelectedDate { get; set; }
         public decimal AverageOrderValue { get; set; }
+        public DateTime PrevDate { get; set; }
+        public DateTime NextDate { get; set; }
+        public bool CanGoNext { get; set; }
 
+        // Rating related fields
+        public double AverageRating { get; set; }
+        public int TotalReviews { get; set; }
 
         public List<LowStockOfferDto> LowStockOffers { get; set; } = new();
 

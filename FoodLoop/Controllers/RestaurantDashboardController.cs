@@ -15,15 +15,13 @@ namespace FoodLoop.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
 
-        public RestaurantDashboardController(
-            ApplicationDbContext context,
-            UserManager<User> userManager)
+        public RestaurantDashboardController(ApplicationDbContext context, UserManager<User> userManager)
         {
             _context = context;
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(DateTime? date)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -36,37 +34,43 @@ namespace FoodLoop.Controllers
             if (restaurant == null)
             {
                 TempData["Error"] = "Restaurant not found.";
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Offers");
             }
 
-            // Всички поръчки за този ресторант (през ReservationItems)
-            var reservationsQuery = _context.Reservations
+            // Избран ден (UTC дата)
+            var selectedDate = (date?.Date ?? DateTime.UtcNow.Date);
+
+            // За UI навигация
+            var prevDate = selectedDate.AddDays(-1);
+            var nextDate = selectedDate.AddDays(1);
+            bool canGoNext = nextDate <= DateTime.UtcNow.Date;
+
+            // Всички резервации за този ресторант (минава през items -> offer -> restaurantId)
+            var allReservations = await _context.Reservations
                 .AsNoTracking()
                 .Include(r => r.Items)
                     .ThenInclude(i => i.Offer)
-                .Where(r => r.Items.Any(i => i.Offer.RestaurantId == restaurant.Id));
-
-            var allReservations = await reservationsQuery.ToListAsync();
+                .Where(r => r.Items.Any(i => i.Offer.RestaurantId == restaurant.Id))
+                .ToListAsync();
 
             var finished = allReservations
                 .Where(r => r.Status == ReservationStatus.Finished)
                 .ToList();
 
-            var now = DateTime.UtcNow;
-
             // ==========================
-            // KPI: TOTAL
+            // KPI: TOTAL (all-time finished)
             // ==========================
             int totalOrders = finished.Count;
             decimal totalRevenue = finished.Sum(r => r.TotalPrice);
 
             decimal averageOrderValue = totalOrders > 0
                 ? totalRevenue / totalOrders
-                : 0;
+                : 0m;
 
             // ==========================
-            // KPI: THIS WEEK
+            // KPI: THIS WEEK (Mon..Now, finished only)
             // ==========================
+            var now = DateTime.UtcNow;
             int diff = (7 + (int)now.DayOfWeek - (int)DayOfWeek.Monday) % 7;
             var weekStart = now.Date.AddDays(-diff);
 
@@ -78,50 +82,62 @@ namespace FoodLoop.Controllers
             decimal revenueThisWeek = finishedThisWeek.Sum(r => r.TotalPrice);
 
             // ==========================
-            // KPI: DELIVERY / PICKUP / GIFT
+            // KPI: statuses / types
             // ==========================
+            int pendingOrders = allReservations.Count(r => r.Status == ReservationStatus.Pending);
+
             int deliveryOrders = finished.Count(r => r.DeliveryType == "Delivery");
             int pickupOrders = finished.Count(r => r.DeliveryType == "Pickup");
-            int ordersForOthers = allReservations
-            .Count(r => r.IsForSomeoneElse && r.Status != ReservationStatus.Canceled);
 
+            int ordersForOthers = allReservations.Count(r =>
+                r.IsForSomeoneElse && r.Status != ReservationStatus.Canceled);
 
-            int pendingOrders = allReservations
-                .Count(r => r.Status == ReservationStatus.Pending);
+            // =========================
+            // KPI: RATING AND REVIEWS
+            // =========================
+
+            var reviewsQuery = _context.Reviews
+            .Where(r =>
+                r.Reservation.Items
+                    .Any(i => i.Offer.RestaurantId == restaurant.Id));
+
+            double avgRating = await reviewsQuery.AnyAsync()
+                ? await reviewsQuery.AverageAsync(r => r.Rating) : 0;
+
+            int totalReviews = await reviewsQuery.CountAsync();
 
             // ==========================
-            // TOP OFFER
+            // TOP OFFER (by sold qty)
             // ==========================
             var topOffer = finished
                 .SelectMany(r => r.Items)
                 .Where(i => i.Offer.RestaurantId == restaurant.Id)
                 .GroupBy(i => new { i.OfferId, i.Offer.Title })
-                .Select(g => new
-                {
-                    g.Key.Title,
-                    Sold = g.Sum(x => x.Quantity)
-                })
+                .Select(g => new { g.Key.Title, Sold = g.Sum(x => x.Quantity) })
                 .OrderByDescending(x => x.Sold)
                 .FirstOrDefault();
 
             // ==========================
-            // LOW STOCK
+            // DAILY RESERVATIONS (selected day) - за таблица/лист, ако решиш да го покажеш
             // ==========================
-            var lowStockOffers = await _context.Offers
+            var dayStart = selectedDate;
+            var dayEnd = selectedDate.AddDays(1);
+
+            var dailyReservations = await _context.Reservations
                 .AsNoTracking()
-                .Where(o => o.RestaurantId == restaurant.Id &&
-                            o.QuantityAvailable <= 5)
-                .OrderBy(o => o.QuantityAvailable)
-                .Select(o => new LowStockOfferDto
-                {
-                    OfferId = o.Id,
-                    Title = o.Title,
-                    QuantityAvailable = o.QuantityAvailable
-                })
+                .Include(r => r.Items)
+                    .ThenInclude(i => i.Offer)
+                .Include(r => r.User)
+                .Include(r => r.StatusLogs)
+                .Where(r =>
+                    r.Items.Any(i => i.Offer.RestaurantId == restaurant.Id) &&
+                    r.CreatedAt >= dayStart && r.CreatedAt < dayEnd)
+                .OrderByDescending(r => r.CreatedAt)
                 .ToListAsync();
 
             // ==========================
-            // CHART (Last 7 days)
+            // CHART: movable 7-day window ending at selectedDate
+            // (selectedDate - 6 .. selectedDate)
             // ==========================
             var labels = new List<string>();
             var ordersSeries = new List<int>();
@@ -129,7 +145,7 @@ namespace FoodLoop.Controllers
 
             for (int i = 6; i >= 0; i--)
             {
-                var day = now.Date.AddDays(-i);
+                var day = selectedDate.AddDays(-i);
                 var next = day.AddDays(1);
 
                 labels.Add(day.ToString("dd MMM"));
@@ -152,21 +168,30 @@ namespace FoodLoop.Controllers
                 OrdersThisWeek = ordersThisWeek,
                 RevenueThisWeek = revenueThisWeek,
 
+                AverageOrderValue = averageOrderValue,
+
+                PendingOrders = pendingOrders,
+                DeliveryOrders = deliveryOrders,
+                PickupOrders = pickupOrders,
+                OrdersForOthers = ordersForOthers,
+
                 TopOfferTitle = topOffer?.Title ?? "—",
                 TopOfferSoldCount = topOffer?.Sold ?? 0,
 
-                LowStockOffers = lowStockOffers,
+                AverageRating = avgRating,
+                TotalReviews = totalReviews,
 
                 ChartLabels = labels,
                 ChartOrders = ordersSeries,
                 ChartRevenue = revenueSeries,
 
-                DeliveryOrders = deliveryOrders,
-                PickupOrders = pickupOrders,
-                OrdersForOthers = ordersForOthers,
-                PendingOrders = pendingOrders,
-                AverageOrderValue = averageOrderValue
+                DailyReservations = dailyReservations,
+                SelectedDate = selectedDate
             };
+
+            vm.PrevDate = prevDate;
+            vm.NextDate = nextDate;
+            vm.CanGoNext = canGoNext;
 
             return View(vm);
         }

@@ -1,4 +1,6 @@
 ﻿@model FoodLoop.Models.ViewModels.RestaurantDashboardViewModel
+@using FoodLoop.Models.Enums
+
 
 @{
     ViewData["Title"] = "Dashboard";
@@ -7,6 +9,37 @@
 <link rel="stylesheet" href="~/css/dashboard.css" />
 
 <h2 class="mb-4">@Model.RestaurantName Dashboard</h2>
+
+<!-- DATE PICKER NAVIGATION -->
+
+<div class="date-navigation mb-4">
+
+    <a asp-action="Index"
+       asp-route-date="@Model.SelectedDate.AddDays(-1)"
+       class="date-nav-btn">
+        ←
+    </a>
+
+    <form method="get" asp-action="Index" class="date-form">
+        <input type="date"
+               name="date"
+               value="@Model.SelectedDate.ToString("yyyy-MM-dd")"
+               max="@DateTime.UtcNow.ToString("yyyy-MM-dd")"
+               class="date-picker"
+               onchange="this.form.submit()" />
+    </form>
+
+    @if (Model.SelectedDate < DateTime.UtcNow.Date)
+    {
+        <a asp-action="Index"
+           asp-route-date="@Model.SelectedDate.AddDays(1)"
+           class="date-nav-btn">
+            →
+        </a>
+    }
+</div>
+
+<!-- KPI CARTS GRID -->
 
 <div class="kpi-grid">
 
@@ -50,9 +83,12 @@
         <div class="kpi-value">@Model.PickupOrders</div>
     </div>
 
-    <div class="kpi-card">
-        <div class="kpi-title">Orders for others</div>
-        <div class="kpi-value">@Model.OrdersForOthers</div>
+    <div class="kpi-card rating-card">
+        <div class="kpi-title">Average Rating</div>
+        <div class="kpi-value rating-value">
+            @Model.AverageRating.ToString("0.0") ⭐
+        </div>
+        <small>@Model.TotalReviews reviews</small>
     </div>
 
     <div class="kpi-card">
@@ -65,24 +101,123 @@
 
 </div>
 
-<div class="chart-section mt-5">
+<!-- HEATMAP -->
+
+<div class="heatmap mt-5">
+    <h5>Last 30 Days Activity</h5>
+
+    <div class="heatmap-grid">
+        @for (int i = 29; i >= 0; i--)
+        {
+            var day = DateTime.UtcNow.Date.AddDays(-i);
+            var count = Model.DailyReservations
+            .Where(r => r.CreatedAt.Date == day)
+            .Count();
+
+            var level = count == 0 ? "level-0" :
+            count < 3 ? "level-1" :
+            count < 6 ? "level-2" :
+            "level-3";
+
+            <div class="heatmap-cell @level"
+                 title="@day.ToString("dd MMM") - @count orders">
+            </div>
+        }
+    </div>
+</div>
+
+<!-- CHART -->
+<div class="chart-section mt-5 mb-4">
     <canvas id="ordersChart"></canvas>
 </div>
 
-@if (Model.LowStockOffers.Any())
-{
-    <div class="low-stock mt-4">
-        <h5>⚠ Low Stock Offers</h5>
-        <ul>
-            @foreach (var offer in Model.LowStockOffers)
-            {
-                <li>
-                    @offer.Title — @offer.QuantityAvailable left
-                </li>
-            }
-        </ul>
-    </div>
+<!-- DAILY REVENUE SUMMARY -->
+@{
+    var totalRevenueToday = Model.DailyReservations
+        .Where(r => r.Status == ReservationStatus.Finished)
+        .Sum(r => r.TotalPrice);
+
+    var totalOrdersToday = Model.DailyReservations.Count;
+    var finishedToday = Model.DailyReservations.Count(r => r.Status == ReservationStatus.Finished);
+    var canceledToday = Model.DailyReservations.Count(r => r.Status == ReservationStatus.Canceled);
 }
+<h5>Daily revenue summary:</h5>
+<div class="daily-summary mt-4 mb-4">
+    <div class="summary-box">
+        <div class="summary-label">Total Orders</div>
+        <div class="summary-value">@totalOrdersToday</div>
+    </div>
+
+    <div class="summary-box">
+        <div class="summary-label">Finished</div>
+        <div class="summary-value success">@finishedToday</div>
+    </div>
+
+    <div class="summary-box">
+        <div class="summary-label">Canceled</div>
+        <div class="summary-value danger">@canceledToday</div>
+    </div>
+
+    <div class="summary-box">
+        <div class="summary-label">Revenue</div>
+        <div class="summary-value highlight">
+            @totalRevenueToday.ToString("0.00") EUR
+        </div>
+    </div>
+
+</div>
+
+<!-- TABLE SORT -->
+<div class="daily-orders mt-4">
+
+    <h5>Orders for @Model.SelectedDate.ToString("dd MMM yyyy")</h5>
+
+    @if (!Model.DailyReservations.Any())
+    {
+        <p>No orders for this day.</p>
+    }
+    else
+    {
+        <table id="ordersTable" class="table table-hover">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">#</th>
+                    <th onclick="sortTable(1)">Customer</th>
+                    <th onclick="sortTable(2)">Status</th>
+                    <th onclick="sortTable(3)">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model.DailyReservations)
+                {
+                    var rowId = "details-" + order.Id.ToString();
+
+                    <tr class="order-row" onclick="toggleDetails('@rowId')">
+                        <td>@order.Id.ToString().Substring(0, 6)</td>
+                        <td>@order.User.FullName</td>
+                        <td>
+                            <span class="status-badge @order.Status.ToString().ToLower()">
+                                @order.Status
+                            </span>
+                        </td>
+                        <td>@order.TotalPrice EUR</td>
+                    </tr>
+
+                    <tr id="@rowId" class="order-details" style="display:none;">
+                        <td colspan="4">
+                            @foreach (var item in order.Items)
+                            {
+                                <div>
+                                    • @item.Offer.Title × @item.Quantity
+                                </div>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -104,5 +239,23 @@
                 }]
             }
         });
+
+                function toggleDetails(id) {
+            const row = document.getElementById(id);
+            row.style.display = row.style.display === "none" ? "table-row" : "none";
+        }
+
+        function sortTable(columnIndex) {
+            const table = document.getElementById("ordersTable");
+            const rows = Array.from(table.rows).slice(1);
+
+            const sorted = rows.sort((a, b) => {
+                const A = a.cells[columnIndex].innerText;
+                const B = b.cells[columnIndex].innerText;
+                return A.localeCompare(B, undefined, { numeric: true });
+            });
+
+            sorted.forEach(row => table.tBodies[0].appendChild(row));
+        }
     </script>
 }
