@@ -1,4 +1,5 @@
 ﻿using FoodLoop.Models.Entities;
+using FoodLoop.Models.DTOs;
 
 namespace FoodLoop.Models.ViewModels
 {
@@ -18,7 +19,7 @@ namespace FoodLoop.Models.ViewModels
         public int PickupOrders { get; set; }
         public int OrdersForOthers { get; set; }
         public int PendingOrders { get; set; }
-        public List<Reservation> DailyReservations { get; set; } = new();
+        public List<ReservationSummaryDto> DailyReservations { get; set; } = new();
         public DateTime SelectedDate { get; set; }
         public decimal AverageOrderValue { get; set; }
         public DateTime PrevDate { get; set; }
@@ -28,6 +29,7 @@ namespace FoodLoop.Models.ViewModels
         // Rating related fields
         public double AverageRating { get; set; }
         public int TotalReviews { get; set; }
+        public List<RestaurantReviewDto> Reviews { get; set; } = new();
 
         // Cancel rate
         public double CancellationRate { get; set; }

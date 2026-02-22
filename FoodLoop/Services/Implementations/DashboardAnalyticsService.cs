@@ -1,4 +1,5 @@
 ﻿using FoodLoop.Data;
+using FoodLoop.Models.DTOs;
 using FoodLoop.Models.Entities;
 using FoodLoop.Models.Enums;
 using FoodLoop.Models.ViewModels;
@@ -24,17 +25,19 @@ namespace FoodLoop.Services.Implementations
             if (restaurant == null)
                 throw new Exception("Restaurant not found.");
 
-            var now = DateTime.UtcNow;
+            var bulgarianTimeZone = TimeZoneInfo.FindSystemTimeZoneById("FLE Standard Time");
+            var now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, bulgarianTimeZone);
 
             var selectedDate = date?.Date ?? now.Date;
             var prevDate = selectedDate.AddDays(-1);
             var nextDate = selectedDate.AddDays(1);
 
             var allReservations = await _context.Reservations
-                .Include(r => r.Items)
-                    .ThenInclude(i => i.Offer)
-                .Where(r => r.Items.Any(i => i.Offer.RestaurantId == restaurant.Id))
-                .ToListAsync();
+            .Include(r => r.User)
+            .Include(r => r.Items)
+                .ThenInclude(i => i.Offer)
+            .Where(r => r.Items.Any(i => i.Offer.RestaurantId == restaurant.Id))
+            .ToListAsync();
 
             var finished = allReservations
                 .Where(r => r.Status == ReservationStatus.Finished)
@@ -61,9 +64,32 @@ namespace FoodLoop.Services.Implementations
 
             // ===== DAILY TABLE =====
             var dailyReservations = allReservations
-                .Where(r => r.CreatedAt.Date == selectedDate)
-                .OrderByDescending(r => r.CreatedAt)
-                .ToList();
+            .Where(r => r.CreatedAt.Date == selectedDate)
+            .OrderByDescending(r => r.CreatedAt)
+            .Select(r => new ReservationSummaryDto
+            {
+                Id = r.Id,
+                CreatedAt = r.CreatedAt,
+                TotalPrice = r.TotalPrice,
+                DeliveryType = r.DeliveryType,
+                DeliveryAddress = r.DeliveryAddress,
+                Status = r.Status.ToString(),
+
+                CustomerName = r.IsForSomeoneElse
+                    ? r.RecipientFullName!
+                    : r.User.FullName,
+
+                Phone = r.IsForSomeoneElse
+                    ? r.RecipientPhone
+                    : r.User.PhoneNumber,
+
+                Items = r.Items.Select(i => new ReservationItemDto
+                {
+                    OfferTitle = i.Offer.Title,
+                    Quantity = i.Quantity
+                }).ToList()
+            })
+            .ToList();
 
             // ===== DELIVERY / PICKUP =====
             int deliveryOrders = finished.Count(r => r.DeliveryType == "Delivery");
@@ -80,6 +106,27 @@ namespace FoodLoop.Services.Implementations
                 .Select(g => new { g.Key.Title, Sold = g.Sum(x => x.Quantity) })
                 .OrderByDescending(x => x.Sold)
                 .FirstOrDefault();
+
+            // ===== REVIEWS (for this restaurant) =====
+            var reviews = await _context.Reviews
+                .AsNoTracking()
+                .Where(rv =>
+                    rv.Reservation.Status == ReservationStatus.Finished &&
+                    rv.Reservation.Items.Any(i => i.Offer.RestaurantId == restaurant.Id))
+                .OrderByDescending(rv => rv.CreatedAt)
+                .Select(rv => new FoodLoop.Models.DTOs.RestaurantReviewDto
+                {
+                    ReviewId = rv.Id,
+                    ReservationId = rv.ReservationId,
+                    Rating = rv.Rating,
+                    Comment = rv.Comment,
+                    AuthorName = rv.Reservation.User.FullName,
+                    CreatedAt = rv.CreatedAt
+                })
+                .ToListAsync();
+
+            var totalReviews = reviews.Count;
+            var averageRating = totalReviews > 0 ? reviews.Average(x => x.Rating) : 0.0;
 
             // ===== LOW STOCK =====
             var lowStockOffers = await _context.Offers
@@ -142,7 +189,12 @@ namespace FoodLoop.Services.Implementations
                 SelectedDate = selectedDate,
                 PrevDate = prevDate,
                 NextDate = nextDate,
-                CanGoNext = nextDate <= now.Date
+                CanGoNext = nextDate <= now.Date,
+
+                //Reviews
+                AverageRating = averageRating,
+                TotalReviews = totalReviews,
+                Reviews = reviews,
             };
         }
     }

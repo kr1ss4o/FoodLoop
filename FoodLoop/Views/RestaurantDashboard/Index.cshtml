@@ -141,12 +141,16 @@
 <!-- DAILY REVENUE SUMMARY -->
 @{
     var totalRevenueToday = Model.DailyReservations
-        .Where(r => r.Status == ReservationStatus.Finished)
+        .Where(r => r.Status == ReservationStatus.Finished.ToString())
         .Sum(r => r.TotalPrice);
 
     var totalOrdersToday = Model.DailyReservations.Count;
-    var finishedToday = Model.DailyReservations.Count(r => r.Status == ReservationStatus.Finished);
-    var canceledToday = Model.DailyReservations.Count(r => r.Status == ReservationStatus.Canceled);
+
+    var finishedToday = Model.DailyReservations
+        .Count(r => r.Status == ReservationStatus.Finished.ToString());
+
+    var canceledToday = Model.DailyReservations
+        .Count(r => r.Status == ReservationStatus.Canceled.ToString());
 }
 <h5>Daily revenue summary:</h5>
 <div class="daily-summary mt-4 mb-4">
@@ -190,8 +194,9 @@
                 <tr>
                     <th onclick="sortTable(0)">#</th>
                     <th onclick="sortTable(1)">Customer</th>
-                    <th onclick="sortTable(2)">Status</th>
-                    <th onclick="sortTable(3)">Total</th>
+                    <th onclick="sortTable(2)">Delivery type</th>
+                    <th onclick="sortTable(3)">Status</th>
+                    <th onclick="sortTable(4)">Total</th>
                 </tr>
             </thead>
             <tbody>
@@ -201,7 +206,8 @@
 
                     <tr class="order-row" onclick="toggleDetails('@rowId')">
                         <td>@order.Id.ToString().Substring(0, 6)</td>
-                        <td>@order.User.FullName</td>
+                        <td>@order.CustomerName</td>
+                        <td>@order.DeliveryType</td>
                         <td>
                             <span class="status-badge @order.Status.ToString().ToLower()">
                                 @order.Status
@@ -211,11 +217,11 @@
                     </tr>
 
                     <tr id="@rowId" class="order-details" style="display:none;">
-                        <td colspan="4">
+                        <td colspan="5">
                             @foreach (var item in order.Items)
                             {
                                 <div>
-                                    • @item.Offer.Title × @item.Quantity
+                                    • @item.OfferTitle × @item.Quantity
                                 </div>
                             }
                         </td>
