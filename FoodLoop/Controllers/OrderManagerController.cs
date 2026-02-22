@@ -139,32 +139,47 @@ namespace FoodLoop.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var oldStatus = reservation.Status;
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
-            reservation.Status = newStatus;
-
-            // Restore stock ONLY when canceling
-            if (newStatus == ReservationStatus.Canceled &&
-                oldStatus != ReservationStatus.Canceled)
+            try
             {
-                foreach (var item in reservation.Items)
+                var oldStatus = reservation.Status;
+
+                reservation.Status = newStatus;
+
+                if (newStatus == ReservationStatus.Canceled &&
+                    oldStatus != ReservationStatus.Canceled)
                 {
-                    if (item.Offer != null)
+                    foreach (var item in reservation.Items)
                     {
-                        item.Offer.QuantityAvailable += item.Quantity;
+                        var offer = await _context.Offers
+                            .FirstOrDefaultAsync(o => o.Id == item.OfferId);
+
+                        if (offer != null)
+                        {
+                            offer.QuantityAvailable += item.Quantity;
+                        }
                     }
                 }
+
+                _context.ReservationStatusLogs.Add(new ReservationStatusLog
+                {
+                    ReservationId = reservation.Id,
+                    OldStatus = oldStatus,
+                    NewStatus = newStatus,
+                    ChangedByUserId = user.Id,
+                    ChangedAt = DateTime.UtcNow
+                });
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
             }
-
-            _context.ReservationStatusLogs.Add(new ReservationStatusLog
+            catch
             {
-                ReservationId = reservation.Id,
-                OldStatus = oldStatus,
-                NewStatus = newStatus,
-                ChangedByUserId = user.Id
-            });
-
-            await _context.SaveChangesAsync();
+                await transaction.RollbackAsync();
+                TempData["Error"] = "Unexpected error occurred.";
+                return RedirectToAction(nameof(Index));
+            }
 
             TempData["Success"] = newStatus switch
             {
@@ -180,18 +195,35 @@ namespace FoodLoop.Controllers
 
         private static bool CanTransition(Reservation reservation, ReservationStatus newStatus)
         {
-            // Delivery-specific rule: OutForDelivery makes sense only for Delivery orders
+            // No self-transition
+            if (reservation.Status == newStatus)
+                return false;
+
+            // Terminal states
+            if (reservation.Status is ReservationStatus.Finished or ReservationStatus.Canceled)
+                return false;
+
+            // Delivery rule
             if (newStatus == ReservationStatus.OutForDelivery &&
                 !string.Equals(reservation.DeliveryType, "Delivery", StringComparison.OrdinalIgnoreCase))
                 return false;
 
             return reservation.Status switch
             {
-                ReservationStatus.Pending => newStatus is ReservationStatus.Confirmed or ReservationStatus.Canceled,
-                ReservationStatus.Confirmed => newStatus is ReservationStatus.OutForDelivery or ReservationStatus.Finished or ReservationStatus.Canceled,
-                ReservationStatus.OutForDelivery => newStatus is ReservationStatus.Finished,
-                ReservationStatus.Finished => false,
-                ReservationStatus.Canceled => false,
+                ReservationStatus.Pending =>
+                    newStatus is ReservationStatus.Confirmed
+                    or ReservationStatus.Canceled,
+
+                ReservationStatus.Confirmed =>
+                    reservation.DeliveryType.Equals("Delivery", StringComparison.OrdinalIgnoreCase)
+                        ? newStatus is ReservationStatus.OutForDelivery
+                            or ReservationStatus.Canceled
+                        : newStatus is ReservationStatus.Finished
+                            or ReservationStatus.Canceled,
+
+                ReservationStatus.OutForDelivery =>
+                    newStatus is ReservationStatus.Finished,
+
                 _ => false
             };
         }

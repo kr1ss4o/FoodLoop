@@ -92,6 +92,13 @@
     </div>
 
     <div class="kpi-card">
+        <div class="kpi-title">Cancellation Rate</div>
+        <div class="kpi-value">
+            @Model.CancellationRate.ToString("0.0")%
+        </div>
+    </div>
+
+    <div class="kpi-card">
         <div class="kpi-title">Top Offer</div>
         <div class="kpi-value">
             @Model.TopOfferTitle <br />
@@ -219,10 +226,16 @@
     }
 </div>
 
+<!-- PEAK HOURS CHART -->
+<div class="chart-section mt-4">
+    <canvas id="hourChart"></canvas>
+</div>
+
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
+        // Last 7 days chart
         const ctx = document.getElementById('ordersChart');
 
         new Chart(ctx, {
@@ -240,7 +253,8 @@
             }
         });
 
-                function toggleDetails(id) {
+        // Sort order table 
+        function toggleDetails(id) {
             const row = document.getElementById(id);
             row.style.display = row.style.display === "none" ? "table-row" : "none";
         }
@@ -257,5 +271,20 @@
 
             sorted.forEach(row => table.tBodies[0].appendChild(row));
         }
+
+        // Peak hours chart 
+        const hourCtx = document.getElementById('hourChart');
+
+        new Chart(hourCtx, {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.HourLabels)),
+                datasets: [{
+                    label: 'Orders by Hour',
+                    data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.HourOrders)),
+                    backgroundColor: '#003b55'
+                }]
+            }
+        });
     </script>
 }

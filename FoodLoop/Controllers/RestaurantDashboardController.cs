@@ -106,6 +106,38 @@ namespace FoodLoop.Controllers
 
             int totalReviews = await reviewsQuery.CountAsync();
 
+            //
+            // CANCELED ORDERS
+            //
+
+            int canceledOrders = allReservations
+            .Count(r => r.Status == ReservationStatus.Canceled);
+
+            double cancellationRate = allReservations.Any()
+                ? (double)canceledOrders / allReservations.Count * 100
+                : 0;
+
+            //
+            //
+            // PEAK HOURS
+            //
+
+            var hourLabels = new List<int>();
+            var hourOrders = new List<int>();
+
+            for (int hour = 0; hour < 24; hour++)
+            {
+                hourLabels.Add(hour);
+
+                int count = allReservations
+                    .Where(r =>
+                        r.CreatedAt.Date == selectedDate &&
+                        r.CreatedAt.Hour == hour)
+                    .Count();
+
+                hourOrders.Add(count);
+            }
+
             // ==========================
             // TOP OFFER (by sold qty)
             // ==========================
@@ -186,7 +218,12 @@ namespace FoodLoop.Controllers
                 ChartRevenue = revenueSeries,
 
                 DailyReservations = dailyReservations,
-                SelectedDate = selectedDate
+                SelectedDate = selectedDate,
+
+                CancellationRate = cancellationRate,
+
+                HourLabels = hourLabels,
+                HourOrders = hourOrders,
             };
 
             vm.PrevDate = prevDate;

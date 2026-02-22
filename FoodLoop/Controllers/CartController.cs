@@ -284,22 +284,32 @@ namespace FoodLoop.Controllers
 
                 foreach (var item in cartItems)
                 {
-                    if (item.Offer.QuantityAvailable < item.Quantity)
+                    var offer = await _context.Offers
+                        .Where(o => o.Id == item.OfferId)
+                        .FirstOrDefaultAsync();
+
+                    if (offer == null)
                     {
-                        TempData["Error"] = $"Not enough stock for {item.Offer.Title}";
+                        TempData["Error"] = "Offer not found.";
                         return RedirectToAction("Index");
                     }
 
-                    item.Offer.QuantityAvailable -= item.Quantity;
+                    if (offer.QuantityAvailable < item.Quantity)
+                    {
+                        TempData["Error"] = $"Not enough stock for {offer.Title}";
+                        return RedirectToAction("Index");
+                    }
+
+                    offer.QuantityAvailable -= item.Quantity;
 
                     reservation.Items.Add(new ReservationItem
                     {
-                        OfferId = item.OfferId,
+                        OfferId = offer.Id,
                         Quantity = item.Quantity,
-                        PriceSnapshot = item.Offer.DiscountedPrice
+                        PriceSnapshot = offer.DiscountedPrice
                     });
 
-                    reservation.TotalPrice += item.Quantity * item.Offer.DiscountedPrice;
+                    reservation.TotalPrice += item.Quantity * offer.DiscountedPrice;
                 }
                 // Adds additional delivery fee of 2 Euro
                 if (deliveryType == "Delivery")

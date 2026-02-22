@@ -29,6 +29,13 @@ namespace FoodLoop.Models.ViewModels
         public double AverageRating { get; set; }
         public int TotalReviews { get; set; }
 
+        // Cancel rate
+        public double CancellationRate { get; set; }
+
+        // Peak hours
+        public List<int> HourLabels { get; set; } = new();
+        public List<int> HourOrders { get; set; } = new();
+
         public List<LowStockOfferDto> LowStockOffers { get; set; } = new();
 
         // Chart (последни 7 дни)
