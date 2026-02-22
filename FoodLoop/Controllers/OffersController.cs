@@ -16,33 +16,58 @@ namespace FoodLoop.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(string? search, string? sort)
+        public async Task<IActionResult> Index(string? search, string? sort, Guid? categoryId, int page = 1)
         {
+            const int pageSize = 3;
+
             var query = _context.Offers
                 .Where(o => o.QuantityAvailable > 0)
                 .Include(o => o.Restaurant)
+                .Include(o => o.Category)
                 .Include(o => o.OfferTags)
                     .ThenInclude(ot => ot.Tag)
                 .AsQueryable();
 
+            // SEARCH
             if (!string.IsNullOrWhiteSpace(search))
             {
                 query = query.Where(o =>
                     o.Title.Contains(search) ||
                     o.Restaurant.Name.Contains(search) ||
-                    o.OfferTags.Any(ot => ot.Tag.Name.Contains(search)));
+                    o.OfferTags.Any(t => t.Tag.Name.Contains(search)));
             }
 
+            // CATEGORY FILTER
+            if (categoryId.HasValue)
+            {
+                query = query.Where(o => o.CategoryId == categoryId);
+            }
+
+            // SORT
             query = (sort ?? "").ToLower() switch
             {
                 "price_asc" => query.OrderBy(o => o.DiscountedPrice),
                 "price_desc" => query.OrderByDescending(o => o.DiscountedPrice),
-                "newest" => query.OrderByDescending(o => o.CreatedAt),
+                "rating_desc" => query.OrderByDescending(o => o.Restaurant.Rating),
                 _ => query.OrderByDescending(o => o.CreatedAt)
             };
 
-            var model = await query.ToListAsync();
-            return View(model);
+            var totalItems = await query.CountAsync();
+
+            var offers = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .AsNoTracking()
+                .ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+            ViewBag.Search = search;
+            ViewBag.Sort = sort;
+            ViewBag.CategoryId = categoryId;
+            ViewBag.Categories = await _context.Categories.AsNoTracking().ToListAsync();
+
+            return View(offers);
         }
 
         public async Task<IActionResult> Details(Guid id)

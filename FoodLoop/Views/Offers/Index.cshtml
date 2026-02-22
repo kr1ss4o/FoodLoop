@@ -1,4 +1,5 @@
 ﻿@model List<FoodLoop.Models.Entities.Offer>
+@using FoodLoop.Models.Entities
 
 @{
     ViewData["Title"] = "Marketplace";
@@ -35,6 +36,16 @@
                         selected="@(Context.Request.Query["sort"] == "newest")">
                     Newest
                 </option>
+            </select>
+            <!-- Filter by category -->
+            <select name="categoryId" class="sort-select">
+                <option value="">All categories</option>
+                @foreach (var cat in (List<Category>)ViewBag.Categories)
+                {
+                    <option value="@cat.Id" selected="@(ViewBag.CategoryId?.ToString() == cat.Id.ToString())">
+                        @cat.Name
+                    </option>
+                }
             </select>
 
             <button type="submit" class="filter-btn">
@@ -87,13 +98,17 @@
                         </div>
 
                         <div class="store-stock">
-                            @if (offer.QuantityAvailable <= 3)
+                            @if (offer.QuantityAvailable <= 2)
                             {
-                                <span class="urgent-badge">🔥 Almost gone</span>
+                                <div class="low-stock-soft pulse">
+                                    Only @offer.QuantityAvailable left
+                                </div>
                             }
                             else if (offer.QuantityAvailable <= 5)
                             {
-                                <span class="low-stock">Only @offer.QuantityAvailable left</span>
+                                <div class="low-stock-soft">
+                                    Only @offer.QuantityAvailable left
+                                </div>
                             }
                             else
                             {
@@ -107,5 +122,102 @@
         }
 
     </div>
+    <!-- PAGINATION -->
+    @if (ViewBag.TotalPages > 1)
+    {
+        var current = (int)ViewBag.CurrentPage;
+        var total = (int)ViewBag.TotalPages;
+
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+
+                <!-- PREVIOUS -->
+                <li class="page-item @(current == 1 ? "disabled" : "")">
+                    <a class="page-link"
+                       asp-action="Index"
+                       asp-route-page="@(current - 1)"
+                       asp-route-search="@ViewBag.Search"
+                       asp-route-sort="@ViewBag.Sort"
+                       asp-route-categoryId="@ViewBag.CategoryId">
+                        «
+                    </a>
+                </li>
+
+                @{
+                    int start = Math.Max(1, current - 2);
+                    int end = Math.Min(total, current + 2);
+                }
+
+                @if (start > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="1"
+                           asp-route-search="@ViewBag.Search"
+                           asp-route-sort="@ViewBag.Sort"
+                           asp-route-categoryId="@ViewBag.CategoryId">
+                            1
+                        </a>
+                    </li>
+
+                    @if (start > 2)
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    }
+                }
+
+                @for (int i = start; i <= end; i++)
+                {
+                    <li class="page-item @(current == i ? "active" : "")">
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@i"
+                           asp-route-search="@ViewBag.Search"
+                           asp-route-sort="@ViewBag.Sort"
+                           asp-route-categoryId="@ViewBag.CategoryId">
+                            @i
+                        </a>
+                    </li>
+                }
+
+                @if (end < total)
+                {
+                    @if (end < total - 1)
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    }
+
+                    <li class="page-item">
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@total"
+                           asp-route-search="@ViewBag.Search"
+                           asp-route-sort="@ViewBag.Sort"
+                           asp-route-categoryId="@ViewBag.CategoryId">
+                            @total
+                        </a>
+                    </li>
+                }
+
+                <!-- NEXT -->
+                <li class="page-item @(current == total ? "disabled" : "")">
+                    <a class="page-link"
+                       asp-action="Index"
+                       asp-route-page="@(current + 1)"
+                       asp-route-search="@ViewBag.Search"
+                       asp-route-sort="@ViewBag.Sort"
+                       asp-route-categoryId="@ViewBag.CategoryId">
+                        »
+                    </a>
+                </li>
+
+            </ul>
+        </nav>
+    }
 
 </div>

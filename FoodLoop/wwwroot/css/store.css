@@ -217,15 +217,24 @@
     background: #e2e2e2;
 }
 
-.urgent-badge {
-    background: linear-gradient(45deg, #ff4d4d, #ff0000);
-    color: white;
-    font-size: 0.75rem;
-    padding: 4px 8px;
-    border-radius: 8px;
+.low-stock-soft {
     display: inline-block;
-    margin-top: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: #fff4e5;
+    color: #c56b00;
     font-weight: 600;
+    font-size: 13px;
+}
+
+.limited-stock {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: #f5f7fa;
+    color: #6c7a86;
+    font-weight: 600;
+    font-size: 13px;
 }
 .store-card {
     position: relative;
@@ -279,4 +288,96 @@
     align-items: center;
     flex-wrap: wrap;
     margin-bottom: 0;
+}
+
+/* PAGINATION */
+
+.pagination-wrapper {
+    margin-top: 30px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.page-btn {
+    padding: 8px 14px;
+    border-radius: 10px;
+    background: #f1f5f9;
+    text-decoration: none;
+    font-weight: 600;
+    color: #003b55;
+}
+
+.page-btn.active {
+    background: #00a86b;
+    color: #fff;
+}
+.pagination .page-link {
+    color: #003b55;
+    font-weight: 600;
+    border-radius: 8px;
+}
+
+.pagination .page-item.active .page-link {
+    background: #00a86b;
+    border-color: #00a86b;
+    color: white;
+}
+
+.pagination .page-item.disabled .page-link {
+    opacity: 0.6;
+}
+.pagination {
+    gap: 8px;
+}
+
+.pagination .page-item {
+    margin: 0;
+}
+
+.pagination .page-link {
+    border-radius: 10px !important;
+    min-width: 38px;
+    text-align: center;
+}
+
+.store-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 28px;
+}
+
+.store-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.store-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.store-stock {
+    margin-top: auto;
+}
+
+/* Low stock pulse */
+.pulse {
+    animation: pulseSoft 1.8s infinite;
+}
+
+@keyframes pulseSoft {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 140, 0, 0.5);
+    }
+
+    70% {
+        box-shadow: 0 0 0 6px rgba(255, 140, 0, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 140, 0, 0);
+    }
 }
