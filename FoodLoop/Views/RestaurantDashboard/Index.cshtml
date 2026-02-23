@@ -114,12 +114,10 @@
     <h5>Last 30 Days Activity</h5>
 
     <div class="heatmap-grid">
-        @for (int i = 29; i >= 0; i--)
+        @for (int i = 0; i < Model.HeatmapDays.Count; i++)
         {
-            var day = DateTime.UtcNow.Date.AddDays(-i);
-            var count = Model.DailyReservations
-            .Where(r => r.CreatedAt.Date == day)
-            .Count();
+            var d = Model.HeatmapDays[i];
+            var count = d.OrdersCount;
 
             var level = count == 0 ? "level-0" :
             count < 3 ? "level-1" :
@@ -127,10 +125,23 @@
             "level-3";
 
             <div class="heatmap-cell @level"
-                 title="@day.ToString("dd MMM") - @count orders">
+                 title="@d.Date.ToString("dd MMM") - @count orders">
             </div>
         }
     </div>
+</div>
+
+<!-- MONTHLY -->
+<div class="kpi-card">
+    <div class="kpi-title">Orders This Month</div>
+    <div class="kpi-value">@Model.OrdersThisMonth</div>
+</div>
+
+<!-- WEEKLY -->
+
+<div class="kpi-card">
+    <div class="kpi-title">Revenue This Month</div>
+    <div class="kpi-value">@Model.RevenueThisMonth EUR</div>
 </div>
 
 <!-- CHART -->

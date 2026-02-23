@@ -20,101 +20,199 @@ namespace FoodLoop.Services.Implementations
         public async Task<RestaurantDashboardViewModel> BuildDashboardAsync(string userId, DateTime? date)
         {
             var restaurant = await _context.Restaurants
-                .FirstOrDefaultAsync(r => r.OwnerUserId == userId);
+                .Where(r => r.OwnerUserId == userId)
+                .Select(r => new { r.Id, r.Name })
+                .FirstOrDefaultAsync();
 
             if (restaurant == null)
                 throw new Exception("Restaurant not found.");
 
-            var bulgarianTimeZone = TimeZoneInfo.FindSystemTimeZoneById("FLE Standard Time");
-            var now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, bulgarianTimeZone);
+            // Bulgarian time
+            var tz = TimeZoneInfo.FindSystemTimeZoneById("FLE Standard Time");
+            var now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, tz);
 
             var selectedDate = date?.Date ?? now.Date;
             var prevDate = selectedDate.AddDays(-1);
             var nextDate = selectedDate.AddDays(1);
 
-            var allReservations = await _context.Reservations
-            .Include(r => r.User)
-            .Include(r => r.Items)
-                .ThenInclude(i => i.Offer)
-            .Where(r => r.Items.Any(i => i.Offer.RestaurantId == restaurant.Id))
-            .ToListAsync();
+            var reservationsQuery = _context.Reservations
+                .Where(r => r.Items.Any(i => i.Offer.RestaurantId == restaurant.Id));
 
-            var finished = allReservations
-                .Where(r => r.Status == ReservationStatus.Finished)
-                .ToList();
+            var finishedQuery = reservationsQuery
+                .Where(r => r.Status == ReservationStatus.Finished);
 
-            // ===== TOTAL =====
-            int totalOrders = finished.Count;
-            decimal totalRevenue = finished.Sum(r => r.TotalPrice);
+            // ================= TOTAL =================
+
+            int totalOrders = await finishedQuery.CountAsync();
+            decimal totalRevenue = totalOrders > 0
+                ? await finishedQuery.SumAsync(r => r.TotalPrice)
+                : 0;
 
             decimal averageOrderValue = totalOrders > 0
                 ? totalRevenue / totalOrders
                 : 0;
 
-            // ===== WEEK =====
+            // ================= WEEK =================
+
             int diff = (7 + (int)now.DayOfWeek - (int)DayOfWeek.Monday) % 7;
             var weekStart = now.Date.AddDays(-diff);
 
-            var finishedThisWeek = finished
-                .Where(r => r.CreatedAt >= weekStart)
-                .ToList();
+            var weekStartUtc = TimeZoneInfo.ConvertTimeToUtc(weekStart, tz);
 
-            int ordersThisWeek = finishedThisWeek.Count;
-            decimal revenueThisWeek = finishedThisWeek.Sum(r => r.TotalPrice);
+            var finishedThisWeek = finishedQuery
+                .Where(r => r.CreatedAt >= weekStartUtc);
 
-            // ===== DAILY TABLE =====
-            var dailyReservations = allReservations
-            .Where(r => r.CreatedAt.Date == selectedDate)
-            .OrderByDescending(r => r.CreatedAt)
-            .Select(r => new ReservationSummaryDto
-            {
-                Id = r.Id,
-                CreatedAt = r.CreatedAt,
-                TotalPrice = r.TotalPrice,
-                DeliveryType = r.DeliveryType,
-                DeliveryAddress = r.DeliveryAddress,
-                Status = r.Status.ToString(),
+            int ordersThisWeek = await finishedThisWeek.CountAsync();
+            decimal revenueThisWeek = ordersThisWeek > 0
+                ? await finishedThisWeek.SumAsync(r => r.TotalPrice)
+                : 0;
 
-                CustomerName = r.IsForSomeoneElse
-                    ? r.RecipientFullName!
-                    : r.User.FullName,
+            // ================= MONTH =================
 
-                Phone = r.IsForSomeoneElse
-                    ? r.RecipientPhone
-                    : r.User.PhoneNumber,
+            var monthStart = new DateTime(now.Year, now.Month, 1);
+            var monthStartUtc = TimeZoneInfo.ConvertTimeToUtc(monthStart, tz);
 
-                Items = r.Items.Select(i => new ReservationItemDto
+            var finishedThisMonth = finishedQuery
+                .Where(r => r.CreatedAt >= monthStartUtc);
+
+            int ordersThisMonth = await finishedThisMonth.CountAsync();
+            decimal revenueThisMonth = ordersThisMonth > 0
+                ? await finishedThisMonth.SumAsync(r => r.TotalPrice)
+                : 0;
+
+            // ================= DELIVERY / PICKUP =================
+
+            int deliveryOrders = await finishedQuery
+                .CountAsync(r => r.DeliveryType == "Delivery");
+
+            int pickupOrders = await finishedQuery
+                .CountAsync(r => r.DeliveryType == "Pickup");
+
+            int pendingOrders = await reservationsQuery
+                .CountAsync(r => r.Status == ReservationStatus.Pending);
+
+            // ================= DAILY TABLE =================
+
+            var nextDayUtc = TimeZoneInfo.ConvertTimeToUtc(selectedDate.AddDays(1), tz);
+            var selectedDateUtc = TimeZoneInfo.ConvertTimeToUtc(selectedDate, tz);
+
+            var dailyReservations = await reservationsQuery
+                .Where(r => r.CreatedAt >= selectedDateUtc && r.CreatedAt < nextDayUtc)
+                .Include(r => r.User)
+                .Include(r => r.Items)
+                    .ThenInclude(i => i.Offer)
+                .OrderByDescending(r => r.CreatedAt)
+                .Select(r => new ReservationSummaryDto
                 {
-                    OfferTitle = i.Offer.Title,
-                    Quantity = i.Quantity
-                }).ToList()
-            })
-            .ToList();
+                    Id = r.Id,
+                    CreatedAt = r.CreatedAt,
+                    TotalPrice = r.TotalPrice,
+                    DeliveryType = r.DeliveryType,
+                    DeliveryAddress = r.DeliveryAddress,
+                    Status = r.Status.ToString(),
 
-            // ===== DELIVERY / PICKUP =====
-            int deliveryOrders = finished.Count(r => r.DeliveryType == "Delivery");
-            int pickupOrders = finished.Count(r => r.DeliveryType == "Pickup");
+                    CustomerName = r.IsForSomeoneElse
+                        ? r.RecipientFullName!
+                        : r.User.FullName,
 
-            int pendingOrders = allReservations
-                .Count(r => r.Status == ReservationStatus.Pending);
+                    Phone = r.IsForSomeoneElse
+                        ? r.RecipientPhone
+                        : r.User.PhoneNumber,
 
-            // ===== TOP OFFER =====
-            var topOffer = finished
-                .SelectMany(r => r.Items)
-                .Where(i => i.Offer.RestaurantId == restaurant.Id)
-                .GroupBy(i => new { i.OfferId, i.Offer.Title })
-                .Select(g => new { g.Key.Title, Sold = g.Sum(x => x.Quantity) })
-                .OrderByDescending(x => x.Sold)
-                .FirstOrDefault();
+                    Items = r.Items.Select(i => new ReservationItemDto
+                    {
+                        OfferTitle = i.Offer.Title,
+                        Quantity = i.Quantity
+                    }).ToList()
+                })
+                .ToListAsync();
 
-            // ===== REVIEWS (for this restaurant) =====
-            var reviews = await _context.Reviews
-                .AsNoTracking()
+            // ================= HEATMAP (Last 30 days) =================
+
+            var heatmapStartLocal = now.Date.AddDays(-29);
+            var heatmapEndLocalExclusive = now.Date.AddDays(1);
+
+            var heatmapStartUtc = TimeZoneInfo.ConvertTimeToUtc(heatmapStartLocal, tz);
+            var heatmapEndUtc = TimeZoneInfo.ConvertTimeToUtc(heatmapEndLocalExclusive, tz);
+
+            var heatmapReservations = await finishedQuery
+                .Where(r => r.CreatedAt >= heatmapStartUtc && r.CreatedAt < heatmapEndUtc)
+                .Select(r => r.CreatedAt)
+                .ToListAsync();
+
+            var heatmapCounts = heatmapReservations
+                .GroupBy(d => TimeZoneInfo.ConvertTimeFromUtc(d, tz).Date)
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            var heatmapDays = new List<HeatmapDayDto>();
+
+            for (int i = 29; i >= 0; i--)
+            {
+                var dayLocal = now.Date.AddDays(-i);
+
+                heatmapDays.Add(new HeatmapDayDto
+                {
+                    Date = dayLocal,
+                    OrdersCount = heatmapCounts.TryGetValue(dayLocal, out var c) ? c : 0
+                });
+            }
+
+            // ================= CHART (7 days) =================
+
+            var chartStartLocal = selectedDate.AddDays(-6);
+            var chartStartUtc = TimeZoneInfo.ConvertTimeToUtc(chartStartLocal, tz);
+
+            var chartData = await finishedQuery
+                .Where(r => r.CreatedAt >= chartStartUtc && r.CreatedAt < nextDayUtc)
+                .GroupBy(r => r.CreatedAt.Date)
+                .Select(g => new
+                {
+                    Date = g.Key,
+                    Count = g.Count(),
+                    Revenue = g.Sum(x => x.TotalPrice)
+                })
+                .ToListAsync();
+
+            var chartDict = chartData.ToDictionary(x => x.Date);
+
+            var labels = new List<string>();
+            var ordersSeries = new List<int>();
+            var revenueSeries = new List<decimal>();
+
+            for (int i = 0; i < 7; i++)
+            {
+                var day = chartStartLocal.AddDays(i);
+
+                labels.Add(day.ToString("dd MMM"));
+
+                if (chartDict.TryGetValue(day, out var data))
+                {
+                    ordersSeries.Add(data.Count);
+                    revenueSeries.Add(data.Revenue);
+                }
+                else
+                {
+                    ordersSeries.Add(0);
+                    revenueSeries.Add(0);
+                }
+            }
+
+            // ================= REVIEWS =================
+
+            var reviewsQuery = _context.Reviews
                 .Where(rv =>
                     rv.Reservation.Status == ReservationStatus.Finished &&
-                    rv.Reservation.Items.Any(i => i.Offer.RestaurantId == restaurant.Id))
+                    rv.Reservation.Items.Any(i => i.Offer.RestaurantId == restaurant.Id));
+
+            int totalReviews = await reviewsQuery.CountAsync();
+            double averageRating = totalReviews > 0
+                ? await reviewsQuery.AverageAsync(r => r.Rating)
+                : 0;
+
+            var reviews = await reviewsQuery
                 .OrderByDescending(rv => rv.CreatedAt)
-                .Select(rv => new FoodLoop.Models.DTOs.RestaurantReviewDto
+                .Take(10)
+                .Select(rv => new RestaurantReviewDto
                 {
                     ReviewId = rv.Id,
                     ReservationId = rv.ReservationId,
@@ -125,13 +223,10 @@ namespace FoodLoop.Services.Implementations
                 })
                 .ToListAsync();
 
-            var totalReviews = reviews.Count;
-            var averageRating = totalReviews > 0 ? reviews.Average(x => x.Rating) : 0.0;
+            // ================= LOW STOCK =================
 
-            // ===== LOW STOCK =====
             var lowStockOffers = await _context.Offers
-                .Where(o => o.RestaurantId == restaurant.Id &&
-                            o.QuantityAvailable <= 5)
+                .Where(o => o.RestaurantId == restaurant.Id && o.QuantityAvailable <= 5)
                 .Select(o => new LowStockOfferDto
                 {
                     OfferId = o.Id,
@@ -139,26 +234,6 @@ namespace FoodLoop.Services.Implementations
                     QuantityAvailable = o.QuantityAvailable
                 })
                 .ToListAsync();
-
-            // ===== CHART (7 days around selected date) =====
-            var labels = new List<string>();
-            var ordersSeries = new List<int>();
-            var revenueSeries = new List<decimal>();
-
-            for (int i = 6; i >= 0; i--)
-            {
-                var day = selectedDate.AddDays(-i);
-                var next = day.AddDays(1);
-
-                labels.Add(day.ToString("dd MMM"));
-
-                var dayFinished = finished
-                    .Where(r => r.CreatedAt >= day && r.CreatedAt < next)
-                    .ToList();
-
-                ordersSeries.Add(dayFinished.Count);
-                revenueSeries.Add(dayFinished.Sum(r => r.TotalPrice));
-            }
 
             return new RestaurantDashboardViewModel
             {
@@ -170,8 +245,8 @@ namespace FoodLoop.Services.Implementations
                 OrdersThisWeek = ordersThisWeek,
                 RevenueThisWeek = revenueThisWeek,
 
-                TopOfferTitle = topOffer?.Title ?? "—",
-                TopOfferSoldCount = topOffer?.Sold ?? 0,
+                OrdersThisMonth = ordersThisMonth,
+                RevenueThisMonth = revenueThisMonth,
 
                 DeliveryOrders = deliveryOrders,
                 PickupOrders = pickupOrders,
@@ -179,22 +254,23 @@ namespace FoodLoop.Services.Implementations
 
                 AverageOrderValue = averageOrderValue,
 
-                LowStockOffers = lowStockOffers,
-
                 ChartLabels = labels,
                 ChartOrders = ordersSeries,
                 ChartRevenue = revenueSeries,
 
                 DailyReservations = dailyReservations,
+                HeatmapDays = heatmapDays,
+
                 SelectedDate = selectedDate,
                 PrevDate = prevDate,
                 NextDate = nextDate,
                 CanGoNext = nextDate <= now.Date,
 
-                //Reviews
                 AverageRating = averageRating,
                 TotalReviews = totalReviews,
                 Reviews = reviews,
+
+                LowStockOffers = lowStockOffers
             };
         }
     }

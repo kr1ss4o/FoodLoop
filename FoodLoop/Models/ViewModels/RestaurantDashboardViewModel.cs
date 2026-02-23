@@ -12,7 +12,6 @@ namespace FoodLoop.Models.ViewModels
 
         public int OrdersThisWeek { get; set; }
         public decimal RevenueThisWeek { get; set; }
-
         public string TopOfferTitle { get; set; } = "—";
         public int TopOfferSoldCount { get; set; }
         public int DeliveryOrders { get; set; }
@@ -44,12 +43,21 @@ namespace FoodLoop.Models.ViewModels
         public List<string> ChartLabels { get; set; } = new();
         public List<int> ChartOrders { get; set; } = new();
         public List<decimal> ChartRevenue { get; set; } = new();
+        
+        // Monthly KPIs + Heatmap days
+        public List<HeatmapDayDto> HeatmapDays { get; set; } = new();
+        public int OrdersThisMonth { get; set; }
+        public decimal RevenueThisMonth { get; set; }
     }
-
     public class LowStockOfferDto
     {
         public Guid OfferId { get; set; }
         public string Title { get; set; } = "";
         public int QuantityAvailable { get; set; }
+    }
+    public class HeatmapDayDto
+    {
+        public DateTime Date { get; set; }
+        public int OrdersCount { get; set; }
     }
 }
