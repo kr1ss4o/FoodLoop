@@ -29,6 +29,9 @@ namespace FoodLoop.Models.ViewModels
         public double AverageRating { get; set; }
         public int TotalReviews { get; set; }
         public List<RestaurantReviewDto> Reviews { get; set; } = new();
+        // Rating distribution
+        public Dictionary<int, int> RatingCounts { get; set; } = new();
+        public Dictionary<int, double> RatingPercentages { get; set; } = new();
 
         // Cancel rate
         public double CancellationRate { get; set; }

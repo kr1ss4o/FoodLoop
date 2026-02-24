@@ -246,6 +246,28 @@ namespace FoodLoop.Services.Implementations
                 })
                 .ToListAsync();
 
+            // ================= RATING DISTRIBUTION =================
+
+            var ratingCountsRaw = await reviewsQuery
+                .GroupBy(r => r.Rating)
+                .Select(g => new { Rating = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            var ratingCounts = Enumerable.Range(1, 5)
+                .ToDictionary(r => r, r => 0);
+
+            foreach (var item in ratingCountsRaw)
+            {
+                ratingCounts[item.Rating] = item.Count;
+            }
+
+            var ratingPercentages = ratingCounts.ToDictionary(
+                kvp => kvp.Key,
+                kvp => totalReviews > 0
+                    ? Math.Round((double)kvp.Value / totalReviews * 100, 1)
+                    : 0
+            );
+
             // ================= PEAK HOURS (Last 30 days, Finished) =================
             var peakStartLocal = now.Date.AddDays(-29);
             var peakEndLocalExclusive = now.Date.AddDays(1);
@@ -264,7 +286,7 @@ namespace FoodLoop.Services.Implementations
                 .GroupBy(h => h)
                 .ToDictionary(g => g.Key, g => g.Count());
 
-            // 00..23
+            // 24 hour time format
             var hourLabels = Enumerable.Range(0, 24).Select(h => $"{h:00}:00 ч.").ToList();
             var hourOrders = Enumerable.Range(0, 24).Select(h => hourCounts.TryGetValue(h, out var c) ? c : 0).ToList();
 
@@ -308,7 +330,10 @@ namespace FoodLoop.Services.Implementations
 
                 AverageRating = averageRating,
                 TotalReviews = totalReviews,
-                Reviews = reviews
+                Reviews = reviews,
+
+                RatingCounts = ratingCounts,
+                RatingPercentages = ratingPercentages,
             };
         }
     }

@@ -1,0 +1,87 @@
+﻿@model List<FoodLoop.Models.DTOs.RestaurantReviewDto>
+
+<h2>Restaurant Reviews</h2>
+
+<form method="get" class="row g-2 mb-4">
+
+    <div class="col-md-2">
+        <select name="rating" class="form-select">
+            <option value="">All Ratings</option>
+            @for (int i = 5; i >= 1; i--)
+            {
+                <option value="@i">@i ⭐</option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <input type="text"
+               name="search"
+               class="form-control"
+               placeholder="Search..."
+               value="@ViewBag.Search" />
+    </div>
+
+    <div class="col-md-3">
+        <select name="sort" class="form-select">
+            <option value="">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="rating_desc">Rating ↓</option>
+            <option value="rating_asc">Rating ↑</option>
+        </select>
+    </div>
+
+    <div class="col-md-2">
+        <button class="btn btn-dark w-100">Apply</button>
+    </div>
+</form>
+
+@if (!Model.Any())
+{
+    <p>No reviews found.</p>
+}
+else
+{
+    @foreach (var review in Model)
+    {
+        <div class="card mb-3 p-3">
+            <div class="d-flex justify-content-between">
+                <strong>@review.AuthorName</strong>
+                <span>@review.CreatedAt.ToString("dd MMM yyyy")</span>
+            </div>
+
+            <div>
+                @for (int i = 0; i < review.Rating; i++)
+                {
+                    <span>⭐</span>
+                }
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(review.Comment))
+            {
+                <p class="mt-2">@review.Comment</p>
+            }
+        </div>
+    }
+}
+
+<!-- Pagination -->
+@if (ViewBag.TotalPages > 1)
+{
+    <nav>
+        <ul class="pagination">
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link"
+                       asp-route-page="@i"
+                       asp-route-rating="@ViewBag.Rating"
+                       asp-route-search="@ViewBag.Search"
+                       asp-route-sort="@ViewBag.Sort">
+                        @i
+                    </a>
+                </li>
+            }
+        </ul>
+    </nav>
+}
