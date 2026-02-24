@@ -1,0 +1,67 @@
+﻿@model FoodLoop.Models.ViewModels.Admin.CreateRestaurantViewModel
+@{
+    ViewData["Title"] = "Create Restaurant";
+}
+
+<h2 class="mb-3">Create Restaurant Profile</h2>
+
+<form method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label">Owner Email</label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Owner Password</label>
+            <input asp-for="Password" class="form-control" type="password" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Owner Full Name</label>
+            <input asp-for="OwnerFullName" class="form-control" />
+            <span asp-validation-for="OwnerFullName" class="text-danger"></span>
+        </div>
+
+        <hr class="mt-4" />
+
+        <div class="col-md-6">
+            <label class="form-label">Restaurant Name</label>
+            <input asp-for="RestaurantName" class="form-control" />
+            <span asp-validation-for="RestaurantName" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Business Email</label>
+            <input asp-for="BusinessEmail" class="form-control" />
+            <span asp-validation-for="BusinessEmail" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Phone</label>
+            <input asp-for="Phone" class="form-control" />
+            <span asp-validation-for="Phone" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Address</label>
+            <input asp-for="Address" class="form-control" />
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-12">
+            <label class="form-label">Image URL (optional)</label>
+            <input asp-for="ImageUrl" class="form-control" />
+        </div>
+    </div>
+
+    <button class="btn btn-success mt-4">Create</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

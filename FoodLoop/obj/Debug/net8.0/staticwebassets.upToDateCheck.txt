@@ -3,15 +3,12 @@ wwwroot\css\business-profile.css
 wwwroot\css\cart.css
 wwwroot\css\dashboard.css
 wwwroot\css\edit-profile-modal.css
-wwwroot\css\offer-details.css
-wwwroot\css\offers-manage.css
 wwwroot\css\order-manager.css
+wwwroot\css\offers-manage.css
 wwwroot\css\profile.css
-wwwroot\css\restaurant-details.css
 wwwroot\css\restaurant.css
 wwwroot\css\site.css
-wwwroot\css\store.css
-wwwroot\css\timeline.css
+wwwroot\js\site.js
 wwwroot\favicon.ico
 wwwroot\images\default-avatar.jpg
 wwwroot\images\icons\nav-back.png
@@ -19,9 +16,7 @@ wwwroot\images\icons\nav-cart.png
 wwwroot\images\icons\nav-offermanager.png
 wwwroot\images\icons\nav-orders.png
 wwwroot\images\icons\nav-profile.png
-wwwroot\images\offers\0022ac21-b657-4d77-8431-7c02a8c56324.png
 wwwroot\images\offers\885ef6fb-ea4d-4fa7-8a91-e79dda13b37f.jpg
-wwwroot\images\offers\aed901a1-b2ef-41c8-bb91-0b89fe10ce6a.jpg
 wwwroot\images\offers\af38a171-2edc-413c-a704-867ddba8320e.jpg
 wwwroot\images\profile\0027e8e2-f5f1-4987-8f79-0f92d64087d8.jpg
 wwwroot\images\profile\00feb39f-6709-4ecb-9072-aa6195fbbe4a.jpg
@@ -61,7 +56,7 @@ wwwroot\js\cart.js
 wwwroot\js\edit-profile-modal.js
 wwwroot\js\order-dashboard.js
 wwwroot\js\profile.js
-wwwroot\js\site.js
+wwwroot\css\offer-details.css
 wwwroot\js\toast.js
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
@@ -120,3 +115,8 @@ wwwroot\lib\jquery\dist\jquery.js
 wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
+wwwroot\css\restaurant-details.css
+wwwroot\css\timeline.css
+wwwroot\css\store.css
+wwwroot\images\offers\aed901a1-b2ef-41c8-bb91-0b89fe10ce6a.jpg
+wwwroot\images\offers\0022ac21-b657-4d77-8431-7c02a8c56324.png

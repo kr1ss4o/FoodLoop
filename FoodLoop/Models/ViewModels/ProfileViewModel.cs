@@ -1,4 +1,6 @@
-﻿namespace FoodLoop.Models.ViewModels
+﻿using FoodLoop.Models.DTOs;
+
+namespace FoodLoop.Models.ViewModels
 {
     public class ProfileViewModel
     {
@@ -12,5 +14,13 @@
         public int TotalOrders { get; set; }
         public decimal MoneySpent { get; set; }
         public DateTime AccountCreated { get; set; }
+
+        // Reviews
+        public List<UserReviewDto> Reviews { get; set; } = new();
+        public int ReviewsPage { get; set; }
+        public int TotalReviewPages { get; set; }
+
+        // Orders
+        public List<ReservationSummaryDto> RecentOrders { get; set; } = new();
     }
 }

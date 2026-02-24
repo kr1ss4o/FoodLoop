@@ -111,7 +111,7 @@ namespace FoodLoop.Controllers
             if (!result.Succeeded)
             {
                 TempData["Error"] = "Invalid email or password.";
-                return View(model); // НЕ редирект! трябва View(model)
+                return View(model);
             }
 
             // Successful login
@@ -120,7 +120,7 @@ namespace FoodLoop.Controllers
             var user = await _userManager.FindByEmailAsync(model.Email);
 
             if (await _userManager.IsInRoleAsync(user, "Admin"))
-                return RedirectToAction("Panel", "Admin");
+                return RedirectToAction("Index", "Admin");
 
             if (await _userManager.IsInRoleAsync(user, "Restaurant"))
                 return RedirectToAction("Index", "RestaurantDashboard");

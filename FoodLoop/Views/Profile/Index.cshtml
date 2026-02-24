@@ -47,8 +47,77 @@
         </div>
 
     </div>
+    <!-- CLIENT'S REVIEWS -->
+
+    <h4 class="mt-5">My Reviews</h4>
+
+    @if (!Model.Reviews.Any())
+    {
+        <p>No reviews yet.</p>
+    }
+    else
+    {
+        @foreach (var review in Model.Reviews)
+        {
+            <div class="review-card">
+                <strong>@review.RestaurantName</strong>
+                <div>⭐ @review.Rating</div>
+                <p>@review.Comment</p>
+                <small>@review.CreatedAt.ToString("dd MMM yyyy")</small>
+            </div>
+        }
+
+        <!-- Pagination -->
+        <div class="pagination mt-3">
+            @for (int i = 1; i <= Model.TotalReviewPages; i++)
+            {
+                <a asp-action="Index"
+                   asp-route-page="@i"
+                   class="btn btn-sm @(i == Model.ReviewsPage ? "btn-primary" : "btn-outline-primary")">
+                    @i
+                </a>
+            }
+        </div>
+    }
+
+
+    <!-- CLIENT'S LAST 3 ORDERS -->
+
+    <h4 class="mt-5">Last 3 Orders</h4>
+
+    @if (!Model.RecentOrders.Any())
+    {
+        <p>No orders yet.</p>
+    }
+    else
+    {
+        @foreach (var order in Model.RecentOrders)
+        {
+            <div class="order-card">
+                <div>
+                    <strong>Order #@order.Id</strong>
+                    <span>@order.Status</span>
+                </div>
+
+                <div>
+                    @foreach (var item in order.Items)
+                    {
+                        <div>
+                            @item.OfferTitle x @item.Quantity
+                        </div>
+                    }
+                </div>
+
+                <div>
+                    Total: @order.TotalPrice EUR
+                </div>
+            </div>
+        }
+    }
+
 
     <!-- ACTIONS -->
+
     <div class="profile-actions">
         <form method="post" action="/Account/Logout">
             <button class="btn-logout">Log out</button>
