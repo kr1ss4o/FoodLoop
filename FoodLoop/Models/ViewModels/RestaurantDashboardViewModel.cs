@@ -34,7 +34,7 @@ namespace FoodLoop.Models.ViewModels
         public double CancellationRate { get; set; }
 
         // Peak hours
-        public List<int> HourLabels { get; set; } = new();
+        public List<string> HourLabels { get; set; } = new();
         public List<int> HourOrders { get; set; } = new();
 
         public List<LowStockOfferDto> LowStockOffers { get; set; } = new();

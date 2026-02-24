@@ -289,19 +289,31 @@
             sorted.forEach(row => table.tBodies[0].appendChild(row));
         }
 
-        // Peak hours chart 
-        const hourCtx = document.getElementById('hourChart');
+        // Peak hours chart
+        document.addEventListener("DOMContentLoaded", function () {
+            const hourCanvas = document.getElementById('hourChart');
+            if (!hourCanvas) return;
 
-        new Chart(hourCtx, {
-            type: 'bar',
-            data: {
-                labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.HourLabels)),
-                datasets: [{
-                    label: 'Orders by Hour',
-                    data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.HourOrders)),
-                    backgroundColor: '#003b55'
-                }]
-            }
+            const hourCtx = hourCanvas.getContext('2d');
+
+            new Chart(hourCtx, {
+                type: 'bar',
+                data: {
+                    labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.HourLabels)),
+                    datasets: [{
+                        label: 'Orders by Hour',
+                        data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.HourOrders))
+                        // без фиксиран цвят, за да не се “кара” с темата/дизайна
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: true } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { precision: 0 } }
+                    }
+                }
+            });
         });
     </script>
 }
