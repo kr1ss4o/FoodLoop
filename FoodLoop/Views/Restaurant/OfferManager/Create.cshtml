@@ -63,8 +63,15 @@
                type="datetime-local"
                class="input" />
 
-        <label>Image:</label>
+        <label>Image (upload file):</label>
         <input type="file" name="ImageUpload" accept="image/*" class="input" />
+
+        <label>Or paste image URL:</label>
+        <input type="text"
+               asp-for="Offer.ImageUrl"
+               class="input"
+               placeholder="https://example.com/image.jpg" />
+
 
         <button type="submit" class="submit-btn">Create offer</button>
     </form>

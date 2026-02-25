@@ -62,6 +62,19 @@
                            value="@(Model.Address ?? "")"
                            required />
                 </div>
+
+                <div class="epm-field">
+                    <label>Banner (upload)</label>
+                    <input type="file" name="BannerImage" accept="image/*" />
+                </div>
+
+                <div class="epm-field">
+                    <label>Or paste banner URL</label>
+                    <input type="text"
+                           name="BannerImageUrl"
+                           value="@Model.BannerImageUrl"
+                           placeholder="https://example.com/banner.jpg" />
+                </div>
             }
 
             <!-- IMAGE -->

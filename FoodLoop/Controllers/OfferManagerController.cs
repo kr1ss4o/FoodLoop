@@ -13,11 +13,13 @@ namespace FoodLoop.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
+        private readonly IWebHostEnvironment _environment;
 
-        public OfferManagerController(ApplicationDbContext context, UserManager<User> userManager)
+        public OfferManagerController(ApplicationDbContext context, UserManager<User> userManager, IWebHostEnvironment environment)
         {
             _context = context;
             _userManager = userManager;
+            _environment = environment;
         }
 
         // ============================================================
@@ -84,8 +86,29 @@ namespace FoodLoop.Controllers
             if (restaurant == null && !User.IsInRole("Admin"))
                 return Unauthorized();
 
-            if (ImageUpload != null)
-                model.Offer.ImageUrl = await SaveImage(ImageUpload);
+            // === IMAGE HANDLING ===
+
+            // 1️⃣ File upload has priority
+            if (ImageUpload != null && ImageUpload.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "offers");
+                Directory.CreateDirectory(uploadsFolder);
+
+                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(ImageUpload.FileName)}";
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await ImageUpload.CopyToAsync(stream);
+                }
+
+                model.Offer.ImageUrl = $"/images/offers/{fileName}";
+            }
+            else if (!string.IsNullOrWhiteSpace(model.Offer.ImageUrl))
+            {
+                // 2️⃣ URL image
+                model.Offer.ImageUrl = model.Offer.ImageUrl.Trim();
+            }
 
             if (!User.IsInRole("Admin"))
                 model.Offer.RestaurantId = restaurant!.Id;
@@ -151,6 +174,7 @@ namespace FoodLoop.Controllers
                 offer.Restaurant.OwnerUserId != user!.Id)
                 return Forbid();
 
+            // ===== BASIC FIELDS =====
             offer.Title = model.Offer.Title;
             offer.Description = model.Offer.Description;
             offer.OriginalPrice = model.Offer.OriginalPrice;
@@ -159,9 +183,21 @@ namespace FoodLoop.Controllers
             offer.CategoryId = model.Offer.CategoryId;
             offer.EndsAt = model.Offer.EndsAt;
 
-            if (ImageUpload != null)
-                offer.ImageUrl = await SaveImage(ImageUpload);
+            // ===== IMAGE HANDLING =====
 
+            // 1️. File has priority
+            if (ImageUpload != null && ImageUpload.Length > 0)
+            {
+                offer.ImageUrl = await SaveImage(ImageUpload);
+            }
+            // 2️. If no file, but URL is provided
+            else if (!string.IsNullOrWhiteSpace(model.Offer.ImageUrl))
+            {
+                offer.ImageUrl = model.Offer.ImageUrl.Trim();
+            }
+            // 3. If neither -> DO NOTHING (keeps existing image)
+
+            // ===== TAGS =====
             await UpdateTags(offer.Id, model.SelectedTags);
 
             await _context.SaveChangesAsync();

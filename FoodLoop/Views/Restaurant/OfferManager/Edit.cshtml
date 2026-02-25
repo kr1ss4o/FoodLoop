@@ -74,14 +74,20 @@
                                        ? Model.Offer.EndsAt.ToString("yyyy-MM-ddTHH:mm")
                                        : "")" />
 
-        <label>Current image:</label>
+        <label>Current Image:</label>
         @if (!string.IsNullOrEmpty(Model.Offer.ImageUrl))
         {
-            <img src="@Model.Offer.ImageUrl" class="preview-img" />
+            <img src="@Model.Offer.ImageUrl"
+                 style="width:150px; margin-bottom:10px;" />
         }
 
         <label>Upload new image:</label>
         <input type="file" name="ImageUpload" accept="image/*" class="input" />
+
+        <label>Or paste new image URL:</label>
+        <input asp-for="Offer.ImageUrl"
+               class="input"
+               placeholder="https://example.com/image.jpg" />
 
         <button type="submit" class="submit-btn">Save changes</button>
     </form>

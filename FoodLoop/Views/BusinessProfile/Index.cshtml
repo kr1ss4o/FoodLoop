@@ -8,85 +8,117 @@
 
 <div class="bp-wrapper">
 
-    <h1 class="bp-title">Hello, @Model.OwnerName</h1>
+    <!-- ============ WELCOME BAR ============ -->
+    <div class="bp-topbar">
+        <div>
+            <div class="bp-welcome-text">Welcome back,</div>
+            <div class="bp-welcome-name">@Model.OwnerName</div>
+        </div>
 
-    <!-- MAIN PANEL -->
-    <div class="bp-main-card">
+        <div class="bp-top-actions">
+            <button id="epm-open" class="bp-btn-edit">
+                <svg class="bp-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+                </svg>
+                Edit profile
+            </button>
+        </div>
+    </div>
 
-        <!-- LEFT COLUMN (text info) -->
-        <div class="bp-info">
+    <!-- ============ HERO ============ -->
+    <section class="bp-hero"
+             style="background-image: url('@(string.IsNullOrEmpty(Model.BannerImageUrl)
+                                            ? "/images/placeholders/banner-default.jpg"
+                                            : Model.BannerImageUrl)')">
 
-            <h2 class="bp-section-head">Business details</h2>
+        <div class="bp-hero-overlay">
 
-            <div class="bp-row">
-                <span class="bp-label">Restaurant name</span>
-                <span id="rest-name" class="bp-value">@Model.RestaurantName</span>
+            <div class="bp-hero-content">
+
+                <div class="bp-hero-left">
+                    <h1 class="bp-hero-title">@Model.RestaurantName</h1>
+
+                    <div class="bp-hero-rating">
+                        <a href="/RestaurantReviews/Index">
+                            ★ @Model.AverageRating.ToString("0.0")
+                            <span class="bp-muted">
+                                (@Model.ReviewCount reviews)
+                            </span>
+                        </a>
+                    </div>
+
+                    <div class="bp-hero-meta">
+                        <span>@Model.BusinessEmail</span>
+                        <span>@Model.Phone</span>
+                        <span>@Model.Address</span>
+                    </div>
+                </div>
+
+                <div class="bp-hero-right">
+                    <img class="bp-hero-logo"
+                         src="@(string.IsNullOrEmpty(Model.ImageUrl)
+                                                       ? "/images/default-restaurant.jpg"
+                                                       : Model.ImageUrl)" />
+                </div>
+
             </div>
 
-            <div class="bp-row">
-                <span class="bp-label">Business email</span>
-                <span id="rest-email" class="bp-value">@Model.BusinessEmail</span>
+        </div>
+    </section>
+
+    <!-- ============ STATS SECTION ============ -->
+    <section class="bp-stats">
+        <div class="bp-stat-card">
+            <div class="bp-stat-value">@Model.ReviewCount</div>
+            <div class="bp-stat-label">Total Reviews</div>
+        </div>
+
+        <div class="bp-stat-card">
+            <div class="bp-stat-value">@Model.AverageRating.ToString("0.0")</div>
+            <div class="bp-stat-label">Average Rating</div>
+        </div>
+
+        <div class="bp-stat-card">
+            <div class="bp-stat-value">@Model.ActiveOffers</div>
+            <div class="bp-stat-label">Active Offers</div>
+        </div>
+
+        <div class="bp-stat-card">
+            <div class="bp-stat-value">@Model.TotalReservations</div>
+            <div class="bp-stat-label">Total orders finished</div>
+        </div>
+    </section>
+
+    <!-- ============ OWNER SECTION ============ -->
+    <section class="bp-section">
+        <div class="bp-section-head">
+            <h2>Owner details</h2>
+        </div>
+
+        <div class="bp-owner-grid">
+            <div class="bp-owner-card">
+                <span class="bp-label">Full name</span>
+                <span class="bp-value">@Model.OwnerName</span>
             </div>
 
-            <div class="bp-row">
+            <div class="bp-owner-card">
+                <span class="bp-label">Email</span>
+                <span class="bp-value">@Model.OwnerEmail</span>
+            </div>
+
+            <div class="bp-owner-card">
                 <span class="bp-label">Phone</span>
-                <span id="rest-phone" class="bp-value">@Model.Phone</span>
+                <span class="bp-value">@Model.OwnerPhone</span>
             </div>
 
-            <div class="bp-row">
-                <span class="bp-label">Address</span>
-                <span id="rest-address" class="bp-value">@Model.Address</span>
+            <div class="bp-owner-card">
+                <span class="bp-label">Account created</span>
+                <span class="bp-value">@Model.AccountCreated.ToShortDateString()</span>
             </div>
-
-            <button id="epm-open" class="bp-edit-btn">Edit profile</button>
         </div>
-
-        <!-- RIGHT COLUMN (image) -->
-        <div class="bp-photo">
-            <img id="rest-photo" src="@(string.IsNullOrEmpty(Model.ImageUrl)
-                                     ? "/images/default-restaurant.jpg"
-                                     : Model.ImageUrl)"
-                 alt="Restaurant photo" />
-        </div>
-
-    </div>
-
-
-    <!-- OWNER SECTION -->
-    <h2 class="bp-section-title">Owner details</h2>
-
-    <div class="bp-owner-grid">
-
-        <div class="bp-owner-card">
-            <span class="bp-owner-label">Full name</span>
-            <span id="owner-name" class="bp-owner-value">@Model.OwnerName</span>
-        </div>
-
-        <div class="bp-owner-card">
-            <span class="bp-owner-label">Email</span>
-            <span id="owner-email" class="bp-owner-value">@Model.OwnerEmail</span>
-        </div>
-
-        <div class="bp-owner-card">
-            <span class="bp-owner-label">Phone</span>
-            <span id="owner-phone" class="bp-owner-value">@Model.OwnerPhone</span>
-        </div>
-
-        <div class="bp-owner-card">
-            <span class="bp-owner-label">Account created</span>
-            <span class="bp-owner-value">@Model.AccountCreated.ToShortDateString()</span>
-        </div>
-
-    </div>
-
-    <!-- BUTTONS -->
-    <form method="post" action="/Account/Logout">
-        <button class="bp-logout-btn">Log out</button>
-    </form>
-
-    <form method="post" action="/Profile/Delete" onsubmit="return confirm('Delete this account permanently?');">
-        <button class="bp-delete-btn">Delete account</button>
-    </form>
+    </section>
 
 </div>
 
