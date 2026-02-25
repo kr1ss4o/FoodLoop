@@ -13,11 +13,13 @@ namespace FoodLoop.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
+        private readonly IWebHostEnvironment _environment;
 
-        public BusinessProfileController(ApplicationDbContext context, UserManager<User> userManager)
+        public BusinessProfileController(ApplicationDbContext context, UserManager<User> userManager, IWebHostEnvironment environment)
         {
             _context = context;
             _userManager = userManager;
+            _environment = environment;
         }
 
         public async Task<IActionResult> Index()
@@ -57,67 +59,73 @@ namespace FoodLoop.Controllers
                 OwnerName = restaurant.Owner.FullName,
                 OwnerEmail = restaurant.Owner.Email,
                 OwnerPhone = restaurant.Owner.PhoneNumber ?? "",
-                AccountCreated = restaurant.Owner.CreatedAt
+                AccountCreated = restaurant.Owner.CreatedAt,
+
+
+                // Edit profile modal
+                EditProfileModal = new EditProfileViewModel
+                {
+                    FullName = restaurant.Owner.FullName,
+                    PhoneNumber = restaurant.Owner.PhoneNumber ?? "",
+                    IsRestaurant = true,
+
+                    RestaurantName = restaurant.Name,
+                    BusinessEmail = restaurant.BusinessEmail,
+                    Address = restaurant.Address,
+
+                    ProfileImageUrl = restaurant.ImageUrl
+                }
             };
 
             return View(vm);
         }
+
         [HttpPost]
-        public async Task<IActionResult> EditProfile( string FullName, string PhoneNumber, string RestaurantName, string BusinessEmail, string Address, string CurrentPassword, string? NewPassword, IFormFile? ProfileImage)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditProfile(EditProfileViewModel model, IFormFile? ProfileImage)
         {
             var user = await _userManager.GetUserAsync(User);
-
             if (user == null)
-            {
-                TempData["Error"] = "User not found.";
-                return RedirectToAction("Index");
-            }
+                return RedirectToAction("Login", "Account");
 
             var restaurant = await _context.Restaurants
-                .FirstOrDefaultAsync(r => r.OwnerUserId == user.Id);
+            .FirstOrDefaultAsync(r => r.OwnerUserId == user.Id);
 
             if (restaurant == null)
+                return RedirectToAction("Index");
+
+            // Update owner info
+            user.FullName = model.FullName;
+            user.PhoneNumber = model.PhoneNumber;
+
+            // Update restaurant info
+            restaurant.Name = model.RestaurantName ?? restaurant.Name;
+            restaurant.BusinessEmail = model.BusinessEmail ?? restaurant.BusinessEmail;
+            restaurant.Address = model.Address ?? restaurant.Address;
+
+            // Wrong password toast
+            var passwordValid = await _userManager.CheckPasswordAsync(user, model.CurrentPassword);
+
+            if (!passwordValid)
             {
-                TempData["Error"] = "Restaurant not found.";
+                TempData["Error"] = "Wrong password. Could not save the changes.";
                 return RedirectToAction("Index");
             }
 
-            // ========== PASSWORD CHECK ==========
-            var passwordCheck = await _userManager.CheckPasswordAsync(user, CurrentPassword);
-            if (!passwordCheck)
+            // === IMAGE URL ===
+            if (!string.IsNullOrWhiteSpace(model.ProfileImageUrl))
             {
-                TempData["Error"] = "Incorrect current password.";
-                return RedirectToAction("Index");
+                restaurant.ImageUrl = model.ProfileImageUrl.Trim();
             }
 
-            // ========== UPDATE OWNER (USER) ==========
-            user.FullName = FullName;
-            user.PhoneNumber = PhoneNumber;
-
-            if (!string.IsNullOrWhiteSpace(NewPassword))
-            {
-                var result = await _userManager.ChangePasswordAsync(user, CurrentPassword, NewPassword);
-                if (!result.Succeeded)
-                {
-                    TempData["Error"] = "New password is invalid.";
-                    return RedirectToAction("Index");
-                }
-            }
-
-            // ========== UPDATE RESTAURANT ==========
-            restaurant.Name = RestaurantName;
-            restaurant.BusinessEmail = BusinessEmail;
-            restaurant.Phone = PhoneNumber;
-            restaurant.Address = Address;
-
-            // ========== IMAGE UPDATE ==========
+            // === FILE UPLOAD ===
             if (ProfileImage != null && ProfileImage.Length > 0)
             {
-                var dir = Path.Combine("wwwroot", "images", "restaurants");
-                Directory.CreateDirectory(dir);
+                var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "restaurants");
+                Directory.CreateDirectory(uploadsFolder);
 
                 var fileName = $"{Guid.NewGuid()}{Path.GetExtension(ProfileImage.FileName)}";
-                var filePath = Path.Combine(dir, fileName);
+                var filePath = Path.Combine(uploadsFolder, fileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
@@ -130,9 +138,7 @@ namespace FoodLoop.Controllers
             await _userManager.UpdateAsync(user);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Profile successfully updated!";
             return RedirectToAction("Index");
         }
-
     }
 }

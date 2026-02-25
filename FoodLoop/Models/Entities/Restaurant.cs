@@ -7,6 +7,7 @@
         public string Phone { get; set; }
         public string Address { get; set; }
         public string? ImageUrl { get; set; }
+        public string? BannerImageUrl { get; set; }
         public double Rating { get; set; }
 
         // FK to Owner (User)

@@ -39,8 +39,6 @@
             </div>
 
             <button id="epm-open" class="bp-edit-btn">Edit profile</button>
-
-            @await Html.PartialAsync("_EditProfileModal")
         </div>
 
         <!-- RIGHT COLUMN (image) -->
@@ -92,6 +90,8 @@
 
 </div>
 
+@await Html.PartialAsync("_EditProfileModal", Model.EditProfileModal)
+
 @section Scripts {
-    <script src="~/js/profile.js" asp-append-version="true"></script>
+    <script src="~/js/profile-edit-modal.js" asp-append-version="true"></script>
 }

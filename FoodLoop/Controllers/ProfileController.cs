@@ -15,11 +15,13 @@ namespace FoodLoop.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _environment;
 
-        public ProfileController(UserManager<User> userManager, ApplicationDbContext context)
+        public ProfileController(UserManager<User> userManager, ApplicationDbContext context, IWebHostEnvironment environment)
         {
             _userManager = userManager;
             _context = context;
+            _environment = environment;
         }
 
         public async Task<IActionResult> Index(int reviewsPage = 1)
@@ -110,83 +112,74 @@ namespace FoodLoop.Controllers
                 RecentOrders = recentOrders,
                 Reviews = reviews,
                 ReviewsPage = reviewsPage,
-                TotalReviewPages = totalPages
+                TotalReviewPages = totalPages,
+
+                IsRestaurant = false,
+
+                // Edit profile modal
+                EditProfileModal = new EditProfileViewModel
+                {
+                    FullName = user.FullName,
+                    PhoneNumber = user.PhoneNumber ?? "",
+                    IsRestaurant = false,
+
+                    // ако искаш да показва текущата снимка в preview
+                    ProfileImageUrl = user.ProfileImageUrl
+                }
             };
 
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditProfile(
-            string FullName,
-            string PhoneNumber,
-            string CurrentPassword,
-            string? NewPassword,
-            IFormFile? ProfileImage)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditProfile(EditProfileViewModel model, IFormFile? ProfileImage)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
                 return RedirectToAction("Login", "Account");
 
-            if (PhoneNumber.Length < 10 || PhoneNumber.Length > 13)
+            if (!ModelState.IsValid)
+                return RedirectToAction("Index");
+
+            // Update basic info
+            user.FullName = model.FullName;
+            user.PhoneNumber = model.PhoneNumber;
+
+            // === IMAGE URL (if provided) ===
+            if (!string.IsNullOrWhiteSpace(model.ProfileImageUrl))
             {
-                TempData["Error"] = "Phone number must be between 10 and 13 digits.";
+                user.ProfileImageUrl = model.ProfileImageUrl.Trim();
+            }
+
+            // Wrong password toast
+            var passwordValid = await _userManager.CheckPasswordAsync(user, model.CurrentPassword);
+
+            if (!passwordValid)
+            {
+                TempData["Error"] = "Wrong password. Could not save the changes.";
                 return RedirectToAction("Index");
             }
 
-            var existingPhone = await _context.Users
-                .FirstOrDefaultAsync(u => u.PhoneNumber == PhoneNumber && u.Id != user.Id);
-
-            if (existingPhone != null)
-            {
-                TempData["Error"] = "Phone number is already in use.";
-                return RedirectToAction("Index");
-            }
-
-            var passwordCheck = await _userManager.CheckPasswordAsync(user, CurrentPassword);
-
-            if (!passwordCheck)
-            {
-                TempData["Error"] = "Incorrect current password.";
-                return RedirectToAction("Index");
-            }
-
-            user.FullName = FullName;
-            user.PhoneNumber = PhoneNumber;
-
+            // === FILE UPLOAD (if provided) ===
             if (ProfileImage != null && ProfileImage.Length > 0)
             {
-                var uploadDir = Path.Combine("wwwroot", "images", "profile");
-
-                if (!Directory.Exists(uploadDir))
-                    Directory.CreateDirectory(uploadDir);
+                var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "users");
+                Directory.CreateDirectory(uploadsFolder);
 
                 var fileName = $"{Guid.NewGuid()}{Path.GetExtension(ProfileImage.FileName)}";
-                var filePath = Path.Combine(uploadDir, fileName);
+                var filePath = Path.Combine(uploadsFolder, fileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await ProfileImage.CopyToAsync(stream);
                 }
 
-                user.ProfileImageUrl = $"/images/profile/{fileName}";
-            }
-
-            if (!string.IsNullOrEmpty(NewPassword))
-            {
-                var result = await _userManager.ChangePasswordAsync(user, CurrentPassword, NewPassword);
-
-                if (!result.Succeeded)
-                {
-                    TempData["Error"] = "New password is invalid.";
-                    return RedirectToAction("Index");
-                }
+                user.ProfileImageUrl = $"/images/users/{fileName}";
             }
 
             await _userManager.UpdateAsync(user);
-            await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Profile successfully updated!";
             return RedirectToAction("Index");
         }
 

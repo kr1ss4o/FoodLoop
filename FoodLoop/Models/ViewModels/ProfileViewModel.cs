@@ -22,5 +22,9 @@ namespace FoodLoop.Models.ViewModels
 
         // Orders
         public List<ReservationSummaryDto> RecentOrders { get; set; } = new();
+
+        //Edit modal
+        public bool IsRestaurant { get; set; }
+        public EditProfileViewModel EditProfileModal { get; set; } = new();
     }
 }

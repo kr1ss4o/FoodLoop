@@ -9,6 +9,7 @@
 <div class="profile-container">
 
     <!-- HEADER -->
+
     <div class="profile-header">
         <div class="profile-avatar-box">
             <img id="prof-photo" src="@(string.IsNullOrEmpty(Model.ProfileImageUrl)
@@ -27,6 +28,7 @@
     </div>
 
     <!-- INSIGHTS -->
+
     <h2 class="section-title">Your activity</h2>
 
     <div class="insights-grid">
@@ -47,6 +49,7 @@
         </div>
 
     </div>
+
     <!-- CLIENT'S REVIEWS -->
 
     <h4 class="mt-5">My Reviews</h4>
@@ -131,9 +134,8 @@
 
 </div>
 
-<!-- MODAL -->
-@await Html.PartialAsync("_EditProfileModal")
+@await Html.PartialAsync("_EditProfileModal", Model.EditProfileModal)
 
 @section Scripts {
-    <script src="~/js/edit-profile-modal.js"></script>
+    <script src="~/js/profile-edit-modal.js"></script>
 }

@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Folder Include="Views\Restaurant\OfferManager\" />
+    <Folder Include="wwwroot\images\placeholders\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -42,7 +42,6 @@
     @if (!hideUI && isLogged)
     {
         @await Html.PartialAsync("_Navbar")
-        @await Html.PartialAsync("_EditProfileModal")
     }
 
     <div class="container py-4">
@@ -72,6 +71,5 @@
     {
         <script>showToast("@TempData["Error"]", "error");</script>
     }
-
 </body>
 </html>

@@ -14,5 +14,9 @@
         public string OwnerEmail { get; set; }
         public string OwnerPhone { get; set; }
         public DateTime AccountCreated { get; set; }
+
+        //Edit modal
+        public bool IsRestaurant { get; set; }
+        public EditProfileViewModel EditProfileModal { get; set; } = new();
     }
 }

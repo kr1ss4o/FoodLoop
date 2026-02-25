@@ -1,4 +1,6 @@
-﻿<div id="editProfileModal" class="epm-overlay">
+﻿
+
+<div id="editProfileModal" class="epm-overlay">
     <div class="epm-modal">
 
         <h2 class="epm-title">Edit Profile</h2>
@@ -8,35 +10,57 @@
               enctype="multipart/form-data"
               asp-controller="@(User.IsInRole("Restaurant") ? "BusinessProfile" : "Profile")"
               asp-action="EditProfile">
+            @Html.AntiForgeryToken()
 
             <!-- OWNER FULL NAME (ALWAYS REQUIRED) -->
             <div class="epm-field">
                 <label>Full Name</label>
-                <input id="epm-fullname" name="FullName" type="text" required />
+                <input id="epm-fullname"
+                       name="FullName"
+                       type="text"
+                       value="@Model.FullName"
+                       required />
             </div>
 
             <!-- PHONE -->
             <div class="epm-field">
                 <label>Phone Number</label>
-                <input id="epm-phone" name="PhoneNumber" type="text" required />
+                <input id="epm-phone"
+                       name="PhoneNumber"
+                       type="text"
+                       value="@Model.PhoneNumber"
+                       required />
             </div>
 
             <!-- BUSINESS-ONLY FIELDS -->
-            @if (User.IsInRole("Restaurant"))
+
+            @if (Model.IsRestaurant)
             {
                 <div class="epm-field">
                     <label>Business Name</label>
-                    <input id="epm-businessname" name="RestaurantName" type="text" required />
+                    <input id="epm-businessname"
+                           name="RestaurantName"
+                           type="text"
+                           value="@(Model.RestaurantName ?? "")"
+                           required />
                 </div>
 
                 <div class="epm-field">
                     <label>Business Email</label>
-                    <input id="epm-email" name="BusinessEmail" type="email" required />
+                    <input id="epm-email"
+                           name="BusinessEmail"
+                           type="email"
+                           value="@(Model.BusinessEmail ?? "")"
+                           required />
                 </div>
 
                 <div class="epm-field">
                     <label>Address</label>
-                    <input id="epm-address" name="Address" type="text" required />
+                    <input id="epm-address"
+                           name="Address"
+                           type="text"
+                           value="@(Model.Address ?? "")"
+                           required />
                 </div>
             }
 
@@ -45,9 +69,23 @@
                 <label>Profile Photo</label>
                 <div id="epm-dropzone" class="epm-dropzone">
                     <p id="epm-text">Drag or click to upload</p>
-                    <img id="epm-preview" class="epm-preview" />
+
+                    <img id="epm-preview"
+                         class="epm-preview"
+                         src="@(string.IsNullOrWhiteSpace(Model.ProfileImageUrl) ? "/images/placeholders/avatar.png" : Model.ProfileImageUrl)"
+                         onerror="this.src='/images/placeholders/avatar.png';" />
                 </div>
+
                 <input type="file" id="epm-file" name="ProfileImage" hidden />
+            </div>
+
+            <div class="mt-3">
+                <label class="form-label">Or paste image URL</label>
+                <input type="text"
+                       id="epm-url"
+                       name="ProfileImageUrl"
+                       class="form-control"
+                       placeholder="https://example.com/image.jpg" />
             </div>
 
             <!-- PASSWORDS -->
