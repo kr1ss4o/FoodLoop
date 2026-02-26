@@ -13,7 +13,7 @@
     <div class="rd-topbar">
         <div class="rd-title">
             <h1>@Model.RestaurantName</h1>
-            <p>Restaurant dashboard</p>
+            <p>Статистики на ресторанта</p>
         </div>
 
         <!-- DATE NAVIGATION (always on top) -->
@@ -51,8 +51,8 @@
     <section class="rd-section">
         <div class="rd-section-head">
             <div>
-                <h2>KPI</h2>
-                <span class="rd-sub">Overview metrics</span>
+                <h2>Ключови показатели</h2>
+                <span class="rd-sub">Общи данни</span>
             </div>
         </div>
 
@@ -60,22 +60,22 @@
 
             <!-- ===================== REVENUE ===================== -->
             <div class="rd-kpi">
-                <div class="rd-kpi-label">Total Revenue</div>
+                <div class="rd-kpi-label">Общи приходи</div>
                 <div class="rd-kpi-value">@Model.TotalRevenue EUR</div>
             </div>
 
             <div class="rd-kpi">
-                <div class="rd-kpi-label">Revenue This Week</div>
+                <div class="rd-kpi-label">Седмични приходи</div>
                 <div class="rd-kpi-value">@Model.RevenueThisWeek EUR</div>
             </div>
 
             <div class="rd-kpi">
-                <div class="rd-kpi-label">Avg Order Value</div>
+                <div class="rd-kpi-label">Средна сума на поръчка</div>
                 <div class="rd-kpi-value">@Model.AverageOrderValue.ToString("0.00") EUR</div>
             </div>
 
             <div class="rd-kpi rd-kpi-wide">
-                <div class="rd-kpi-label">Top Offer</div>
+                <div class="rd-kpi-label">Най-продавана оферта</div>
                 <div class="rd-kpi-value">
                     @Model.TopOfferTitle
                     <span class="rd-kpi-meta">@Model.TopOfferSoldCount sold</span>
@@ -84,33 +84,33 @@
 
             <!-- ===================== VOLUME ===================== -->
             <div class="rd-kpi">
-                <div class="rd-kpi-label">Total Orders</div>
+                <div class="rd-kpi-label">Всички поръчки</div>
                 <div class="rd-kpi-value">@Model.TotalOrders</div>
             </div>
 
             <div class="rd-kpi">
-                <div class="rd-kpi-label">Orders This Week</div>
+                <div class="rd-kpi-label">Поръчки за седмицата</div>
                 <div class="rd-kpi-value">@Model.OrdersThisWeek</div>
             </div>
 
             <div class="rd-kpi">
-                <div class="rd-kpi-label">Delivery Orders</div>
+                <div class="rd-kpi-label">Поръчки с доставки</div>
                 <div class="rd-kpi-value">@Model.DeliveryOrders</div>
             </div>
 
             <div class="rd-kpi">
-                <div class="rd-kpi-label">Pickup Orders</div>
+                <div class="rd-kpi-label">Поръчки с лично взимане</div>
                 <div class="rd-kpi-value">@Model.PickupOrders</div>
             </div>
 
             <!-- ===================== OPERATIONS ===================== -->
             <div class="rd-kpi">
-                <div class="rd-kpi-label">Pending Orders</div>
+                <div class="rd-kpi-label">Изчакващи поръчки</div>
                 <div class="rd-kpi-value">@Model.PendingOrders</div>
             </div>
 
             <div class="rd-kpi">
-                <div class="rd-kpi-label">Cancellation Rate</div>
+                <div class="rd-kpi-label">Процент на анулиране</div>
                 <div class="rd-kpi-value">@Model.CancellationRate.ToString("0.0")%</div>
             </div>
 
@@ -122,14 +122,14 @@
     <section class="rd-section">
         <div class="rd-section-head">
             <div>
-                <h2>Rating & reviews</h2>
+                <h2>Рейтинг и ревюта</h2>
                 <span class="rd-sub">Quality insights</span>
             </div>
 
             <a asp-controller="RestaurantReviews"
                asp-action="Index"
                class="rd-btn rd-btn-ghost">
-                View all
+                Виж всички
             </a>
         </div>
 
@@ -137,7 +137,7 @@
             <!-- Rating card -->
             <div class="rd-card">
                 <div class="rd-card-head">
-                    <div class="rd-card-title">Average rating</div>
+                    <div class="rd-card-title">Рейтинг</div>
                 </div>
 
                 <div class="rd-rating">
@@ -150,7 +150,7 @@
             <!-- Distribution -->
             <div class="rd-card">
                 <div class="rd-card-head">
-                    <div class="rd-card-title">Distribution</div>
+                    <div class="rd-card-title">Дистрибуция</div>
                 </div>
 
                 <div class="rd-dist">
@@ -199,28 +199,28 @@
                asp-route-from="@Model.SelectedDate.ToString("yyyy-MM-dd")"
                asp-route-to="@Model.SelectedDate.ToString("yyyy-MM-dd")"
                class="rd-btn rd-btn-solid">
-                Export CSV (day)
+                Експортирай към CSV (ден)
             </a>
         </div>
 
         <div class="rd-kpi-grid rd-kpi-grid-4">
             <div class="rd-kpi">
-                <div class="rd-kpi-label">Total Orders</div>
+                <div class="rd-kpi-label">Всички поръчки</div>
                 <div class="rd-kpi-value">@totalOrdersToday</div>
             </div>
 
             <div class="rd-kpi">
-                <div class="rd-kpi-label">Finished</div>
+                <div class="rd-kpi-label">Завършени поръчки</div>
                 <div class="rd-kpi-value rd-ok">@finishedToday</div>
             </div>
 
             <div class="rd-kpi">
-                <div class="rd-kpi-label">Canceled</div>
+                <div class="rd-kpi-label">Отказани поръчки</div>
                 <div class="rd-kpi-value rd-bad">@canceledToday</div>
             </div>
 
             <div class="rd-kpi">
-                <div class="rd-kpi-label">Revenue</div>
+                <div class="rd-kpi-label">Приходи</div>
                 <div class="rd-kpi-value">@totalRevenueToday.ToString("0.00") EUR</div>
             </div>
         </div>
@@ -229,13 +229,13 @@
 
         <div class="rd-card rd-card-table mt-5">
             <div class="rd-card-head">
-                <div class="rd-card-title">Orders</div>
-                <div class="rd-card-sub">Tap row to expand items</div>
+                <div class="rd-card-title">Поръчки за деня</div>
+                <div class="rd-card-sub">Натисни реда за детайли</div>
             </div>
 
             @if (!Model.DailyReservations.Any())
             {
-                <div class="rd-empty">No orders for this day.</div>
+                <div class="rd-empty">Няма намерени поръчки за днешния ден.</div>
             }
             else
             {
@@ -244,10 +244,10 @@
                         <thead>
                             <tr>
                                 <th onclick="sortTable(0)">#</th>
-                                <th onclick="sortTable(1)">Customer</th>
-                                <th onclick="sortTable(2)">Delivery</th>
-                                <th onclick="sortTable(3)">Status</th>
-                                <th onclick="sortTable(4)">Total</th>
+                                <th onclick="sortTable(1)">Клиент</th>
+                                <th onclick="sortTable(2)">Вид доставка</th>
+                                <th onclick="sortTable(3)">Статус</th>
+                                <th onclick="sortTable(4)">Обща сума</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -288,8 +288,8 @@
 
         <div class="rd-card rd-card-chart mt-5">
             <div class="rd-card-head">
-                <div class="rd-card-title">Last 7 days</div>
-                <div class="rd-card-sub">Orders trend</div>
+                <div class="rd-card-title">Поръчки за последни 7 дни</div>
+                <div class="rd-card-sub">Тенденция на поръчките</div>
             </div>
 
             <div class="rd-chart">
@@ -304,15 +304,15 @@
     <section class="rd-section">
         <div class="rd-section-head">
             <div>
-                <h2>Last 30 days analytics</h2>
-                <span class="rd-sub">Trends & activity</span>
+                <h2>Данни за последни 30 дни</h2>
+                <span class="rd-sub">Тенденция и активност</span>
             </div>
 
             <a asp-action="ExportCsv"
                asp-route-from="@Model.SelectedDate.AddDays(-29).ToString("yyyy-MM-dd")"
                asp-route-to="@Model.SelectedDate.ToString("yyyy-MM-dd")"
                class="rd-btn rd-btn-ghost">
-                Export CSV (30 days)
+                Експортирай към CSV (30 дни)
             </a>
         </div>
 
@@ -320,12 +320,12 @@
 
         <div class="rd-kpi-grid rd-kpi-grid-2">
             <div class="rd-kpi">
-                <div class="rd-kpi-label">Orders This Month</div>
+                <div class="rd-kpi-label">Поръчки този месец</div>
                 <div class="rd-kpi-value">@Model.OrdersThisMonth</div>
             </div>
 
             <div class="rd-kpi">
-                <div class="rd-kpi-label">Revenue This Month</div>
+                <div class="rd-kpi-label">Месечен приход</div>
                 <div class="rd-kpi-value">@Model.RevenueThisMonth EUR</div>
             </div>
         </div>
@@ -334,7 +334,7 @@
 
         <div class="rd-card mt-2">
             <div class="rd-card-head">
-                <div class="rd-card-title">Activity heatmap</div>
+                <div class="rd-card-title">Карта за активност</div>
             </div>
 
             <div class="rd-heatmap">
@@ -357,8 +357,8 @@
         <!-- Peak hours (30 days context) -->
         <div class="rd-card rd-card-chart mt-2">
             <div class="rd-card-head">
-                <div class="rd-card-title">Peak hours</div>
-                <div class="rd-card-sub">Orders by hour (last 30 days)</div>
+                <div class="rd-card-title">Пикови часове</div>
+                <div class="rd-card-sub">Поръчки на час (последни 30 дни)</div>
             </div>
 
             <div class="rd-chart rd-chart-lg">
