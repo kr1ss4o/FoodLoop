@@ -4,7 +4,6 @@ wwwroot\css\cart.css
 wwwroot\css\dashboard.css
 wwwroot\css\edit-profile-modal.css
 wwwroot\css\offer-details.css
-wwwroot\css\offers-manage.css
 wwwroot\css\order-manager.css
 wwwroot\css\profile.css
 wwwroot\css\restaurant-details.css
@@ -23,6 +22,7 @@ wwwroot\images\icons\nav-profile.png
 wwwroot\images\offers\0022ac21-b657-4d77-8431-7c02a8c56324.png
 wwwroot\images\offers\7f3160cf-bc15-4241-9f4f-2f30b081231e.JPG
 wwwroot\images\offers\885ef6fb-ea4d-4fa7-8a91-e79dda13b37f.jpg
+wwwroot\images\offers\8f487fb4-c698-4673-8370-6b6e62f4946d.jpg
 wwwroot\images\offers\aed901a1-b2ef-41c8-bb91-0b89fe10ce6a.jpg
 wwwroot\images\offers\af38a171-2edc-413c-a704-867ddba8320e.jpg
 wwwroot\images\placeholders\avatar.png
@@ -128,3 +128,4 @@ wwwroot\lib\jquery\dist\jquery.js
 wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
+wwwroot\css\offers-manage.css
