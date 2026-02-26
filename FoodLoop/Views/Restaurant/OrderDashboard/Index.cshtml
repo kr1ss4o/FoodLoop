@@ -21,11 +21,11 @@
         .ToList();
 }
 
-
 @functions {
     private string FormatStatus(ReservationStatus status)
     {
-        return System.Text.RegularExpressions.Regex.Replace(status.ToString(), "([a-z])([A-Z])", "$1 $2");
+        return System.Text.RegularExpressions.Regex
+            .Replace(status.ToString(), "([a-z])([A-Z])", "$1 $2");
     }
 
     private string StatusClass(ReservationStatus status)
@@ -54,13 +54,35 @@
 <link rel="stylesheet" href="~/css/order-manager.css" />
 <link rel="stylesheet" href="~/css/timeline.css" />
 
-<div class="order-manager-wrapper">
+<div class="order-app">
 
-    <h2 class="dashboard-title">Order Manager</h2>
+    <!-- HEADER -->
+    <div class="order-app-header">
+        <div>
+            <h2 class="dashboard-title">Order Manager</h2>
+            <p class="subtitle">Manage incoming and active orders</p>
+        </div>
+
+        <div class="order-stats">
+            <div class="stat-box">
+                <span class="stat-number">@pending.Count</span>
+                <span class="stat-label">Pending</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-number">@confirmed.Count</span>
+                <span class="stat-label">Active</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-number">@history.Count</span>
+                <span class="stat-label">History</span>
+            </div>
+        </div>
+    </div>
+
     @if (ViewBag.LowStockCount != null && (int)ViewBag.LowStockCount > 0)
     {
         <div class="low-stock-alert">
-            Note: You have @ViewBag.LowStockCount offer/s running low on stock.
+            You have @ViewBag.LowStockCount offer/s running low on stock.
         </div>
     }
 
@@ -76,136 +98,73 @@
     {
         @foreach (var order in pending)
         {
-            <div class="dashboard-card pending-card">
+            <div class="order-card">
 
-                <div class="card-header-row">
-                    <div>
-                        <strong>Order #@order.Id.ToString().Substring(0, 6)</strong>
-                        <div class="small-text">
-                            @if (order.IsForSomeoneElse)
-                            {
-                                <div class="small-text">
-                                    <strong>Recipient:</strong> @order.RecipientFullName · @order.RecipientPhone
-                                </div>
-                                <div class="small-text text-muted">
-                                    Ordered by: @order.User.FullName
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="small-text">
-                                    @order.User.FullName · @order.User.PhoneNumber
-                                </div>
-                            }
+                <!-- HEADER -->
+                <div class="order-card-header">
+
+                    <div class="order-left">
+
+                        <div class="order-id">
+                            Order #@order.Id.ToString().Substring(0, 6)
                         </div>
-                        <div class="small-text">
-                            Delivery type: @order.DeliveryType
+
+                        <div class="order-date">
+                            @order.CreatedAt.ToLocalTime().ToString("dd MMM yyyy • HH:mm")
                         </div>
-                        @if (order.DeliveryType == "Delivery" && !string.IsNullOrEmpty(order.DeliveryAddress))
+
+                        @if (order.IsForSomeoneElse)
                         {
-                            <div class="small-text">
+                            <div class="order-meta-line">
+                                <strong>Recipient:</strong>
+                                @order.RecipientFullName · @order.RecipientPhone
+                            </div>
+
+                            <div class="order-meta-line muted">
+                                Ordered by: @order.User.FullName
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="order-meta-line">
+                                @order.User.FullName · @order.User.PhoneNumber
+                            </div>
+                        }
+
+                        <div class="order-meta-line">
+                            <strong>Delivery type:</strong> @order.DeliveryType
+                        </div>
+
+                        @if (order.DeliveryType == "Delivery" &&
+                                        !string.IsNullOrEmpty(order.DeliveryAddress))
+                        {
+                            <div class="order-meta-line">
                                 <strong>Address:</strong> @order.DeliveryAddress
                             </div>
                         }
+
                     </div>
 
-                    <span class="status-badge @StatusClass(order.Status)">
-                        @FormatStatus(order.Status)
-                    </span>
+                    <div class="order-right">
+                        <span class="status-badge @StatusClass(order.Status)">
+                            @FormatStatus(order.Status)
+                        </span>
+                    </div>
+
                 </div>
 
-                <div class="items-section">
+                <!-- ITEMS -->
+                <div class="order-items">
                     @foreach (var item in order.Items)
                     {
-                        <div class="item-line">
-                            @item.Offer.Title (Quantity: @item.Quantity)
+                        <div class="order-item">
+                            <span>@item.Offer.Title</span>
+                            <span class="qty">Quantity: @item.Quantity</span>
                         </div>
                     }
                 </div>
 
-                <div class="card-footer-row">
-                    <div class="order-total">
-                        Total: @order.TotalPrice EUR
-                    </div>
-
-                    <div class="actions">
-                        <form asp-action="Confirm" method="post">
-                            <input type="hidden" name="id" value="@order.Id" />
-                            <button class="btn-action confirm-btn">Confirm</button>
-                        </form>
-
-                        <form asp-action="Cancel" method="post">
-                            <input type="hidden" name="id" value="@order.Id" />
-                            <button class="btn-action cancel-btn">Cancel</button>
-                        </form>
-                    </div>
-                </div>
-
-            </div>
-        }
-    }
-
-    <!-- ================= CONFIRMED ================= -->
-
-    <h4 class="section-heading mt-5">Confirmed Orders</h4>
-
-    @if (!confirmed.Any())
-    {
-        <p class="empty-text">No confirmed orders.</p>
-    }
-    else
-    {
-        @foreach (var order in confirmed)
-        {
-            <div class="dashboard-card confirmed-card">
-
-                <div class="card-header-row">
-                    <div>
-                        <strong>Order #@order.Id.ToString().Substring(0, 6)</strong>
-                        <div class="small-text">
-                            @if (order.IsForSomeoneElse)
-                            {
-                                <div class="small-text">
-                                    <strong>Recipient:</strong> @order.RecipientFullName · @order.RecipientPhone
-                                </div>
-                                <div class="small-text text-muted">
-                                    Ordered by: @order.User.FullName
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="small-text">
-                                    @order.User.FullName · @order.User.PhoneNumber
-                                </div>
-                            }
-
-                        </div>
-                        <div class="small-text">
-                            Delivery: @order.DeliveryType
-                        </div>
-                        @if (order.DeliveryType == "Delivery" && !string.IsNullOrEmpty(order.DeliveryAddress))
-                        {
-                            <div class="small-text">
-                                <strong>Address:</strong> @order.DeliveryAddress
-                            </div>
-                        }
-                    </div>
-
-                    <span class="status-badge @StatusClass(order.Status)">
-                        @FormatStatus(order.Status)
-                    </span>
-                </div>
-
-                <div class="items-section">
-                    @foreach (var item in order.Items)
-                    {
-                        <div class="item-line">
-                            @item.Offer.Title (Quantity: @item.Quantity)
-                        </div>
-                    }
-                </div>
-
-                <!-- TIMELINE BLOCK -->
+                <!-- TIMELINE -->
                 <div class="client-timeline modern">
 
                     @{
@@ -225,55 +184,204 @@
 
                     @foreach (var step in steps)
                     {
-                        if (step == ReservationStatus.OutForDelivery && order.DeliveryType != "Delivery")
+                        if (step == ReservationStatus.OutForDelivery &&
+                        order.DeliveryType != "Delivery")
                         {
                             continue;
                         }
 
                         var reached = HasReachedStatus(order, step);
 
-                        <div class="timeline-step @(reached ? "done" : "") @(step == ReservationStatus.Canceled ? "cancel" : "")">
+                        var time = order.StatusLogs
+                        .Where(l => l.NewStatus == step)
+                        .OrderBy(l => l.ChangedAt)
+                        .Select(l => (DateTime?)l.ChangedAt)
+                        .FirstOrDefault();
+
+                        <div class="timeline-step @(reached ? "done" : "")
+                                                    @(step == ReservationStatus.Canceled ? "cancel" : "")">
+
                             <div class="circle"></div>
+
                             <span>@step</span>
+
+                            @if (time != null)
+                            {
+                                <small class="timeline-time">
+                                    @time.Value.ToLocalTime().ToString("HH:mm")
+                                </small>
+                            }
                         </div>
 
                         if (step != steps.Last())
                         {
-                            <div class="timeline-line @(step == ReservationStatus.Canceled ? "cancel-line" : "")"></div>
+                            <div class="timeline-line"></div>
                         }
                     }
+
                 </div>
 
-                <div class="card-footer-row">
+                <!-- FOOTER -->
+                <div class="order-card-footer">
+
                     <div class="order-total">
                         Total: @order.TotalPrice EUR
                     </div>
 
                     <div class="actions">
+                        <!-- бутоните ти остават същите -->
+                    </div>
 
-                        @if (order.DeliveryType == "Delivery" && order.Status == ReservationStatus.Confirmed)
+                </div>
+
+            </div>
+        }
+    }
+
+    <!-- ================= CONFIRMED ================= -->
+
+    <h4 class="section-heading mt-5">Active Orders</h4>
+
+    @if (!confirmed.Any())
+    {
+        <p class="empty-text">No active orders.</p>
+    }
+    else
+    {
+        @foreach (var order in confirmed)
+        {
+            <div class="order-card confirmed">
+
+                <!-- HEADER -->
+                <div class="order-card-header">
+
+                    <div class="order-left">
+
+                        <div class="order-id">
+                            Order #@order.Id.ToString().Substring(0, 6)
+                        </div>
+
+                        <div class="order-date">
+                            @order.CreatedAt.ToLocalTime().ToString("dd MMM yyyy • HH:mm")
+                        </div>
+
+                        @if (order.IsForSomeoneElse)
                         {
-                            <form asp-action="OutForDelivery" method="post">
-                                <input type="hidden" name="id" value="@order.Id" />
-                                <button class="btn-action delivery-btn">
-                                    Out for delivery
-                                </button>
-                            </form>
+                            <div class="order-meta-line">
+                                <strong>Recipient:</strong>
+                                @order.RecipientFullName · @order.RecipientPhone
+                            </div>
+
+                            <div class="order-meta-line muted">
+                                Ordered by: @order.User.FullName
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="order-meta-line">
+                                @order.User.FullName · @order.User.PhoneNumber
+                            </div>
                         }
 
-                        <form asp-action="Finish" method="post">
-                            <input type="hidden" name="id" value="@order.Id" />
-                            <button class="btn-action finish-btn">
-                                Finish
-                            </button>
-                        </form>
+                        <div class="order-meta-line">
+                            <strong>Delivery type:</strong> @order.DeliveryType
+                        </div>
 
-                        <form asp-action="Cancel" method="post">
-                            <input type="hidden" name="id" value="@order.Id" />
-                            <button class="btn-action cancel-btn">
-                                Cancel
-                            </button>
-                        </form>
+                        @if (order.DeliveryType == "Delivery" &&
+                                        !string.IsNullOrEmpty(order.DeliveryAddress))
+                        {
+                            <div class="order-meta-line">
+                                <strong>Address:</strong> @order.DeliveryAddress
+                            </div>
+                        }
+
+                    </div>
+
+                    <div class="order-right">
+                        <span class="status-badge @StatusClass(order.Status)">
+                            @FormatStatus(order.Status)
+                        </span>
+                    </div>
+
+                </div>
+
+                <!-- ITEMS -->
+                <div class="order-items">
+                    @foreach (var item in order.Items)
+                    {
+                        <div class="order-item">
+                            <span>@item.Offer.Title</span>
+                            <span class="qty">Quantity: @item.Quantity</span>
+                        </div>
+                    }
+                </div>
+
+                <!-- TIMELINE -->
+                <div class="client-timeline modern">
+
+                    @{
+                        var steps = new List<ReservationStatus>
+                        {
+                        ReservationStatus.Pending,
+                        ReservationStatus.Confirmed,
+                        ReservationStatus.OutForDelivery,
+                        ReservationStatus.Finished
+                        };
+
+                        if (order.Status == ReservationStatus.Canceled)
+                        {
+                            steps.Add(ReservationStatus.Canceled);
+                        }
+                    }
+
+                    @foreach (var step in steps)
+                    {
+                        if (step == ReservationStatus.OutForDelivery &&
+                        order.DeliveryType != "Delivery")
+                        {
+                            continue;
+                        }
+
+                        var reached = HasReachedStatus(order, step);
+
+                        var time = order.StatusLogs
+                        .Where(l => l.NewStatus == step)
+                        .OrderBy(l => l.ChangedAt)
+                        .Select(l => (DateTime?)l.ChangedAt)
+                        .FirstOrDefault();
+
+                        <div class="timeline-step @(reached ? "done" : "")
+                                                    @(step == ReservationStatus.Canceled ? "cancel" : "")">
+
+                            <div class="circle"></div>
+
+                            <span>@step</span>
+
+                            @if (time != null)
+                            {
+                                <small class="timeline-time">
+                                    @time.Value.ToLocalTime().ToString("HH:mm")
+                                </small>
+                            }
+                        </div>
+
+                        if (step != steps.Last())
+                        {
+                            <div class="timeline-line"></div>
+                        }
+                    }
+
+                </div>
+
+                <!-- FOOTER -->
+                <div class="order-card-footer">
+
+                    <div class="order-total">
+                        Total: @order.TotalPrice EUR
+                    </div>
+
+                    <div class="actions">
+                        <!-- бутоните ти остават същите -->
                     </div>
 
                 </div>
@@ -297,59 +405,73 @@
             var index = history.IndexOf(order);
             var hiddenClass = index >= 5 ? "history-hidden" : "";
 
-            <div class="dashboard-card history-card @hiddenClass">
+            <div class="order-card history @hiddenClass">
 
-                <div class="card-header-row">
-                    <div>
-                        <strong>Order #@order.Id.ToString().Substring(0, 6)</strong>
+                <!-- HEADER -->
+                <div class="order-card-header">
+
+                    <div class="order-left">
+
+                        <div class="order-id">
+                            Order #@order.Id.ToString().Substring(0, 6)
+                        </div>
+
                         <div class="order-date">
                             @order.CreatedAt.ToLocalTime().ToString("dd MMM yyyy • HH:mm")
                         </div>
 
                         @if (order.IsForSomeoneElse)
                         {
-                            <div class="small-text">
-                                Recipient: @order.RecipientFullName · @order.RecipientPhone
+                            <div class="order-meta-line">
+                                <strong>Recipient:</strong>
+                                @order.RecipientFullName · @order.RecipientPhone
                             </div>
-                            <div class="small-text text-muted">
+
+                            <div class="order-meta-line muted">
                                 Ordered by: @order.User.FullName
                             </div>
                         }
                         else
                         {
-                            <div class="small-text">
+                            <div class="order-meta-line">
                                 @order.User.FullName · @order.User.PhoneNumber
                             </div>
                         }
 
-                        <div class="small-text">
-                            Delivery: @order.DeliveryType
+                        <div class="order-meta-line">
+                            <strong>Delivery type:</strong> @order.DeliveryType
                         </div>
-                        @if (order.DeliveryType == "Delivery" && !string.IsNullOrEmpty(order.DeliveryAddress))
+
+                        @if (order.DeliveryType == "Delivery" &&
+                                        !string.IsNullOrEmpty(order.DeliveryAddress))
                         {
-                            <div class="small-text">
+                            <div class="order-meta-line">
                                 <strong>Address:</strong> @order.DeliveryAddress
                             </div>
                         }
+
                     </div>
 
+                    <div class="order-right">
+                        <span class="status-badge @StatusClass(order.Status)">
+                            @FormatStatus(order.Status)
+                        </span>
+                    </div>
 
-                    <span class="status-badge @StatusClass(order.Status)">
-                        @FormatStatus(order.Status)
-                    </span>
                 </div>
 
-                <div class="items-section">
+                <!-- ITEMS -->
+                <div class="order-items">
                     @foreach (var item in order.Items)
                     {
-                        <div class="item-line">
-                            @item.Offer.Title (Quantity: @item.Quantity)
+                        <div class="order-item">
+                            <span>@item.Offer.Title</span>
+                            <span class="qty">Quantity: @item.Quantity</span>
                         </div>
                     }
                 </div>
 
-                <!-- ORDER TIMELINE -->
-
+                <!-- TIMELINE -->
                 <div class="client-timeline modern">
 
                     @{
@@ -369,38 +491,59 @@
 
                     @foreach (var step in steps)
                     {
+                        if (step == ReservationStatus.OutForDelivery &&
+                        order.DeliveryType != "Delivery")
+                        {
+                            continue;
+                        }
+
                         var reached = HasReachedStatus(order, step);
+
                         var time = order.StatusLogs
                         .Where(l => l.NewStatus == step)
                         .OrderBy(l => l.ChangedAt)
                         .Select(l => (DateTime?)l.ChangedAt)
                         .FirstOrDefault();
 
-                        <div class="timeline-step @(reached ? "done" : "") @(step == ReservationStatus.Canceled ? "cancel" : "")">
+                        <div class="timeline-step @(reached ? "done" : "")
+                                                    @(step == ReservationStatus.Canceled ? "cancel" : "")">
+
                             <div class="circle"></div>
+
                             <span>@step</span>
 
                             @if (time != null)
                             {
-                                <small class="text-muted">@time.Value.ToLocalTime().ToString("HH:mm")</small>
+                                <small class="timeline-time">
+                                    @time.Value.ToLocalTime().ToString("HH:mm")
+                                </small>
                             }
                         </div>
 
                         if (step != steps.Last())
                         {
-                            <div class="timeline-line @(step == ReservationStatus.Canceled ? "cancel-line" : "")"></div>
+                            <div class="timeline-line"></div>
                         }
                     }
+
                 </div>
 
-                <div class="card-footer-row">
+                <!-- FOOTER -->
+                <div class="order-card-footer">
+
                     <div class="order-total">
                         Total: @order.TotalPrice EUR
                     </div>
+
+                    <div class="actions">
+                        <!-- бутоните ти остават същите -->
+                    </div>
+
                 </div>
 
             </div>
         }
+
         @if (history.Count > 5)
         {
             <button id="showMoreBtn" class="btn btn-outline-secondary mt-3">
@@ -413,11 +556,10 @@
 
 @section Scripts {
     <script>
-            document.getElementById("showMoreBtn")?.addEventListener("click", function () {
+        document.getElementById("showMoreBtn")?.addEventListener("click", function () {
             document.querySelectorAll(".history-hidden").forEach(card => {
                 card.style.display = "block";
             });
-
             this.style.display = "none";
         });
     </script>
