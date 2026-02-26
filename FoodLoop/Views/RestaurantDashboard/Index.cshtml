@@ -1,339 +1,430 @@
 ﻿@model FoodLoop.Models.ViewModels.RestaurantDashboardViewModel
 @using FoodLoop.Models.Enums
 
-
 @{
     ViewData["Title"] = "Dashboard";
 }
 
 <link rel="stylesheet" href="~/css/dashboard.css" />
 
-<h2 class="mb-4">@Model.RestaurantName Dashboard</h2>
+<div class="rd-shell">
 
-<!-- DATE PICKER NAVIGATION -->
-<div class="date-navigation mb-4">
-
-    <a asp-action="Index"
-       asp-route-date="@Model.SelectedDate.AddDays(-1)"
-       class="date-nav-btn">
-        ←
-    </a>
-
-    <form method="get" asp-action="Index" class="date-form">
-        <input type="date"
-               name="date"
-               value="@Model.SelectedDate.ToString("yyyy-MM-dd")"
-               max="@DateTime.UtcNow.ToString("yyyy-MM-dd")"
-               class="date-picker"
-               onchange="this.form.submit()" />
-    </form>
-
-    @if (Model.SelectedDate < DateTime.UtcNow.Date)
-    {
-        <a asp-action="Index"
-           asp-route-date="@Model.SelectedDate.AddDays(1)"
-           class="date-nav-btn">
-            →
-        </a>
-    }
-</div>
-
-<!-- EXPORT TO CSV -->
-<div class="d-flex gap-2 align-items-center mb-3">
-    <a asp-action="ExportCsv"
-       asp-route-from="@Model.SelectedDate.AddDays(-29).ToString("yyyy-MM-dd")"
-       asp-route-to="@Model.SelectedDate.ToString("yyyy-MM-dd")"
-       class="btn btn-sm btn-outline-success">
-        Export CSV (last 30 days)
-    </a>
-
-    <a asp-action="ExportCsv"
-       asp-route-from="@Model.SelectedDate.ToString("yyyy-MM-dd")"
-       asp-route-to="@Model.SelectedDate.ToString("yyyy-MM-dd")"
-       class="btn btn-sm btn-outline-secondary">
-        Export CSV (current selected date)
-    </a>
-</div>
-
-<!-- KPI CARTS GRID -->
-<div class="kpi-grid">
-
-    <div class="kpi-card">
-        <div class="kpi-title">Total Orders</div>
-        <div class="kpi-value">@Model.TotalOrders</div>
-    </div>
-
-    <div class="kpi-card">
-        <div class="kpi-title">Total Revenue</div>
-        <div class="kpi-value">@Model.TotalRevenue EUR</div>
-    </div>
-
-    <div class="kpi-card">
-        <div class="kpi-title">Orders This Week</div>
-        <div class="kpi-value">@Model.OrdersThisWeek</div>
-    </div>
-
-    <div class="kpi-card">
-        <div class="kpi-title">Revenue This Week</div>
-        <div class="kpi-value">@Model.RevenueThisWeek EUR</div>
-    </div>
-
-    <div class="kpi-card">
-        <div class="kpi-title">Avg Order Value</div>
-        <div class="kpi-value">@Model.AverageOrderValue.ToString("0.00") EUR</div>
-    </div>
-
-    <div class="kpi-card">
-        <div class="kpi-title">Pending Orders</div>
-        <div class="kpi-value">@Model.PendingOrders</div>
-    </div>
-
-    <div class="kpi-card">
-        <div class="kpi-title">Delivery Orders</div>
-        <div class="kpi-value">@Model.DeliveryOrders</div>
-    </div>
-
-    <div class="kpi-card">
-        <div class="kpi-title">Pickup Orders</div>
-        <div class="kpi-value">@Model.PickupOrders</div>
-    </div>
-
-    <div class="kpi-card rating-card">
-        <div class="kpi-title">Average Rating</div>
-        <div class="kpi-value rating-value">
-            @Model.AverageRating.ToString("0.0") ⭐
+    <!-- TOP BAR -->
+    <div class="rd-topbar">
+        <div class="rd-title">
+            <h1>@Model.RestaurantName</h1>
+            <p>Restaurant dashboard</p>
         </div>
-        <small>@Model.TotalReviews reviews</small>
-    </div>
 
-    <div class="kpi-card">
-        <div class="kpi-title">Cancellation Rate</div>
-        <div class="kpi-value">
-            @Model.CancellationRate.ToString("0.0")%
+        <!-- DATE NAVIGATION (always on top) -->
+        <div class="rd-date">
+            <a asp-action="Index"
+               asp-route-date="@Model.SelectedDate.AddDays(-1)"
+               class="rd-icon-btn"
+               aria-label="Previous day">
+                ←
+            </a>
+
+            <form method="get" asp-action="Index" class="rd-date-form">
+                <input type="date"
+                       name="date"
+                       value="@Model.SelectedDate.ToString("yyyy-MM-dd")"
+                       max="@DateTime.UtcNow.ToString("yyyy-MM-dd")"
+                       class="rd-date-input"
+                       onchange="this.form.submit()" />
+            </form>
+
+            @if (Model.SelectedDate < DateTime.UtcNow.Date)
+            {
+                <a asp-action="Index"
+                   asp-route-date="@Model.SelectedDate.AddDays(1)"
+                   class="rd-icon-btn"
+                   aria-label="Next day">
+                    →
+                </a>
+            }
         </div>
     </div>
 
-    <div class="kpi-card">
-        <div class="kpi-title">Top Offer</div>
-        <div class="kpi-value">
-            @Model.TopOfferTitle <br />
-            <small>@Model.TopOfferSoldCount sold</small>
+
+    <!-- KPI SECTION -->
+    <section class="rd-section">
+        <div class="rd-section-head">
+            <div>
+                <h2>KPI</h2>
+                <span class="rd-sub">Overview metrics</span>
+            </div>
         </div>
-    </div>
 
-</div>
+        <div class="rd-kpi-grid">
 
-<!-- RATING INSIGHTS -->
-<div class="rating-distribution mt-4">
-    <h5>Rating Distribution</h5>
-
-    @for (int i = 5; i >= 1; i--)
-    {
-        var count = Model.RatingCounts.ContainsKey(i) ? Model.RatingCounts[i] : 0;
-        var percent = Model.RatingPercentages.ContainsKey(i) ? Model.RatingPercentages[i] : 0;
-
-        <div class="rating-row d-flex align-items-center mb-2">
-            <div style="width:60px;">
-                @i ⭐
+            <!-- ===================== REVENUE ===================== -->
+            <div class="rd-kpi">
+                <div class="rd-kpi-label">Total Revenue</div>
+                <div class="rd-kpi-value">@Model.TotalRevenue EUR</div>
             </div>
 
-            <div class="progress flex-grow-1 me-2" style="height:10px;">
-                <div class="progress-bar bg-warning"
-                     style="width:@percent%">
+            <div class="rd-kpi">
+                <div class="rd-kpi-label">Revenue This Week</div>
+                <div class="rd-kpi-value">@Model.RevenueThisWeek EUR</div>
+            </div>
+
+            <div class="rd-kpi">
+                <div class="rd-kpi-label">Avg Order Value</div>
+                <div class="rd-kpi-value">@Model.AverageOrderValue.ToString("0.00") EUR</div>
+            </div>
+
+            <div class="rd-kpi rd-kpi-wide">
+                <div class="rd-kpi-label">Top Offer</div>
+                <div class="rd-kpi-value">
+                    @Model.TopOfferTitle
+                    <span class="rd-kpi-meta">@Model.TopOfferSoldCount sold</span>
                 </div>
             </div>
 
-            <div style="width:60px; text-align:right;">
-                @count
+            <!-- ===================== VOLUME ===================== -->
+            <div class="rd-kpi">
+                <div class="rd-kpi-label">Total Orders</div>
+                <div class="rd-kpi-value">@Model.TotalOrders</div>
+            </div>
+
+            <div class="rd-kpi">
+                <div class="rd-kpi-label">Orders This Week</div>
+                <div class="rd-kpi-value">@Model.OrdersThisWeek</div>
+            </div>
+
+            <div class="rd-kpi">
+                <div class="rd-kpi-label">Delivery Orders</div>
+                <div class="rd-kpi-value">@Model.DeliveryOrders</div>
+            </div>
+
+            <div class="rd-kpi">
+                <div class="rd-kpi-label">Pickup Orders</div>
+                <div class="rd-kpi-value">@Model.PickupOrders</div>
+            </div>
+
+            <!-- ===================== OPERATIONS ===================== -->
+            <div class="rd-kpi">
+                <div class="rd-kpi-label">Pending Orders</div>
+                <div class="rd-kpi-value">@Model.PendingOrders</div>
+            </div>
+
+            <div class="rd-kpi">
+                <div class="rd-kpi-label">Cancellation Rate</div>
+                <div class="rd-kpi-value">@Model.CancellationRate.ToString("0.0")%</div>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- RATING & REVIEWS -->
+    <section class="rd-section">
+        <div class="rd-section-head">
+            <div>
+                <h2>Rating & reviews</h2>
+                <span class="rd-sub">Quality insights</span>
+            </div>
+
+            <a asp-controller="RestaurantReviews"
+               asp-action="Index"
+               class="rd-btn rd-btn-ghost">
+                View all
+            </a>
+        </div>
+
+        <div class="rd-grid-2">
+            <!-- Rating card -->
+            <div class="rd-card">
+                <div class="rd-card-head">
+                    <div class="rd-card-title">Average rating</div>
+                </div>
+
+                <div class="rd-rating">
+                    <div class="rd-rating-big">@Model.AverageRating.ToString("0.0")</div>
+                    <div class="rd-rating-star">★★★★★</div>
+                    <div class="rd-rating-sub">@Model.TotalReviews reviews</div>
+                </div>
+            </div>
+
+            <!-- Distribution -->
+            <div class="rd-card">
+                <div class="rd-card-head">
+                    <div class="rd-card-title">Distribution</div>
+                </div>
+
+                <div class="rd-dist">
+                    @for (int i = 5; i >= 1; i--)
+                    {
+                        var count = Model.RatingCounts.ContainsKey(i) ? Model.RatingCounts[i] : 0;
+                        var percent = Model.RatingPercentages.ContainsKey(i) ? Model.RatingPercentages[i] : 0;
+
+                        <div class="rd-dist-row">
+                            <div class="rd-dist-left">@i ★</div>
+                            <div class="rd-dist-bar">
+                                <div class="rd-dist-fill" style="width:@percent%"></div>
+                            </div>
+                            <div class="rd-dist-right">@count</div>
+                        </div>
+                    }
+                </div>
             </div>
         </div>
-    }
-</div>
+    </section>
 
-<!-- VIEW ALL RATINGS -->
-<a asp-controller="RestaurantReviews"
-   asp-action="Index"
-   class="btn btn-outline-dark mt-3">
-    View All Reviews
-</a>
 
-<!-- HEATMAP -->
-<div class="heatmap mt-5">
-    <h5>Last 30 Days Activity</h5>
-
-    <div class="heatmap-grid">
-        @for (int i = 0; i < Model.HeatmapDays.Count; i++)
-        {
-            var d = Model.HeatmapDays[i];
-            var count = d.OrdersCount;
-
-            var level = count == 0 ? "level-0" :
-            count < 3 ? "level-1" :
-            count < 6 ? "level-2" :
-            "level-3";
-
-            <div class="heatmap-cell @level"
-                 title="@d.Date.ToString("dd MMM") - @count orders">
-            </div>
-        }
-    </div>
-</div>
-
-<!-- MONTHLY -->
-<div class="kpi-card">
-    <div class="kpi-title">Orders This Month</div>
-    <div class="kpi-value">@Model.OrdersThisMonth</div>
-</div>
-
-<!-- WEEKLY -->
-<div class="kpi-card">
-    <div class="kpi-title">Revenue This Month</div>
-    <div class="kpi-value">@Model.RevenueThisMonth EUR</div>
-</div>
-
-<!-- CHART -->
-<div class="chart-section mt-5 mb-4">
-    <canvas id="ordersChart"></canvas>
-</div>
-
-<!-- DAILY REVENUE SUMMARY -->
-@{
-    var totalRevenueToday = Model.DailyReservations
+    <!-- DAILY ANALYTICS -->
+    @{
+        var totalRevenueToday = Model.DailyReservations
         .Where(r => r.Status == ReservationStatus.Finished.ToString())
         .Sum(r => r.TotalPrice);
 
-    var totalOrdersToday = Model.DailyReservations.Count;
+        var totalOrdersToday = Model.DailyReservations.Count;
 
-    var finishedToday = Model.DailyReservations
+        var finishedToday = Model.DailyReservations
         .Count(r => r.Status == ReservationStatus.Finished.ToString());
 
-    var canceledToday = Model.DailyReservations
+        var canceledToday = Model.DailyReservations
         .Count(r => r.Status == ReservationStatus.Canceled.ToString());
-}
-<h5>Daily revenue summary:</h5>
-<div class="daily-summary mt-4 mb-4">
-    <div class="summary-box">
-        <div class="summary-label">Total Orders</div>
-        <div class="summary-value">@totalOrdersToday</div>
-    </div>
+    }
 
-    <div class="summary-box">
-        <div class="summary-label">Finished</div>
-        <div class="summary-value success">@finishedToday</div>
-    </div>
+    <section class="rd-section">
+        <div class="rd-section-head">
+            <div>
+                <h2>Daily analytics</h2>
+                <span class="rd-sub">@Model.SelectedDate.ToString("dd MMM yyyy")</span>
+            </div>
 
-    <div class="summary-box">
-        <div class="summary-label">Canceled</div>
-        <div class="summary-value danger">@canceledToday</div>
-    </div>
-
-    <div class="summary-box">
-        <div class="summary-label">Revenue</div>
-        <div class="summary-value highlight">
-            @totalRevenueToday.ToString("0.00") EUR
+            <a asp-action="ExportCsv"
+               asp-route-from="@Model.SelectedDate.ToString("yyyy-MM-dd")"
+               asp-route-to="@Model.SelectedDate.ToString("yyyy-MM-dd")"
+               class="rd-btn rd-btn-solid">
+                Export CSV (day)
+            </a>
         </div>
-    </div>
 
-</div>
+        <div class="rd-kpi-grid rd-kpi-grid-4">
+            <div class="rd-kpi">
+                <div class="rd-kpi-label">Total Orders</div>
+                <div class="rd-kpi-value">@totalOrdersToday</div>
+            </div>
 
-<!-- TABLE SORT -->
-<div class="daily-orders mt-4">
+            <div class="rd-kpi">
+                <div class="rd-kpi-label">Finished</div>
+                <div class="rd-kpi-value rd-ok">@finishedToday</div>
+            </div>
 
-    <h5>Orders for @Model.SelectedDate.ToString("dd MMM yyyy")</h5>
+            <div class="rd-kpi">
+                <div class="rd-kpi-label">Canceled</div>
+                <div class="rd-kpi-value rd-bad">@canceledToday</div>
+            </div>
 
-    @if (!Model.DailyReservations.Any())
-    {
-        <p>No orders for this day.</p>
-    }
-    else
-    {
-        <table id="ordersTable" class="table table-hover">
-            <thead>
-                <tr>
-                    <th onclick="sortTable(0)">#</th>
-                    <th onclick="sortTable(1)">Customer</th>
-                    <th onclick="sortTable(2)">Delivery type</th>
-                    <th onclick="sortTable(3)">Status</th>
-                    <th onclick="sortTable(4)">Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var order in Model.DailyReservations)
-                {
-                    var rowId = "details-" + order.Id.ToString();
+            <div class="rd-kpi">
+                <div class="rd-kpi-label">Revenue</div>
+                <div class="rd-kpi-value">@totalRevenueToday.ToString("0.00") EUR</div>
+            </div>
+        </div>
 
-                    <tr class="order-row" onclick="toggleDetails('@rowId')">
-                        <td>@order.Id.ToString().Substring(0, 6)</td>
-                        <td>@order.CustomerName</td>
-                        <td>@order.DeliveryType</td>
-                        <td>
-                            <span class="status-badge @order.Status.ToString().ToLower()">
-                                @order.Status
-                            </span>
-                        </td>
-                        <td>@order.TotalPrice EUR</td>
-                    </tr>
+        <!-- Orders table -->
 
-                    <tr id="@rowId" class="order-details" style="display:none;">
-                        <td colspan="5">
-                            @foreach (var item in order.Items)
+        <div class="rd-card rd-card-table mt-5">
+            <div class="rd-card-head">
+                <div class="rd-card-title">Orders</div>
+                <div class="rd-card-sub">Tap row to expand items</div>
+            </div>
+
+            @if (!Model.DailyReservations.Any())
+            {
+                <div class="rd-empty">No orders for this day.</div>
+            }
+            else
+            {
+                <div class="rd-table-wrap">
+                    <table id="ordersTable" class="rd-table">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable(0)">#</th>
+                                <th onclick="sortTable(1)">Customer</th>
+                                <th onclick="sortTable(2)">Delivery</th>
+                                <th onclick="sortTable(3)">Status</th>
+                                <th onclick="sortTable(4)">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.DailyReservations)
                             {
-                                <div>
-                                    • @item.OfferTitle × @item.Quantity
-                                </div>
+                                var rowId = "details-" + order.Id.ToString();
+
+                                <tr class="order-row" data-details-id="@rowId" onclick="toggleDetails('@rowId')">
+                                    <td>@order.Id.ToString().Substring(0, 6)</td>
+                                    <td>@order.CustomerName</td>
+                                    <td>@order.DeliveryType</td>
+                                    <td>
+                                        <span class="rd-badge rd-@order.Status.ToString().ToLower()">
+                                            @order.Status
+                                        </span>
+                                    </td>
+                                    <td>@order.TotalPrice EUR</td>
+                                </tr>
+
+                                <tr id="@rowId" class="order-details" style="display:none;">
+                                    <td colspan="5">
+                                        <div class="rd-items">
+                                            @foreach (var item in order.Items)
+                                            {
+                                                <div class="rd-item">• @item.OfferTitle × @item.Quantity</div>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
                             }
-                        </td>
-                    </tr>
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+
+        <!-- Last 7 days chart -->
+
+        <div class="rd-card rd-card-chart mt-5">
+            <div class="rd-card-head">
+                <div class="rd-card-title">Last 7 days</div>
+                <div class="rd-card-sub">Orders trend</div>
+            </div>
+
+            <div class="rd-chart">
+                <canvas id="ordersChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- LAST 30 DAYS ANALYTICS -->
+
+    <section class="rd-section">
+        <div class="rd-section-head">
+            <div>
+                <h2>Last 30 days analytics</h2>
+                <span class="rd-sub">Trends & activity</span>
+            </div>
+
+            <a asp-action="ExportCsv"
+               asp-route-from="@Model.SelectedDate.AddDays(-29).ToString("yyyy-MM-dd")"
+               asp-route-to="@Model.SelectedDate.ToString("yyyy-MM-dd")"
+               class="rd-btn rd-btn-ghost">
+                Export CSV (30 days)
+            </a>
+        </div>
+
+        <!-- Last 30 days KPI summary -->
+
+        <div class="rd-kpi-grid rd-kpi-grid-2">
+            <div class="rd-kpi">
+                <div class="rd-kpi-label">Orders This Month</div>
+                <div class="rd-kpi-value">@Model.OrdersThisMonth</div>
+            </div>
+
+            <div class="rd-kpi">
+                <div class="rd-kpi-label">Revenue This Month</div>
+                <div class="rd-kpi-value">@Model.RevenueThisMonth EUR</div>
+            </div>
+        </div>
+
+        <!-- Heatmap-->
+
+        <div class="rd-card mt-2">
+            <div class="rd-card-head">
+                <div class="rd-card-title">Activity heatmap</div>
+            </div>
+
+            <div class="rd-heatmap">
+                @for (int i = 0; i < Model.HeatmapDays.Count; i++)
+                {
+                    var d = Model.HeatmapDays[i];
+                    var count = d.OrdersCount;
+
+                    var level = count == 0 ? "lv0" :
+                    count < 3 ? "lv1" :
+                    count < 6 ? "lv2" : "lv3";
+
+                    <div class="rd-cell @level"
+                         title="@d.Date.ToString("dd MMM") - @count orders">
+                    </div>
                 }
-            </tbody>
-        </table>
-    }
+            </div>
+        </div>
+
+        <!-- Peak hours (30 days context) -->
+        <div class="rd-card rd-card-chart mt-2">
+            <div class="rd-card-head">
+                <div class="rd-card-title">Peak hours</div>
+                <div class="rd-card-sub">Orders by hour (last 30 days)</div>
+            </div>
+
+            <div class="rd-chart rd-chart-lg">
+                <canvas id="hourChart"></canvas>
+            </div>
+        </div>
+    </section>
+
 </div>
 
-<!-- PEAK HOURS CHART -->
-<div class="chart-section mt-4">
-    <canvas id="hourChart"></canvas>
-</div>
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
-        // Last 7 days chart
+        // Trend chart
         const ctx = document.getElementById('ordersChart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ChartLabels)),
+                    datasets: [{
+                        label: 'Orders',
+                        data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ChartOrders)),
+                        borderColor: '#00a86b',
+                        backgroundColor: 'rgba(0,168,107,0.10)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: true } }
+                }
+            });
+        }
 
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ChartLabels)),
-                datasets: [{
-                    label: 'Orders',
-                    data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ChartOrders)),
-                    borderColor: '#00a86b',
-                    backgroundColor: 'rgba(0,168,107,0.1)',
-                    tension: 0.4,
-                    fill: true
-                }]
-            }
-        });
-
-        // Sort order table 
+        // Toggle details
         function toggleDetails(id) {
             const row = document.getElementById(id);
             row.style.display = row.style.display === "none" ? "table-row" : "none";
         }
 
+        // Sort only order rows and keep details attached
         function sortTable(columnIndex) {
             const table = document.getElementById("ordersTable");
-            const rows = Array.from(table.rows).slice(1);
+            if (!table) return;
 
-            const sorted = rows.sort((a, b) => {
-                const A = a.cells[columnIndex].innerText;
-                const B = b.cells[columnIndex].innerText;
+            const tbody = table.tBodies[0];
+            const mainRows = Array.from(tbody.querySelectorAll("tr.order-row"));
+
+            const pairs = mainRows.map(r => {
+                const detailsId = r.getAttribute("data-details-id");
+                return { main: r, details: document.getElementById(detailsId) };
+            });
+
+            pairs.sort((a, b) => {
+                const A = a.main.cells[columnIndex].innerText.trim();
+                const B = b.main.cells[columnIndex].innerText.trim();
                 return A.localeCompare(B, undefined, { numeric: true });
             });
 
-            sorted.forEach(row => table.tBodies[0].appendChild(row));
+            tbody.innerHTML = "";
+            pairs.forEach(p => { tbody.appendChild(p.main); tbody.appendChild(p.details); });
         }
 
         // Peak hours chart
@@ -341,24 +432,20 @@
             const hourCanvas = document.getElementById('hourChart');
             if (!hourCanvas) return;
 
-            const hourCtx = hourCanvas.getContext('2d');
-
-            new Chart(hourCtx, {
+            new Chart(hourCanvas, {
                 type: 'bar',
                 data: {
                     labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.HourLabels)),
                     datasets: [{
                         label: 'Orders by Hour',
                         data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.HourOrders))
-                        // без фиксиран цвят, за да не се “кара” с темата/дизайна
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: { legend: { display: true } },
-                    scales: {
-                        y: { beginAtZero: true, ticks: { precision: 0 } }
-                    }
+                    scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
                 }
             });
         });

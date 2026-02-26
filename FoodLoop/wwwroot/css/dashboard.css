@@ -1,221 +1,678 @@
-﻿.kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
+﻿/* =========================================================
+   RestaurantDashboard - Clean Luxury App UI (dashboard.css)
+   Keep layout. Style is clean & premium.
+   Fixes included:
+   - Proper spacing (vertical rhythm)
+   - Orders table: full width + scrollable + sticky header + fade
+   - Better grid gaps
+========================================================= */
+
+/* =========================================================
+   1) TOKENS
+========================================================= */
+:root {
+    --bg: #f6f7fb;
+    --card: #ffffff;
+    --stroke: rgba(16, 24, 40, 0.08);
+    --text: #0b1220;
+    --muted: rgba(11, 18, 32, 0.62);
+    /* Signature green */
+    --green: #00a86b;
+    --green-soft: rgba(0, 168, 107, 0.12);
+    --green-border: rgba(0, 168, 107, 0.28);
+    /* Shadows */
+    --shadow: 0 18px 60px rgba(15, 23, 42, 0.10);
+    --shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.08);
+    --r-xl: 22px;
+    --r-lg: 18px;
+    --r-md: 14px;
+    --max: 1160px;
+    /* Typography (readable) */
+    --font: system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans", sans-serif;
+    --fs-12: 12px;
+    --fs-13: 13px;
+    --fs-14: 14px;
+    --fs-15: 15px;
+    --fs-16: 16px;
+    --fs-18: 18px;
+    --fs-24: 24px;
 }
 
-.kpi-card {
-    background: white;
-    padding: 25px;
-    border-radius: 20px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.06);
-    border: 1px solid #eef2f3;
+/* =========================================================
+   2) BASE
+========================================================= */
+html, body {
+    background: var(--bg);
 }
 
-.kpi-title {
-    font-size: 14px;
-    color: #6c7a86;
-    margin-bottom: 8px;
+* {
+    box-sizing: border-box;
+    font-family: var(--font);
 }
 
-.kpi-value {
-    font-size: 24px;
-    font-weight: 800;
-    color: #00a86b;
+.rd-shell {
+    max-width: var(--max);
+    margin: 22px auto 70px;
+    padding: 0 16px;
 }
 
-/* KPI Rating card style */
+    /* Make sure internal elements don't randomly add margins */
+    .rd-shell .rd-card,
+    .rd-shell .rd-kpi {
+        margin: 0;
+        padding: 20px 30px;
+    }
 
-.rating-card {
-    background: linear-gradient(135deg,#fff7e6,#ffffff);
-}
-
-.rating-value {
-    color: #ff9800;
-    font-weight: 900;
-    font-size: 26px;
-}
-
-.chart-section {
-    background: white;
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.06);
-}
-.date-navigation {
+/* =========================================================
+   3) TOP BAR
+========================================================= */
+.rd-topbar {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 30px;
-    margin-bottom: 30px;
-}
-
-.date-nav-btn {
-    padding: 8px 16px;
-    border-radius: 8px;
-    background: #f1f5f9;
-    text-decoration: none;
-    font-weight: 600;
-    color: #003b55;
-}
-
-    .date-nav-btn:hover {
-        background: #e2e8f0;
-    }
-
-.current-date {
-    font-weight: 700;
-    font-size: 18px;
-}
-/* NAVIGATION STYLE */
-.date-navigation {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-}
-
-.date-picker {
-    padding: 6px 10px;
-    border-radius: 10px;
-    border: 1px solid #e3e8ee;
-    font-weight: 600;
-    color: #003b55;
-}
-
-.date-nav-btn {
-    padding: 6px 12px;
-    border-radius: 10px;
-    background: #fff;
-    border: 1px solid #e3e8ee;
-    font-weight: 700;
-    text-decoration: none;
-    color: #003b55;
-    transition: 0.2s;
-}
-
-    .date-nav-btn:hover {
-        background: #f1f4f7;
-    }
-
-.current-date {
-    font-weight: 800;
-    color: #003b55;
-}
-
-/* STATUS COLORS */
-
-.status-badge {
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-    .status-badge.pending {
-        background: #fff3cd;
-        color: #856404;
-    }
-
-    .status-badge.confirmed {
-        background: #cce5ff;
-        color: #004085;
-    }
-
-    .status-badge.outfordelivery {
-        background: #e2e3ff;
-        color: #383d7a;
-    }
-
-    .status-badge.finished {
-        background: #d4edda;
-        color: #155724;
-    }
-
-    .status-badge.canceled {
-        background: #f8d7da;
-        color: #721c24;
-    }
-
-.order-row {
-    cursor: pointer;
-}
-
-.order-details {
-    background: #f9fafb;
-}
-
-/* DAILY SUMMARY STYLE */
-
-.daily-summary {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    justify-content: space-between;
     gap: 16px;
+    background: rgba(255,255,255,0.78);
+    border: 1px solid var(--stroke);
+    border-radius: var(--r-xl);
+    padding: 16px 16px;
+    box-shadow: var(--shadow-soft);
+    backdrop-filter: blur(10px);
 }
 
-.summary-box {
-    background: #ffffff;
-    border-radius: 18px;
-    padding: 18px;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+.rd-title h1 {
+    margin: 0;
+    font-size: var(--fs-24);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
 }
 
-.summary-label {
-    font-size: 13px;
-    color: #6c7a89;
-    margin-bottom: 6px;
+.rd-title p {
+    margin: 6px 0 0;
+    font-size: var(--fs-14);
+    font-weight: 500;
+    color: var(--muted);
+}
+
+/* Date controls */
+.rd-date {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rd-icon-btn {
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    border: 1px solid var(--stroke);
+    background: rgba(255,255,255,0.92);
+    color: var(--text);
+    text-decoration: none;
     font-weight: 600;
+    transition: transform .12s ease, box-shadow .12s ease, background .12s ease, border-color .12s ease;
 }
 
-.summary-value {
+    .rd-icon-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-soft);
+        border-color: rgba(16,24,40,0.12);
+    }
+
+.rd-date-form {
+    margin: 0;
+}
+
+.rd-date-input {
+    height: 42px;
+    padding: 0 14px;
+    border-radius: 14px;
+    border: 1px solid var(--stroke);
+    background: rgba(255,255,255,0.92);
+    color: var(--text);
+    font-weight: 550;
+    font-size: var(--fs-14);
+    outline: none;
+    transition: box-shadow .12s ease, border-color .12s ease;
+}
+
+    .rd-date-input:focus {
+        border-color: var(--green-border);
+        box-shadow: 0 0 0 4px rgba(0,168,107,0.10);
+    }
+
+/* =========================================================
+   4) SECTION HEADERS
+========================================================= */
+.rd-section {
+    margin-top: 18px;
+}
+
+.rd-section-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 2px 12px;
+    margin-bottom: 0;
+}
+
+    .rd-section-head h2 {
+        margin: 0;
+        font-size: var(--fs-18);
+        font-weight: 650;
+        color: var(--text);
+        letter-spacing: -0.01em;
+    }
+
+.rd-sub {
+    display: block;
+    margin-top: 6px;
+    font-size: var(--fs-14);
+    font-weight: 500;
+    color: var(--muted);
+}
+
+/* =========================================================
+   5) BUTTONS
+========================================================= */
+.rd-btn {
+    height: 40px;
+    padding: 0 14px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: var(--fs-14);
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid var(--stroke);
+    background: rgba(255,255,255,0.88);
+    color: var(--text);
+    transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
+    user-select: none;
+    white-space: nowrap;
+}
+
+    .rd-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-soft);
+        border-color: rgba(16,24,40,0.12);
+    }
+
+.rd-btn-solid {
+    background: var(--green-soft);
+    border-color: var(--green-border);
+    color: #07130f;
+}
+
+    .rd-btn-solid:hover {
+        background: rgba(0,168,107,0.16);
+        border-color: rgba(0,168,107,0.34);
+    }
+
+.rd-btn-ghost {
+    background: rgba(255,255,255,0.88);
+}
+
+/* =========================================================
+   6) KPI GRID (clean cards)
+========================================================= */
+.rd-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.rd-kpi {
+    grid-column: span 3;
+    background: var(--card);
+    border: 1px solid var(--stroke);
+    border-radius: var(--r-xl);
+    padding: 18px 18px;
+    box-shadow: var(--shadow-soft);
+    transition: transform .14s ease, box-shadow .14s ease, border-color .14s ease;
+}
+
+    .rd-kpi:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+        border-color: rgba(16,24,40,0.12);
+    }
+
+.rd-kpi-label {
+    font-size: var(--fs-14);
+    font-weight: 520;
+    color: var(--muted);
+}
+
+.rd-kpi-value {
+    margin-top: 10px;
     font-size: 22px;
-    font-weight: 800;
-    color: #003b55;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
 }
 
-    .summary-value.success {
-        color: #00a86b;
+.rd-kpi-meta {
+    display: block;
+    margin-top: 8px;
+    font-size: var(--fs-14);
+    font-weight: 500;
+    color: var(--muted);
+}
+
+.rd-kpi-wide {
+    grid-column: span 6;
+}
+
+.rd-kpi-grid-4 .rd-kpi {
+    grid-column: span 3;
+}
+
+.rd-kpi-grid-2 .rd-kpi {
+    grid-column: span 6;
+}
+
+.rd-ok {
+    color: var(--green);
+    font-weight: 650;
+}
+
+.rd-bad {
+    color: #dc3545;
+    font-weight: 650;
+}
+
+/* =========================================================
+   7) CARDS (general)
+========================================================= */
+.rd-card {
+    background: var(--card);
+    border: 1px solid var(--stroke);
+    border-radius: var(--r-xl);
+    box-shadow: var(--shadow-soft);
+    padding: 20px 20px;
+}
+
+.rd-card-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.rd-card-title {
+    font-size: var(--fs-16);
+    font-weight: 650;
+    color: var(--text);
+}
+
+.rd-card-sub {
+    font-size: var(--fs-14);
+    font-weight: 500;
+    color: var(--muted);
+}
+
+/* =========================================================
+   7.1) TWO COLUMN GRID
+========================================================= */
+.rd-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-top: 20px;
+}
+
+    .rd-grid-2 .rd-card {
+        height: 100%;
     }
 
-    .summary-value.danger {
-        color: #dc3545;
-    }
+/* =========================================================
+   8) RATING
+========================================================= */
+.rd-rating {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
 
-    .summary-value.highlight {
-        color: #00a86b;
-    }
+.rd-rating-big {
+    font-size: 44px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    line-height: 1;
+}
 
-/* HEATMAP */
-.heatmap-grid {
+.rd-rating-star {
+    color: var(--green);
+    font-weight: 700;
+    margin-left: 6px;
+}
+
+.rd-rating-sub {
+    font-size: var(--fs-14);
+    font-weight: 500;
+    color: var(--muted);
+}
+
+/* Distribution */
+.rd-dist {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.rd-dist-row {
+    display: grid;
+    grid-template-columns: 54px 1fr 44px;
+    gap: 10px;
+    align-items: center;
+}
+
+.rd-dist-left,
+.rd-dist-right {
+    font-size: var(--fs-14);
+    font-weight: 520;
+    color: var(--muted);
+}
+
+.rd-dist-right {
+    text-align: right;
+}
+
+.rd-dist-bar {
+    height: 10px;
+    border-radius: 999px;
+    background: rgba(16,24,40,0.06);
+    overflow: hidden;
+}
+
+.rd-dist-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: rgba(0,168,107,0.70);
+}
+
+/* =========================================================
+   9) HEATMAP
+========================================================= */
+.rd-heatmap {
     display: grid;
     grid-template-columns: repeat(15, 1fr);
-    gap: 6px;
+    gap: 8px;
+    padding-top: 6px;
+    margin-top: 10px;
 }
 
-.heatmap-cell {
+.rd-cell {
     height: 22px;
-    border-radius: 4px;
+    border-radius: 10px;
+    background: rgba(16,24,40,0.05);
+    transition: transform .12s ease, filter .12s ease;
 }
 
-.level-0 {
-    background: #edf2f7;
+    .rd-cell:hover {
+        transform: translateY(-1px);
+        filter: brightness(0.98);
+    }
+
+    .rd-cell.lv0 {
+        background: rgba(16,24,40,0.05);
+    }
+
+    .rd-cell.lv1 {
+        background: rgba(0,168,107,0.18);
+    }
+
+    .rd-cell.lv2 {
+        background: rgba(0,168,107,0.36);
+    }
+
+    .rd-cell.lv3 {
+        background: rgba(0,168,107,0.62);
+    }
+
+/* =========================================================
+   10) CHARTS (fixed height to avoid stretch)
+========================================================= */
+.rd-card-chart {
+    padding-bottom: 16px;
 }
 
-.level-1 {
-    background: #c6f6d5;
+.rd-chart {
+    height: 320px;
+    width: 100%;
 }
 
-.level-2 {
-    background: #48bb78;
+    .rd-chart canvas {
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+/* If you want a larger chart (e.g. Peak hours) */
+.rd-chart-lg {
+    height: 420px;
 }
 
-.level-3 {
-    background: #2f855a;
+/* =========================================================
+   11) TABLE (FULL WIDTH + SCROLL + STICKY + FADE)
+========================================================= */
+.rd-card-table {
+    padding: 0; /* ✅ full width look */
+    overflow: hidden; /* ✅ clean rounded corners */
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
 }
 
-.rating-distribution {
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+/* Scroll container */
+.rd-table-wrap {
+    width: 100%;
+    max-height: 420px;
+    overflow: auto;
+    border: none; /* ✅ remove inner frame */
+    background: transparent; /* ✅ remove inner background */
+    border-radius: 0;
+    position: relative;
+}
+
+    /* Premium fade at bottom while scrolling */
+    .rd-table-wrap::after {
+        content: "";
+        position: sticky;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: block;
+        height: 46px;
+        pointer-events: none;
+        background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.95));
+        z-index: 3;
+    }
+
+    /* nicer scrollbars (WebKit only) */
+    .rd-table-wrap::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    .rd-table-wrap::-webkit-scrollbar-thumb {
+        background: rgba(16,24,40,0.18);
+        border-radius: 999px;
+    }
+
+    .rd-table-wrap::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+/* Table itself */
+.rd-table {
+    width: 100%;
+    min-width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+}
+
+    .rd-table thead th {
+        position: sticky;
+        top: 0;
+        z-index: 4;
+        background: rgba(255,255,255,0.96);
+        padding: 16px 20px;
+        font-size: var(--fs-14);
+        font-weight: 600;
+        color: rgba(11,18,32,0.70);
+        user-select: none;
+        cursor: pointer;
+        white-space: nowrap;
+        border-bottom: 1px solid rgba(16,24,40,0.06);
+    }
+
+    .rd-table tbody td {
+        padding: 16px 20px;
+        font-size: var(--fs-15);
+        font-weight: 520;
+        color: var(--text);
+        white-space: nowrap;
+        border-bottom: 1px solid rgba(16,24,40,0.06);
+    }
+
+.order-row:hover {
+    background: rgba(0,168,107,0.06);
+}
+
+.order-details td {
+    background: rgba(16,24,40,0.02);
+    white-space: normal;
+}
+
+.rd-items {
+    padding: 4px 0;
+}
+
+.rd-item {
+    color: rgba(11,18,32,0.74);
+    font-weight: 500;
+    padding: 4px 0;
+}
+
+/* Badges */
+.rd-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: var(--fs-14);
+    font-weight: 550;
+    border: 1px solid rgba(16,24,40,0.08);
+    background: rgba(16,24,40,0.03);
+    color: rgba(11,18,32,0.78);
+}
+
+.rd-finished {
+    background: rgba(0,168,107,0.12);
+    border-color: rgba(0,168,107,0.18);
+    color: rgba(0,120,70,1);
+}
+
+.rd-canceled {
+    background: rgba(220,53,69,0.10);
+    border-color: rgba(220,53,69,0.18);
+    color: rgba(150,20,35,1);
+}
+
+.rd-pending {
+    background: rgba(255,193,7,0.14);
+    border-color: rgba(255,193,7,0.20);
+    color: rgba(120,90,0,1);
+}
+
+.rd-confirmed {
+    background: rgba(13,110,253,0.10);
+    border-color: rgba(13,110,253,0.18);
+    color: rgba(10,70,170,1);
+}
+
+.rd-outfordelivery {
+    background: rgba(124,58,237,0.10);
+    border-color: rgba(124,58,237,0.18);
+    color: rgba(80,30,170,1);
+}
+
+/* =========================================================
+   12) FINAL SPACING RHYTHM (fix margins everywhere)
+========================================================= */
+/* Clean, consistent vertical spacing between blocks in a section */
+.rd-section > * + * {
+    margin-top: 20px;
+}
+
+/* Ensure grids breathe */
+.rd-kpi-grid {
+    margin-top: 18px;
+}
+
+.rd-card-chart {
+    margin-top: 20px;
+}
+
+/* =========================================================
+   13) RESPONSIVE
+========================================================= */
+@media (max-width: 980px) {
+    .rd-topbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .rd-grid-2 {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .rd-kpi {
+        grid-column: span 6;
+    }
+
+    .rd-kpi-wide {
+        grid-column: span 12;
+    }
+
+    .rd-kpi-grid-4 .rd-kpi {
+        grid-column: span 6;
+    }
+
+    .rd-kpi-grid-2 .rd-kpi {
+        grid-column: span 12;
+    }
+
+    .rd-table-wrap {
+        max-height: 360px;
+    }
+
+    .rd-chart-lg {
+        height: 360px;
+    }
+}
+
+@media (max-width: 520px) {
+    .rd-date-input {
+        width: 180px;
+    }
+
+    .rd-chart {
+        height: 260px;
+    }
+
+    .rd-heatmap {
+        grid-template-columns: repeat(10, 1fr);
+    }
 }
