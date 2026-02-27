@@ -59,22 +59,22 @@
     <!-- HEADER -->
     <div class="order-app-header">
         <div>
-            <h2 class="dashboard-title">Order Manager</h2>
-            <p class="subtitle">Manage incoming and active orders</p>
+            <h2 class="dashboard-title">Управление на поръчки</h2>
+            <p class="subtitle">Управлявай идващи и активни поръчки</p>
         </div>
 
         <div class="order-stats">
             <div class="stat-box">
                 <span class="stat-number">@pending.Count</span>
-                <span class="stat-label">Pending</span>
+                <span class="stat-label">Изчакващи</span>
             </div>
             <div class="stat-box">
                 <span class="stat-number">@confirmed.Count</span>
-                <span class="stat-label">Active</span>
+                <span class="stat-label">Активни</span>
             </div>
             <div class="stat-box">
                 <span class="stat-number">@history.Count</span>
-                <span class="stat-label">History</span>
+                <span class="stat-label">История</span>
             </div>
         </div>
     </div>
@@ -82,17 +82,17 @@
     @if (ViewBag.LowStockCount != null && (int)ViewBag.LowStockCount > 0)
     {
         <div class="low-stock-alert">
-            You have @ViewBag.LowStockCount offer/s running low on stock.
+            Вие имате @ViewBag.LowStockCount оферти/а с ниско количество.
         </div>
     }
 
     <!-- ================= PENDING ================= -->
 
-    <h4 class="section-heading">Pending Orders</h4>
+    <h4 class="section-heading">Изчакващи оферти</h4>
 
     @if (!pending.Any())
     {
-        <p class="empty-text">No pending orders.</p>
+        <p class="empty-text">В момента нямате изчакващи оферти</p>
     }
     else
     {
@@ -116,12 +116,12 @@
                         @if (order.IsForSomeoneElse)
                         {
                             <div class="order-meta-line">
-                                <strong>Recipient:</strong>
+                                <strong>Получател:</strong>
                                 @order.RecipientFullName · @order.RecipientPhone
                             </div>
 
                             <div class="order-meta-line muted">
-                                Ordered by: @order.User.FullName
+                                Поръчана от: @order.User.FullName
                             </div>
                         }
                         else
@@ -132,14 +132,14 @@
                         }
 
                         <div class="order-meta-line">
-                            <strong>Delivery type:</strong> @order.DeliveryType
+                            <strong>Вид доставка:</strong> @order.DeliveryType
                         </div>
 
                         @if (order.DeliveryType == "Delivery" &&
                                         !string.IsNullOrEmpty(order.DeliveryAddress))
                         {
                             <div class="order-meta-line">
-                                <strong>Address:</strong> @order.DeliveryAddress
+                                <strong>Адрес:</strong> @order.DeliveryAddress
                             </div>
                         }
 
@@ -159,7 +159,7 @@
                     {
                         <div class="order-item">
                             <span>@item.Offer.Title</span>
-                            <span class="qty">Quantity: @item.Quantity</span>
+                            <span class="qty">Количество: @item.Quantity бр.</span>
                         </div>
                     }
                 </div>
@@ -225,7 +225,7 @@
                 <div class="order-card-footer">
 
                     <div class="order-total">
-                        Total: @order.TotalPrice EUR
+                        Обща сума: @order.TotalPrice EUR
                     </div>
 
                     <div class="actions">
@@ -240,11 +240,11 @@
 
     <!-- ================= CONFIRMED ================= -->
 
-    <h4 class="section-heading mt-5">Active Orders</h4>
+    <h4 class="section-heading mt-5">Активни поръчки</h4>
 
     @if (!confirmed.Any())
     {
-        <p class="empty-text">No active orders.</p>
+        <p class="empty-text">В момента нямате активни поръчки</p>
     }
     else
     {
@@ -268,12 +268,12 @@
                         @if (order.IsForSomeoneElse)
                         {
                             <div class="order-meta-line">
-                                <strong>Recipient:</strong>
+                                <strong>Получател:</strong>
                                 @order.RecipientFullName · @order.RecipientPhone
                             </div>
 
                             <div class="order-meta-line muted">
-                                Ordered by: @order.User.FullName
+                                Поръчана от: @order.User.FullName
                             </div>
                         }
                         else
@@ -284,14 +284,14 @@
                         }
 
                         <div class="order-meta-line">
-                            <strong>Delivery type:</strong> @order.DeliveryType
+                            <strong>Вид доставка:</strong> @order.DeliveryType
                         </div>
 
                         @if (order.DeliveryType == "Delivery" &&
                                         !string.IsNullOrEmpty(order.DeliveryAddress))
                         {
                             <div class="order-meta-line">
-                                <strong>Address:</strong> @order.DeliveryAddress
+                                <strong>Адрес:</strong> @order.DeliveryAddress
                             </div>
                         }
 
@@ -311,7 +311,7 @@
                     {
                         <div class="order-item">
                             <span>@item.Offer.Title</span>
-                            <span class="qty">Quantity: @item.Quantity</span>
+                            <span class="qty">Количество: @item.Quantity бр.</span>
                         </div>
                     }
                 </div>
@@ -377,7 +377,7 @@
                 <div class="order-card-footer">
 
                     <div class="order-total">
-                        Total: @order.TotalPrice EUR
+                        Обща сума: @order.TotalPrice EUR
                     </div>
 
                     <div class="actions">
@@ -392,11 +392,11 @@
 
     <!-- ================= HISTORY ================= -->
 
-    <h4 class="section-heading mt-5">Order History</h4>
+    <h4 class="section-heading mt-5">История на поръчките</h4>
 
     @if (!history.Any())
     {
-        <p class="empty-text">No past orders.</p>
+        <p class="empty-text">В момента нямате завършени поръчки</p>
     }
     else
     {
@@ -413,7 +413,7 @@
                     <div class="order-left">
 
                         <div class="order-id">
-                            Order #@order.Id.ToString().Substring(0, 6)
+                            Поръчка #@order.Id.ToString().Substring(0, 6)
                         </div>
 
                         <div class="order-date">
@@ -423,12 +423,12 @@
                         @if (order.IsForSomeoneElse)
                         {
                             <div class="order-meta-line">
-                                <strong>Recipient:</strong>
+                                <strong>Получател:</strong>
                                 @order.RecipientFullName · @order.RecipientPhone
                             </div>
 
                             <div class="order-meta-line muted">
-                                Ordered by: @order.User.FullName
+                                Поръчана от: @order.User.FullName
                             </div>
                         }
                         else
@@ -439,14 +439,14 @@
                         }
 
                         <div class="order-meta-line">
-                            <strong>Delivery type:</strong> @order.DeliveryType
+                            <strong>Вид доставка:</strong> @order.DeliveryType
                         </div>
 
                         @if (order.DeliveryType == "Delivery" &&
                                         !string.IsNullOrEmpty(order.DeliveryAddress))
                         {
                             <div class="order-meta-line">
-                                <strong>Address:</strong> @order.DeliveryAddress
+                                <strong>Адрес:</strong> @order.DeliveryAddress
                             </div>
                         }
 
@@ -466,7 +466,7 @@
                     {
                         <div class="order-item">
                             <span>@item.Offer.Title</span>
-                            <span class="qty">Quantity: @item.Quantity</span>
+                            <span class="qty">Количество: @item.Quantity бр.</span>
                         </div>
                     }
                 </div>
@@ -532,7 +532,7 @@
                 <div class="order-card-footer">
 
                     <div class="order-total">
-                        Total: @order.TotalPrice EUR
+                        Обща сума: @order.TotalPrice EUR
                     </div>
 
                     <div class="actions">
@@ -547,7 +547,7 @@
         @if (history.Count > 5)
         {
             <button id="showMoreBtn" class="btn btn-outline-secondary mt-3">
-                Show more
+                Покажи още
             </button>
         }
     }
