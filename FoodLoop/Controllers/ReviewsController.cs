@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FoodLoop.Controllers
 {
-    [Authorize(Roles = "Client,Admin")]
+    [Authorize(Roles = "Restaurant,Admin")]
     public class ReviewsController : Controller
     {
         private readonly ApplicationDbContext _db;

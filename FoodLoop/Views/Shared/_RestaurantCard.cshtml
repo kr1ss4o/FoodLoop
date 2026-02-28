@@ -1,0 +1,33 @@
+﻿@model FoodLoop.Models.Entities.Restaurant
+
+<a asp-controller="Restaurant"
+   asp-action="Details"
+   asp-route-id="@Model.Id"
+   class="restaurant-card-link">
+
+    <div class="restaurant-card">
+
+        <img src="@(string.IsNullOrEmpty(Model.ImageUrl)
+                                 ? "/images/no-image.png"
+                                 : Model.ImageUrl)"
+             class="restaurant-image"
+             alt="@Model.Name" />
+
+        <div class="restaurant-body">
+
+            <div class="restaurant-name">
+                @Model.Name
+            </div>
+
+            <div class="restaurant-meta">
+                ⭐ @Model.Rating.ToString("0.0")
+            </div>
+
+            <div class="restaurant-meta">
+                @Model.Address
+            </div>
+
+        </div>
+    </div>
+
+</a>

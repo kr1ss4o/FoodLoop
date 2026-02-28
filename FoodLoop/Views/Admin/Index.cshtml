@@ -1,4 +1,4 @@
-﻿@model IEnumerable<dynamic>
+﻿@model IEnumerable<FoodLoop.Models.Entities.Restaurant>
 @{
     ViewData["Title"] = "Restaurants";
 }
@@ -15,6 +15,7 @@
             <th>Business Email</th>
             <th>Phone</th>
             <th>Address</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -25,6 +26,23 @@
                 <td>@r.BusinessEmail</td>
                 <td>@r.Phone</td>
                 <td>@r.Address</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@r.Id" class="btn btn-sm btn-warning">
+                        Edit
+                    </a>
+
+                    <form asp-action="DeleteRestaurant"
+                          method="post"
+                          style="display:inline;"
+                          onsubmit="return confirm('Сигурен ли си, че искаш да изтриеш този ресторант?');">
+
+                        <input type="hidden" name="id" value="@r.Id" />
+                        @Html.AntiForgeryToken()
+                        <button class="btn btn-sm btn-danger">
+                            Delete
+                        </button>
+                    </form>
+                </td>
             </tr>
         }
     </tbody>

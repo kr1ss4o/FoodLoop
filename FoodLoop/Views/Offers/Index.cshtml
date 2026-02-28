@@ -1,223 +1,107 @@
-﻿@model List<FoodLoop.Models.Entities.Offer>
-@using FoodLoop.Models.Entities
+﻿@model FoodLoop.Models.ViewModels.MarketplaceViewModel
+@using FoodLoop.Models.ViewModels
 
 @{
     ViewData["Title"] = "Marketplace";
-    var categories = ViewBag.Categories as List<FoodLoop.Models.Entities.Category>;
 }
 
 <link rel="stylesheet" href="~/css/store.css" />
 
-<div class="store-wrapper">
+<div class="marketplace">
 
-    <h2 class="store-title">Marketplace</h2>
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Търсиш нещо за хапване?</h1>
 
-    <!-- FILTERS -->
-    <div class="filters-wrapper">
-        <form method="get" asp-controller="Offers" asp-action="Index" class="marketplace-filters">
+            <form asp-controller="Search" asp-action="Index" method="get" class="hero-search">
+                <input type="text"
+                       name="query"
+                       placeholder="Търси оферти или ресторанти..."
+                       class="hero-input" />
 
-            <input type="text"
-                   name="search"
-                   value="@Context.Request.Query["search"]"
-                   placeholder="Search offers, restaurants or tags..."
-                   class="search-input" />
+                <button type="submit" class="hero-btn">
+                    Търси
+                </button>
+            </form>
+        </div>
+    </section>
 
-            <select name="sort" class="sort-select">
-                <option value="">Sort by</option>
-                <option value="price_asc"
-                        selected="@(Context.Request.Query["sort"] == "price_asc")">
-                    Price ↑
-                </option>
-                <option value="price_desc"
-                        selected="@(Context.Request.Query["sort"] == "price_desc")">
-                    Price ↓
-                </option>
-                <option value="newest"
-                        selected="@(Context.Request.Query["sort"] == "newest")">
-                    Newest
-                </option>
-            </select>
-            <!-- Filter by category -->
-            <select name="categoryId" class="sort-select">
-                <option value="">All categories</option>
-                @foreach (var cat in (List<Category>)ViewBag.Categories)
-                {
-                    <option value="@cat.Id" selected="@(ViewBag.CategoryId?.ToString() == cat.Id.ToString())">
-                        @cat.Name
-                    </option>
-                }
-            </select>
+    <!-- CATEGORY BLOCKS -->
+    <section class="category-section">
+        <div class="category-grid">
 
-            <button type="submit" class="filter-btn">
-                Apply
-            </button>
-
-            <a asp-controller="Offers" asp-action="Index" class="clear-btn">
-                Clear
+            <a asp-controller="Offers" asp-action="Index" asp-route-category="fastfood" class="category-card">
+                🍔
+                <span>Бърза храна</span>
             </a>
 
-        </form>
-    </div>
-
-
-    <!-- GRID -->
-    <div class="store-grid">
-
-        @if (!Model.Any())
-        {
-            <p>No active offers found.</p>
-        }
-
-        @foreach (var offer in Model)
-        {
-            <a asp-controller="Offers"
-               asp-action="Details"
-               asp-route-id="@offer.Id"
-               class="store-card-link">
-
-                <div class="store-card">
-
-                    <img src="@(string.IsNullOrEmpty(offer.ImageUrl) ? "/images/no-image.png" : offer.ImageUrl)"
-                         class="store-image"
-                         alt="@offer.Title" />
-
-                    <div class="store-body">
-
-                        <div class="store-title-small">@offer.Title</div>
-
-                        <div class="store-restaurant">
-                            <button type="button"
-                                    class="restaurant-link-btn"
-                                    onclick="event.preventDefault(); event.stopPropagation(); window.location.href='@Url.Action("Details", "Restaurant", new { id = offer.Restaurant.Id })'">
-                                @offer.Restaurant.Name
-                            </button>
-                        </div>
-
-                        <div class="store-price">
-                            @offer.DiscountedPrice.ToString("F2") EUR
-                        </div>
-
-                        <div class="store-stock">
-                            @if (offer.QuantityAvailable <= 2)
-                            {
-                                <div class="low-stock-soft pulse">
-                                    Only @offer.QuantityAvailable left
-                                </div>
-                            }
-                            else if (offer.QuantityAvailable <= 5)
-                            {
-                                <div class="low-stock-soft">
-                                    Only @offer.QuantityAvailable left
-                                </div>
-                            }
-                            else
-                            {
-                                <span class="muted-stock">@offer.QuantityAvailable available</span>
-                            }
-                        </div>
-
-                    </div>
-                </div>
+            <a asp-controller="Offers" asp-action="Index" asp-route-category="restaurant" class="category-card">
+                🍽
+                <span>Ресторанти</span>
             </a>
-        }
 
-    </div>
-    <!-- PAGINATION -->
-    @if (ViewBag.TotalPages > 1)
-    {
-        var current = (int)ViewBag.CurrentPage;
-        var total = (int)ViewBag.TotalPages;
+            <a asp-controller="Offers" asp-action="Index" asp-route-category="supermarket" class="category-card">
+                🛒
+                <span>Супермаркет</span>
+            </a>
 
-        <nav class="mt-4">
-            <ul class="pagination justify-content-center">
+            <a asp-controller="Offers" asp-action="Index" asp-route-category="drinks" class="category-card">
+                🥤
+                <span>Напитки</span>
+            </a>
 
-                <!-- PREVIOUS -->
-                <li class="page-item @(current == 1 ? "disabled" : "")">
-                    <a class="page-link"
-                       asp-action="Index"
-                       asp-route-page="@(current - 1)"
-                       asp-route-search="@ViewBag.Search"
-                       asp-route-sort="@ViewBag.Sort"
-                       asp-route-categoryId="@ViewBag.CategoryId">
-                        «
-                    </a>
-                </li>
+            <a asp-controller="Offers" asp-action="Index" asp-route-category="snacks" class="category-card">
+                🍪
+                <span>Снакс</span>
+            </a>
 
-                @{
-                    int start = Math.Max(1, current - 2);
-                    int end = Math.Min(total, current + 2);
-                }
+        </div>
+    </section>
 
-                @if (start > 1)
-                {
-                    <li class="page-item">
-                        <a class="page-link"
-                           asp-action="Index"
-                           asp-route-page="1"
-                           asp-route-search="@ViewBag.Search"
-                           asp-route-sort="@ViewBag.Sort"
-                           asp-route-categoryId="@ViewBag.CategoryId">
-                            1
-                        </a>
-                    </li>
+    <!-- BREAKFAST -->
+    <section class="offer-section">
+        <h2>Закуска</h2>
 
-                    @if (start > 2)
-                    {
-                        <li class="page-item disabled">
-                            <span class="page-link">...</span>
-                        </li>
-                    }
-                }
+        <div class="store-grid">
+            @foreach (var offer in Model.BreakfastOffers)
+            {
+                @await Html.PartialAsync("_OfferCard", offer)
+            }
+        </div>
 
-                @for (int i = start; i <= end; i++)
-                {
-                    <li class="page-item @(current == i ? "active" : "")">
-                        <a class="page-link"
-                           asp-action="Index"
-                           asp-route-page="@i"
-                           asp-route-search="@ViewBag.Search"
-                           asp-route-sort="@ViewBag.Sort"
-                           asp-route-categoryId="@ViewBag.CategoryId">
-                            @i
-                        </a>
-                    </li>
-                }
+        @await Html.PartialAsync("_SectionPagination",
+        new PaginationViewModel { CurrentPage = Model.BreakfastPage, TotalPages = Model.BreakfastTotalPages, Section = "breakfast" })
+    </section>
 
-                @if (end < total)
-                {
-                    @if (end < total - 1)
-                    {
-                        <li class="page-item disabled">
-                            <span class="page-link">...</span>
-                        </li>
-                    }
+    <!-- LUNCH -->
+    <section class="offer-section">
+        <h2>Обяд</h2>
 
-                    <li class="page-item">
-                        <a class="page-link"
-                           asp-action="Index"
-                           asp-route-page="@total"
-                           asp-route-search="@ViewBag.Search"
-                           asp-route-sort="@ViewBag.Sort"
-                           asp-route-categoryId="@ViewBag.CategoryId">
-                            @total
-                        </a>
-                    </li>
-                }
+        <div class="store-grid">
+            @foreach (var offer in Model.LunchOffers)
+            {
+                @await Html.PartialAsync("_OfferCard", offer)
+            }
+        </div>
 
-                <!-- NEXT -->
-                <li class="page-item @(current == total ? "disabled" : "")">
-                    <a class="page-link"
-                       asp-action="Index"
-                       asp-route-page="@(current + 1)"
-                       asp-route-search="@ViewBag.Search"
-                       asp-route-sort="@ViewBag.Sort"
-                       asp-route-categoryId="@ViewBag.CategoryId">
-                        »
-                    </a>
-                </li>
+        @await Html.PartialAsync("_SectionPagination",
+        new PaginationViewModel { CurrentPage = Model.LunchPage, TotalPages = Model.LunchTotalPages, Section = "lunch" })
+    </section>
 
-            </ul>
-        </nav>
-    }
+    <!-- DINNER -->
+    <section class="offer-section">
+        <h2>Вечеря</h2>
+
+        <div class="store-grid">
+            @foreach (var offer in Model.DinnerOffers)
+            {
+                @await Html.PartialAsync("_OfferCard", offer)
+            }
+        </div>
+
+        @await Html.PartialAsync("_SectionPagination",
+        new PaginationViewModel { CurrentPage = Model.DinnerPage, TotalPages = Model.DinnerTotalPages, Section = "dinner" })
+    </section>
 
 </div>

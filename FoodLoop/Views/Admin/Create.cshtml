@@ -5,8 +5,9 @@
 
 <h2 class="mb-3">Create Restaurant Profile</h2>
 
-<form method="post">
+<form asp-action="Create" method="post" asp-controller="Admin">
     @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="text-danger"></div>
 
     <div class="row g-3">
         <div class="col-md-6">

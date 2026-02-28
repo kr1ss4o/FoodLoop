@@ -1,0 +1,148 @@
+﻿@using FoodLoop.Models.Enums
+@using FoodLoop.Helpers
+@model FoodLoop.Models.Entities.Reservation
+
+<div class="order-card">
+
+    <div class="order-card-header">
+
+        <div class="order-left">
+
+            <div class="order-id">
+                Поръчка #@Model.Id.ToString().Substring(0, 6)
+            </div>
+
+            <div class="order-date">
+                @Model.CreatedAt.ToLocalTime().ToString("dd MMM yyyy • HH:mm")
+            </div>
+
+            @if (Model.IsForSomeoneElse)
+            {
+                <div class="order-meta-line">
+                    <strong>Получател:</strong>
+                    @Model.RecipientFullName · @Model.RecipientPhone
+                </div>
+
+                <div class="order-meta-line muted">
+                    Поръчана от: @Model.User.FullName
+                </div>
+            }
+            else
+            {
+                <div class="order-meta-line">
+                    @Model.User.FullName · @Model.User.PhoneNumber
+                </div>
+            }
+
+            <div class="order-meta-line">
+                <strong>Вид доставка:</strong> @Model.DeliveryType
+            </div>
+
+            @if (Model.DeliveryType == "Delivery" &&
+                        !string.IsNullOrEmpty(Model.DeliveryAddress))
+            {
+                <div class="order-meta-line">
+                    <strong>Адрес:</strong> @Model.DeliveryAddress
+                </div>
+            }
+
+        </div>
+
+        <div class="order-right">
+            <span class="status-badge @GetStatusClass(Model.Status)">
+                @Model.Status.GetDisplayName()
+            </span>
+        </div>
+
+    </div>
+
+    <div class="order-items">
+        @foreach (var item in Model.Items)
+        {
+            <div class="order-item">
+                <span>@item.Offer.Title</span>
+                <span class="qty">Количество: @item.Quantity бр.</span>
+            </div>
+        }
+    </div>
+
+    <div class="client-timeline modern">
+
+        @{
+            var steps = new List<ReservationStatus>
+                {
+                ReservationStatus.Pending,
+                ReservationStatus.Confirmed,
+                ReservationStatus.OutForDelivery,
+                ReservationStatus.Finished
+                };
+
+            if (Model.Status == ReservationStatus.Canceled)
+            {
+                steps.Add(ReservationStatus.Canceled);
+            }
+        }
+
+        @foreach (var step in steps)
+        {
+            if (step == ReservationStatus.OutForDelivery &&
+            Model.DeliveryType != "Delivery")
+            {
+                continue;
+            }
+
+            var reached = Model.StatusLogs.Any(l => l.NewStatus == step)
+            || Model.Status == step
+            || step == ReservationStatus.Pending;
+
+            var time = Model.StatusLogs
+            .Where(l => l.NewStatus == step)
+            .OrderBy(l => l.ChangedAt)
+            .Select(l => (DateTime?)l.ChangedAt)
+            .FirstOrDefault();
+
+            <div class="timeline-step @(reached ? "done" : "")
+                                            @(step == ReservationStatus.Canceled ? "cancel" : "")">
+
+                <div class="circle"></div>
+
+                <span>@step.GetDisplayName()</span>
+
+                @if (time != null)
+                {
+                    <small class="timeline-time">
+                        @time.Value.ToLocalTime().ToString("HH:mm")
+                    </small>
+                }
+            </div>
+
+            if (step != steps.Last())
+            {
+                <div class="timeline-line"></div>
+            }
+        }
+
+    </div>
+
+    <div class="order-card-footer">
+        <div class="order-total">
+            Обща сума: @Model.TotalPrice EUR
+        </div>
+    </div>
+
+</div>
+
+@functions {
+    private string GetStatusClass(ReservationStatus status)
+    {
+        return status switch
+        {
+            ReservationStatus.Pending => "pending",
+            ReservationStatus.Confirmed => "confirmed",
+            ReservationStatus.OutForDelivery => "outfordelivery",
+            ReservationStatus.Finished => "finished",
+            ReservationStatus.Canceled => "canceled",
+            _ => ""
+        };
+    }
+}

@@ -1,12 +1,12 @@
 ﻿using FoodLoop.Data;
+using FoodLoop.Helpers;
 using FoodLoop.Models.Entities;
-using Microsoft.AspNetCore.Authorization;
+using FoodLoop.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodLoop.Controllers
 {
-    [Authorize]
     public class OffersController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -16,72 +16,59 @@ namespace FoodLoop.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(string? search, string? sort, Guid? categoryId, int page = 1)
+        public async Task<IActionResult> Index(
+            int breakfastPage = 1,
+            int lunchPage = 1,
+            int dinnerPage = 1)
         {
-            const int pageSize = 3;
+            const int pageSize = 4;
 
-            var query = _context.Offers
+            IQueryable<Offer> baseQuery = _context.Offers
+                .AsNoTracking()
                 .Where(o => o.QuantityAvailable > 0)
                 .Include(o => o.Restaurant)
-                .Include(o => o.Category)
-                .Include(o => o.OfferTags)
-                    .ThenInclude(ot => ot.Tag)
-                .AsQueryable();
+                .Include(o => o.Category);
 
-            // SEARCH
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                query = query.Where(o =>
-                    o.Title.Contains(search) ||
-                    o.Restaurant.Name.Contains(search) ||
-                    o.OfferTags.Any(t => t.Tag.Name.Contains(search)));
-            }
+            // Закуска
+            var breakfastQuery = baseQuery
+                .Where(o => o.Category.Name == "Закуска")
+                .OrderByDescending(o => o.CreatedAt);
 
-            // CATEGORY FILTER
-            if (categoryId.HasValue)
-            {
-                query = query.Where(o => o.CategoryId == categoryId);
-            }
+            var (breakfastOffers, breakfastTotalPages) =
+                await breakfastQuery.ToPagedListAsync(breakfastPage, pageSize);
 
-            // SORT
-            query = (sort ?? "").ToLower() switch
+            // Обяд
+            var lunchQuery = baseQuery
+                .Where(o => o.Category.Name == "Обяд")
+                .OrderByDescending(o => o.CreatedAt);
+
+            var (lunchOffers, lunchTotalPages) =
+                await lunchQuery.ToPagedListAsync(lunchPage, pageSize);
+
+            // Вечеря
+            var dinnerQuery = baseQuery
+                .Where(o => o.Category.Name == "Вечеря")
+                .OrderByDescending(o => o.CreatedAt);
+
+            var (dinnerOffers, dinnerTotalPages) =
+                await dinnerQuery.ToPagedListAsync(dinnerPage, pageSize);
+
+            var vm = new MarketplaceViewModel
             {
-                "price_asc" => query.OrderBy(o => o.DiscountedPrice),
-                "price_desc" => query.OrderByDescending(o => o.DiscountedPrice),
-                "rating_desc" => query.OrderByDescending(o => o.Restaurant.Rating),
-                _ => query.OrderByDescending(o => o.CreatedAt)
+                BreakfastOffers = breakfastOffers,
+                LunchOffers = lunchOffers,
+                DinnerOffers = dinnerOffers,
+
+                BreakfastPage = breakfastPage,
+                LunchPage = lunchPage,
+                DinnerPage = dinnerPage,
+
+                BreakfastTotalPages = breakfastTotalPages,
+                LunchTotalPages = lunchTotalPages,
+                DinnerTotalPages = dinnerTotalPages
             };
 
-            var totalItems = await query.CountAsync();
-
-            var offers = await query
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .AsNoTracking()
-                .ToListAsync();
-
-            ViewBag.CurrentPage = page;
-            ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
-            ViewBag.Search = search;
-            ViewBag.Sort = sort;
-            ViewBag.CategoryId = categoryId;
-            ViewBag.Categories = await _context.Categories.AsNoTracking().ToListAsync();
-
-            return View(offers);
-        }
-
-        public async Task<IActionResult> Details(Guid id)
-        {
-            var offer = await _context.Offers
-                .Include(o => o.Restaurant)
-                .Include(o => o.OfferTags)
-                    .ThenInclude(ot => ot.Tag)
-                .FirstOrDefaultAsync(o => o.Id == id);
-
-            if (offer == null)
-                return NotFound();
-
-            return View(offer);
+            return View(vm);
         }
     }
 }

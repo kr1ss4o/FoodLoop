@@ -1,383 +1,230 @@
-﻿.store-wrapper {
-    max-width: 1100px;
-    margin: 40px auto;
+﻿/* ======================================================
+   MARKETPLACE PAGE
+====================================================== */
+
+.marketplace {
+    padding: 40px 0;
+    background: #f7f9fb;
 }
 
-.store-title {
-    font-weight: 800;
-    margin-bottom: 30px;
-}
 
-.store-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 20px;
-}
+/* ======================================================
+   HERO SECTION
+====================================================== */
 
-.store-card {
-    background: white;
+.hero {
+    background: #1f8f4c;
+    padding: 60px 40px;
     border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.06);
-    border: 1px solid #eef2f3;
-    transition: .2s ease;
-}
-
-    .store-card:hover {
-        transform: translateY(-4px);
-    }
-
-.store-image {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-}
-
-.store-body {
-    padding: 16px;
-}
-
-.store-title-small {
-    font-weight: 700;
-    margin-bottom: 6px;
-}
-
-.store-restaurant {
-    font-size: 13px;
-    color: #6c7a86;
-    margin-bottom: 10px;
-}
-
-.store-price {
-    font-weight: 800;
-    color: #008b5a;
-    margin-bottom: 8px;
-}
-
-.store-stock {
-    font-size: 12px;
-    margin-bottom: 12px;
-}
-
-.low-stock {
-    color: #b26a00;
-    font-weight: 700;
-}
-
-.add-btn {
-    width: 100%;
-    padding: 10px;
-    border-radius: 14px;
-    border: none;
-    background: linear-gradient(135deg,#00a86b,#008b5a);
     color: white;
-    font-weight: 700;
+    margin-bottom: 50px;
 }
 
-.login-btn {
-    display: block;
+.hero-content {
+    max-width: 800px;
+    margin: 0 auto;
     text-align: center;
-    padding: 10px;
-    border-radius: 14px;
-    background: #eef2f3;
-    text-decoration: none;
+}
+
+.hero h1 {
+    font-size: 32px;
     font-weight: 600;
+    margin-bottom: 20px;
 }
 
-/* FILTERS DEISGN */
-
-.filters-wrapper {
-    background: #ffffff;
-    padding: 18px;
-    border-radius: 16px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
-    margin-bottom: 30px;
-}
-
-.filters-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-}
-
-.filter-input,
-.filter-select {
-    padding: 10px 14px;
-    border-radius: 10px;
-    border: 1px solid #e5e7eb;
-    font-size: 14px;
-    transition: all 0.2s ease;
-}
-
-    .filter-input:focus,
-    .filter-select:focus {
-        border-color: #16a34a;
-        box-shadow: 0 0 0 3px rgba(22,163,74,0.2);
-        outline: none;
-    }
-
-.filter-btn {
-    background: #16a34a;
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 10px;
-    font-weight: 600;
-    transition: all 0.2s ease;
-}
-
-    .filter-btn:hover {
-        background: #15803d;
-    }
-
-.clear-btn {
-    background: transparent;
-    border: 1px solid #e5e7eb;
-    padding: 10px 16px;
-    border-radius: 10px;
-    font-weight: 600;
-}
-
-.clear-btn:hover {
-    background: #f3f4f6;
-}
-
-.store-card-link {
-    text-decoration: none;
-    color: inherit;
-    display: block;
-}
-
-    .store-card-link:hover {
-        text-decoration: none;
-    }
-
-.details-tag {
-    display: inline-block;
-    padding: 4px 10px;
-    background: #f0f4f2;
-    border-radius: 20px;
-    font-size: 13px;
-    margin-right: 6px;
-    text-decoration: none;
-    color: #0a6c3a;
-    transition: 0.2s;
-}
-
-.details-tag:hover {
-    background: #d8efe2;
-}
-
-.marketplace-filters {
+.hero-search {
     display: flex;
     gap: 12px;
-    margin-bottom: 30px;
-    align-items: center;
-}
-
-.search-input {
-    padding: 10px 14px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    width: 280px;
-    font-size: 14px;
-}
-
-.sort-select {
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    font-size: 14px;
-}
-
-.filter-btn {
-    padding: 10px 18px;
-    background: #0a6c3a;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-    .filter-btn:hover {
-        background: #08542d;
-    }
-
-.clear-btn {
-    padding: 10px 16px;
-    background: #f1f1f1;
-    border-radius: 8px;
-    text-decoration: none;
-    color: #333;
-    transition: 0.2s;
-}
-
-.clear-btn:hover {
-    background: #e2e2e2;
-}
-
-.low-stock-soft {
-    display: inline-block;
-    padding: 6px 12px;
-    border-radius: 999px;
-    background: #fff4e5;
-    color: #c56b00;
-    font-weight: 600;
-    font-size: 13px;
-}
-
-.limited-stock {
-    display: inline-block;
-    padding: 6px 12px;
-    border-radius: 999px;
-    background: #f5f7fa;
-    color: #6c7a86;
-    font-weight: 600;
-    font-size: 13px;
-}
-.store-card {
-    position: relative;
-}
-
-.store-card-stretch {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    text-decoration: none;
-}
-
-.store-image,
-.store-body {
-    position: relative;
-    z-index: 2;
-}
-
-.restaurant-link {
-    position: relative;
-    z-index: 3;
-    text-decoration: none;
-    color: inherit;
-    font-weight: 600;
-}
-
-.restaurant-link:hover {
-    opacity: 0.7;
-}
-
-.restaurant-link-btn {
-    all: unset;
-    cursor: pointer;
-    font-weight: 600;
-    color: inherit;
-}
-
-.restaurant-link-btn:hover {
-    opacity: 0.7;
-}
-
-.muted-stock {
-    color: #7a8a99;
-    font-weight: 600;
-}
-
-.marketplace-filters {
-    width: 100%;
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-bottom: 0;
-}
-
-/* PAGINATION */
-
-.pagination-wrapper {
-    margin-top: 30px;
-    display: flex;
-    gap: 10px;
     justify-content: center;
 }
 
-.page-btn {
-    padding: 8px 14px;
-    border-radius: 10px;
-    background: #f1f5f9;
-    text-decoration: none;
-    font-weight: 600;
-    color: #003b55;
+.hero-input {
+    flex: 1;
+    max-width: 500px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    border: none;
+    font-size: 15px;
 }
 
-.page-btn.active {
-    background: #00a86b;
-    color: #fff;
-}
-.pagination .page-link {
-    color: #003b55;
-    font-weight: 600;
-    border-radius: 8px;
-}
-
-.pagination .page-item.active .page-link {
-    background: #00a86b;
-    border-color: #00a86b;
+.hero-btn {
+    background: #0f5f2f;
     color: white;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: 0.2s ease;
 }
 
-.pagination .page-item.disabled .page-link {
-    opacity: 0.6;
-}
-.pagination {
-    gap: 8px;
+    .hero-btn:hover {
+        background: #094421;
+    }
+
+
+/* ======================================================
+   CATEGORY CARDS
+====================================================== */
+
+.category-section {
+    margin-bottom: 60px;
 }
 
-.pagination .page-item {
-    margin: 0;
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 20px;
 }
 
-.pagination .page-link {
-    border-radius: 10px !important;
-    min-width: 38px;
+.category-card {
+    background: white;
+    border-radius: 18px;
+    padding: 30px 20px;
     text-align: center;
+    font-size: 18px;
+    text-decoration: none;
+    color: #333;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+    transition: 0.25s ease;
 }
+
+    .category-card span {
+        display: block;
+        margin-top: 10px;
+        font-size: 14px;
+    }
+
+    .category-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+    }
+
+
+/* ======================================================
+   OFFER SECTIONS
+====================================================== */
+
+.offer-section {
+    margin-bottom: 60px;
+}
+
+    .offer-section h2 {
+        font-size: 22px;
+        margin-bottom: 25px;
+    }
+
+
+/* ======================================================
+   GRID
+====================================================== */
 
 .store-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 28px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 24px;
 }
 
-.store-card {
-    display: flex;
-    flex-direction: column;
+
+/* ======================================================
+   OFFER CARD
+====================================================== */
+
+.offer-card-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.offer-card {
+    background: white;
+    border-radius: 18px;
+    overflow: hidden;
+    transition: 0.25s ease;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+}
+
+    .offer-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+    }
+
+
+/* IMAGE */
+
+.offer-image-wrapper {
+    position: relative;
+    height: 180px;
+    overflow: hidden;
+}
+
+.offer-image {
+    width: 100%;
     height: 100%;
+    object-fit: cover;
 }
 
-.store-body {
+.stock-badge.low {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: #e53935;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 30px;
+    font-size: 12px;
+}
+
+
+/* BODY */
+
+.offer-body {
+    padding: 16px;
+}
+
+.offer-title {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 6px;
+}
+
+.offer-restaurant {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.offer-price-row {
     display: flex;
-    flex-direction: column;
-    flex: 1;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
 }
 
-.store-stock {
-    margin-top: auto;
+.offer-price {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2e7d32;
 }
 
-/* Low stock pulse */
-.pulse {
-    animation: pulseSoft 1.8s infinite;
+.offer-rating {
+    font-size: 13px;
+    color: #444;
 }
 
-@keyframes pulseSoft {
-    0% {
-        box-shadow: 0 0 0 0 rgba(255, 140, 0, 0.5);
-    }
 
-    70% {
-        box-shadow: 0 0 0 6px rgba(255, 140, 0, 0);
-    }
+/* STOCK */
 
-    100% {
-        box-shadow: 0 0 0 0 rgba(255, 140, 0, 0);
-    }
+.offer-stock {
+    font-size: 12px;
+}
+
+.stock-low {
+    color: #d32f2f;
+}
+
+.stock-medium {
+    color: #f57c00;
+}
+
+.stock-normal {
+    color: #777;
 }

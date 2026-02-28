@@ -1,50 +1,50 @@
 ﻿using FoodLoop.Data;
 using FoodLoop.Models.Entities;
 using FoodLoop.Models.ViewModels.Admin;
+using FoodLoop.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace FoodLoop.Controllers.Admin
+namespace FoodLoop.Controllers
 {
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
+        private readonly AdminDeleteService _deleteService;
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
 
-        public AdminController(ApplicationDbContext context, UserManager<User> userManager)
+        public AdminController(
+            AdminDeleteService deleteService,
+            ApplicationDbContext context,
+            UserManager<User> userManager)
         {
+            _deleteService = deleteService;
             _context = context;
             _userManager = userManager;
         }
 
-        // LIST
+        // ================== INDEX ==================
+
         public async Task<IActionResult> Index()
         {
             var restaurants = await _context.Restaurants
                 .AsNoTracking()
-                .OrderBy(r => r.Name)
-                .Select(r => new
-                {
-                    r.Id,
-                    r.Name,
-                    r.BusinessEmail,
-                    r.Phone,
-                    r.Address,
-                    r.OwnerUserId
-                })
                 .ToListAsync();
 
             return View(restaurants);
         }
 
-        // CREATE - GET
-        [HttpGet]
-        public IActionResult Create() => View(new CreateRestaurantViewModel());
+        // ================== CREATE ==================
 
-        // CREATE - POST
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateRestaurantViewModel model)
@@ -52,15 +52,6 @@ namespace FoodLoop.Controllers.Admin
             if (!ModelState.IsValid)
                 return View(model);
 
-            // 1) prevent duplicate user
-            var existing = await _userManager.FindByEmailAsync(model.Email);
-            if (existing != null)
-            {
-                ModelState.AddModelError(nameof(model.Email), "Email already exists.");
-                return View(model);
-            }
-
-            // 2) create user (restaurant owner)
             var user = new User
             {
                 UserName = model.Email,
@@ -68,34 +59,113 @@ namespace FoodLoop.Controllers.Admin
                 FullName = model.OwnerFullName
             };
 
-            var createUserResult = await _userManager.CreateAsync(user, model.Password);
-            if (!createUserResult.Succeeded)
+            var result = await _userManager.CreateAsync(user, model.Password);
+
+            if (!result.Succeeded)
             {
-                foreach (var err in createUserResult.Errors)
-                    ModelState.AddModelError("", err.Description);
+                foreach (var error in result.Errors)
+                    ModelState.AddModelError("", error.Description);
 
                 return View(model);
             }
 
-            // 3) assign role Restaurant
-            await _userManager.AddToRoleAsync(user, "Restaurant");
+            var roleResult = await _userManager.AddToRoleAsync(user, "Restaurant");
 
-            // 4) create Restaurant entity and link OwnerUserId
             var restaurant = new Restaurant
             {
                 Name = model.RestaurantName,
                 BusinessEmail = model.BusinessEmail,
                 Phone = model.Phone,
                 Address = model.Address,
-                ImageUrl = string.IsNullOrWhiteSpace(model.ImageUrl) ? null : model.ImageUrl.Trim(),
-                OwnerUserId = user.Id,
-                Rating = 0
+                ImageUrl = model.ImageUrl,
+                OwnerUserId = user.Id
             };
 
             _context.Restaurants.Add(restaurant);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Restaurant profile created.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // ================== EDIT ==================
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(Guid id)
+        {
+            var restaurant = await _context.Restaurants
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (restaurant == null)
+                return NotFound();
+
+            var vm = new EditRestaurantViewModel
+            {
+                Id = restaurant.Id,
+                Name = restaurant.Name,
+                BusinessEmail = restaurant.BusinessEmail,
+                Phone = restaurant.Phone,
+                Address = restaurant.Address,
+                ImageUrl = restaurant.ImageUrl
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(EditRestaurantViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var restaurant = await _context.Restaurants
+                .FirstOrDefaultAsync(r => r.Id == model.Id);
+
+            if (restaurant == null)
+                return NotFound();
+
+            restaurant.Name = model.Name;
+            restaurant.BusinessEmail = model.BusinessEmail;
+            restaurant.Phone = model.Phone;
+            restaurant.Address = model.Address;
+            restaurant.ImageUrl = model.ImageUrl;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // ================== DELETE ==================
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteRestaurant(Guid id)
+        {
+            await _deleteService.DeleteRestaurantAsync(id);
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteOffer(Guid id)
+        {
+            await _deleteService.DeleteOfferAsync(id);
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteOrder(Guid id)
+        {
+            await _deleteService.DeleteReservationAsync(id);
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteReview(Guid id)
+        {
+            await _deleteService.DeleteReviewAsync(id);
             return RedirectToAction(nameof(Index));
         }
     }

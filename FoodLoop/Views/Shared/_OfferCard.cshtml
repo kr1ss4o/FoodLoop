@@ -1,0 +1,67 @@
+﻿@model FoodLoop.Models.Entities.Offer
+
+@{
+    var remaining = Model.EndsAt - DateTime.UtcNow;
+    var hoursLeft = remaining.TotalHours > 0 ? Math.Floor(remaining.TotalHours) : 0;
+}
+
+<a asp-controller="Offers"
+   asp-action="Details"
+   asp-route-id="@Model.Id"
+   class="offer-card-link">
+
+    <div class="premium-offer-card">
+
+        <div class="premium-image-wrapper">
+            <img src="@(string.IsNullOrEmpty(Model.ImageUrl)
+                                         ? "/images/no-image.png"
+                                         : Model.ImageUrl)"
+                 alt="@Model.Title" />
+
+            @if (hoursLeft > 0)
+            {
+                <div class="premium-badge countdown"
+                     data-end="@Model.EndsAt.ToString("o")">
+                </div>
+            }
+        </div>
+
+        <div class="premium-body">
+
+            <div class="premium-title">
+                @Model.Title
+            </div>
+
+            <div class="premium-restaurant">
+                @Model.Restaurant.Name
+            </div>
+
+            <div class="premium-bottom-row">
+                <div class="premium-price">
+                    @Model.DiscountedPrice.ToString("F2") EUR
+                </div>
+
+                <div class="premium-rating">
+                    ⭐ @Model.Restaurant.Rating.ToString("0.0")
+                </div>
+            </div>
+
+            <div class="premium-stock">
+                @if (Model.QuantityAvailable <= 3)
+                {
+                    <span class="stock-danger">
+                        Остават @Model.QuantityAvailable
+                    </span>
+                }
+                else
+                {
+                    <span class="stock-muted">
+                        @Model.QuantityAvailable налични
+                    </span>
+                }
+            </div>
+
+        </div>
+    </div>
+
+</a>

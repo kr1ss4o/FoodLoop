@@ -1,9 +1,11 @@
 ﻿@using FoodLoop.Models.Enums
 @using FoodLoop.Models.Entities
+@using FoodLoop.Helpers
+
 @model List<FoodLoop.Models.Entities.Reservation>
 
 @{
-    ViewData["Title"] = "Order Manager";
+    ViewData["Title"] = "Управление на поръчки";
     ViewData["BodyClass"] = "profile-body";
 
     var pending = Model
@@ -22,11 +24,6 @@
 }
 
 @functions {
-    private string FormatStatus(ReservationStatus status)
-    {
-        return System.Text.RegularExpressions.Regex
-            .Replace(status.ToString(), "([a-z])([A-Z])", "$1 $2");
-    }
 
     private string StatusClass(ReservationStatus status)
     {
@@ -56,7 +53,6 @@
 
 <div class="order-app">
 
-    <!-- HEADER -->
     <div class="order-app-header">
         <div>
             <h2 class="dashboard-title">Управление на поръчки</h2>
@@ -86,159 +82,23 @@
         </div>
     }
 
-    <!-- ================= PENDING ================= -->
+    <!-- ================= ИЗЧАКВАЩИ ================= -->
 
-    <h4 class="section-heading">Изчакващи оферти</h4>
+    <h4 class="section-heading">Изчакващи поръчки</h4>
 
     @if (!pending.Any())
     {
-        <p class="empty-text">В момента нямате изчакващи оферти</p>
+        <p class="empty-text">В момента нямате изчакващи поръчки</p>
     }
     else
     {
         @foreach (var order in pending)
         {
-            <div class="order-card">
-
-                <!-- HEADER -->
-                <div class="order-card-header">
-
-                    <div class="order-left">
-
-                        <div class="order-id">
-                            Order #@order.Id.ToString().Substring(0, 6)
-                        </div>
-
-                        <div class="order-date">
-                            @order.CreatedAt.ToLocalTime().ToString("dd MMM yyyy • HH:mm")
-                        </div>
-
-                        @if (order.IsForSomeoneElse)
-                        {
-                            <div class="order-meta-line">
-                                <strong>Получател:</strong>
-                                @order.RecipientFullName · @order.RecipientPhone
-                            </div>
-
-                            <div class="order-meta-line muted">
-                                Поръчана от: @order.User.FullName
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="order-meta-line">
-                                @order.User.FullName · @order.User.PhoneNumber
-                            </div>
-                        }
-
-                        <div class="order-meta-line">
-                            <strong>Вид доставка:</strong> @order.DeliveryType
-                        </div>
-
-                        @if (order.DeliveryType == "Delivery" &&
-                                        !string.IsNullOrEmpty(order.DeliveryAddress))
-                        {
-                            <div class="order-meta-line">
-                                <strong>Адрес:</strong> @order.DeliveryAddress
-                            </div>
-                        }
-
-                    </div>
-
-                    <div class="order-right">
-                        <span class="status-badge @StatusClass(order.Status)">
-                            @FormatStatus(order.Status)
-                        </span>
-                    </div>
-
-                </div>
-
-                <!-- ITEMS -->
-                <div class="order-items">
-                    @foreach (var item in order.Items)
-                    {
-                        <div class="order-item">
-                            <span>@item.Offer.Title</span>
-                            <span class="qty">Количество: @item.Quantity бр.</span>
-                        </div>
-                    }
-                </div>
-
-                <!-- TIMELINE -->
-                <div class="client-timeline modern">
-
-                    @{
-                        var steps = new List<ReservationStatus>
-                        {
-                        ReservationStatus.Pending,
-                        ReservationStatus.Confirmed,
-                        ReservationStatus.OutForDelivery,
-                        ReservationStatus.Finished
-                        };
-
-                        if (order.Status == ReservationStatus.Canceled)
-                        {
-                            steps.Add(ReservationStatus.Canceled);
-                        }
-                    }
-
-                    @foreach (var step in steps)
-                    {
-                        if (step == ReservationStatus.OutForDelivery &&
-                        order.DeliveryType != "Delivery")
-                        {
-                            continue;
-                        }
-
-                        var reached = HasReachedStatus(order, step);
-
-                        var time = order.StatusLogs
-                        .Where(l => l.NewStatus == step)
-                        .OrderBy(l => l.ChangedAt)
-                        .Select(l => (DateTime?)l.ChangedAt)
-                        .FirstOrDefault();
-
-                        <div class="timeline-step @(reached ? "done" : "")
-                                                    @(step == ReservationStatus.Canceled ? "cancel" : "")">
-
-                            <div class="circle"></div>
-
-                            <span>@step</span>
-
-                            @if (time != null)
-                            {
-                                <small class="timeline-time">
-                                    @time.Value.ToLocalTime().ToString("HH:mm")
-                                </small>
-                            }
-                        </div>
-
-                        if (step != steps.Last())
-                        {
-                            <div class="timeline-line"></div>
-                        }
-                    }
-
-                </div>
-
-                <!-- FOOTER -->
-                <div class="order-card-footer">
-
-                    <div class="order-total">
-                        Обща сума: @order.TotalPrice EUR
-                    </div>
-
-                    <div class="actions">
-                        <!-- бутоните ти остават същите -->
-                    </div>
-
-                </div>
-
-            </div>
+            @await Html.PartialAsync("_OrderCard", order)
         }
     }
 
-    <!-- ================= CONFIRMED ================= -->
+    <!-- ================= АКТИВНИ ================= -->
 
     <h4 class="section-heading mt-5">Активни поръчки</h4>
 
@@ -250,147 +110,11 @@
     {
         @foreach (var order in confirmed)
         {
-            <div class="order-card confirmed">
-
-                <!-- HEADER -->
-                <div class="order-card-header">
-
-                    <div class="order-left">
-
-                        <div class="order-id">
-                            Order #@order.Id.ToString().Substring(0, 6)
-                        </div>
-
-                        <div class="order-date">
-                            @order.CreatedAt.ToLocalTime().ToString("dd MMM yyyy • HH:mm")
-                        </div>
-
-                        @if (order.IsForSomeoneElse)
-                        {
-                            <div class="order-meta-line">
-                                <strong>Получател:</strong>
-                                @order.RecipientFullName · @order.RecipientPhone
-                            </div>
-
-                            <div class="order-meta-line muted">
-                                Поръчана от: @order.User.FullName
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="order-meta-line">
-                                @order.User.FullName · @order.User.PhoneNumber
-                            </div>
-                        }
-
-                        <div class="order-meta-line">
-                            <strong>Вид доставка:</strong> @order.DeliveryType
-                        </div>
-
-                        @if (order.DeliveryType == "Delivery" &&
-                                        !string.IsNullOrEmpty(order.DeliveryAddress))
-                        {
-                            <div class="order-meta-line">
-                                <strong>Адрес:</strong> @order.DeliveryAddress
-                            </div>
-                        }
-
-                    </div>
-
-                    <div class="order-right">
-                        <span class="status-badge @StatusClass(order.Status)">
-                            @FormatStatus(order.Status)
-                        </span>
-                    </div>
-
-                </div>
-
-                <!-- ITEMS -->
-                <div class="order-items">
-                    @foreach (var item in order.Items)
-                    {
-                        <div class="order-item">
-                            <span>@item.Offer.Title</span>
-                            <span class="qty">Количество: @item.Quantity бр.</span>
-                        </div>
-                    }
-                </div>
-
-                <!-- TIMELINE -->
-                <div class="client-timeline modern">
-
-                    @{
-                        var steps = new List<ReservationStatus>
-                        {
-                        ReservationStatus.Pending,
-                        ReservationStatus.Confirmed,
-                        ReservationStatus.OutForDelivery,
-                        ReservationStatus.Finished
-                        };
-
-                        if (order.Status == ReservationStatus.Canceled)
-                        {
-                            steps.Add(ReservationStatus.Canceled);
-                        }
-                    }
-
-                    @foreach (var step in steps)
-                    {
-                        if (step == ReservationStatus.OutForDelivery &&
-                        order.DeliveryType != "Delivery")
-                        {
-                            continue;
-                        }
-
-                        var reached = HasReachedStatus(order, step);
-
-                        var time = order.StatusLogs
-                        .Where(l => l.NewStatus == step)
-                        .OrderBy(l => l.ChangedAt)
-                        .Select(l => (DateTime?)l.ChangedAt)
-                        .FirstOrDefault();
-
-                        <div class="timeline-step @(reached ? "done" : "")
-                                                    @(step == ReservationStatus.Canceled ? "cancel" : "")">
-
-                            <div class="circle"></div>
-
-                            <span>@step</span>
-
-                            @if (time != null)
-                            {
-                                <small class="timeline-time">
-                                    @time.Value.ToLocalTime().ToString("HH:mm")
-                                </small>
-                            }
-                        </div>
-
-                        if (step != steps.Last())
-                        {
-                            <div class="timeline-line"></div>
-                        }
-                    }
-
-                </div>
-
-                <!-- FOOTER -->
-                <div class="order-card-footer">
-
-                    <div class="order-total">
-                        Обща сума: @order.TotalPrice EUR
-                    </div>
-
-                    <div class="actions">
-                        <!-- бутоните ти остават същите -->
-                    </div>
-
-                </div>
-
-            </div>
+            @await Html.PartialAsync("_OrderCard", order)
         }
     }
 
-    <!-- ================= HISTORY ================= -->
+    <!-- ================= ИСТОРИЯ ================= -->
 
     <h4 class="section-heading mt-5">История на поръчките</h4>
 
@@ -405,142 +129,8 @@
             var index = history.IndexOf(order);
             var hiddenClass = index >= 5 ? "history-hidden" : "";
 
-            <div class="order-card history @hiddenClass">
-
-                <!-- HEADER -->
-                <div class="order-card-header">
-
-                    <div class="order-left">
-
-                        <div class="order-id">
-                            Поръчка #@order.Id.ToString().Substring(0, 6)
-                        </div>
-
-                        <div class="order-date">
-                            @order.CreatedAt.ToLocalTime().ToString("dd MMM yyyy • HH:mm")
-                        </div>
-
-                        @if (order.IsForSomeoneElse)
-                        {
-                            <div class="order-meta-line">
-                                <strong>Получател:</strong>
-                                @order.RecipientFullName · @order.RecipientPhone
-                            </div>
-
-                            <div class="order-meta-line muted">
-                                Поръчана от: @order.User.FullName
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="order-meta-line">
-                                @order.User.FullName · @order.User.PhoneNumber
-                            </div>
-                        }
-
-                        <div class="order-meta-line">
-                            <strong>Вид доставка:</strong> @order.DeliveryType
-                        </div>
-
-                        @if (order.DeliveryType == "Delivery" &&
-                                        !string.IsNullOrEmpty(order.DeliveryAddress))
-                        {
-                            <div class="order-meta-line">
-                                <strong>Адрес:</strong> @order.DeliveryAddress
-                            </div>
-                        }
-
-                    </div>
-
-                    <div class="order-right">
-                        <span class="status-badge @StatusClass(order.Status)">
-                            @FormatStatus(order.Status)
-                        </span>
-                    </div>
-
-                </div>
-
-                <!-- ITEMS -->
-                <div class="order-items">
-                    @foreach (var item in order.Items)
-                    {
-                        <div class="order-item">
-                            <span>@item.Offer.Title</span>
-                            <span class="qty">Количество: @item.Quantity бр.</span>
-                        </div>
-                    }
-                </div>
-
-                <!-- TIMELINE -->
-                <div class="client-timeline modern">
-
-                    @{
-                        var steps = new List<ReservationStatus>
-                        {
-                        ReservationStatus.Pending,
-                        ReservationStatus.Confirmed,
-                        ReservationStatus.OutForDelivery,
-                        ReservationStatus.Finished
-                        };
-
-                        if (order.Status == ReservationStatus.Canceled)
-                        {
-                            steps.Add(ReservationStatus.Canceled);
-                        }
-                    }
-
-                    @foreach (var step in steps)
-                    {
-                        if (step == ReservationStatus.OutForDelivery &&
-                        order.DeliveryType != "Delivery")
-                        {
-                            continue;
-                        }
-
-                        var reached = HasReachedStatus(order, step);
-
-                        var time = order.StatusLogs
-                        .Where(l => l.NewStatus == step)
-                        .OrderBy(l => l.ChangedAt)
-                        .Select(l => (DateTime?)l.ChangedAt)
-                        .FirstOrDefault();
-
-                        <div class="timeline-step @(reached ? "done" : "")
-                                                    @(step == ReservationStatus.Canceled ? "cancel" : "")">
-
-                            <div class="circle"></div>
-
-                            <span>@step</span>
-
-                            @if (time != null)
-                            {
-                                <small class="timeline-time">
-                                    @time.Value.ToLocalTime().ToString("HH:mm")
-                                </small>
-                            }
-                        </div>
-
-                        if (step != steps.Last())
-                        {
-                            <div class="timeline-line"></div>
-                        }
-                    }
-
-                </div>
-
-                <!-- FOOTER -->
-                <div class="order-card-footer">
-
-                    <div class="order-total">
-                        Обща сума: @order.TotalPrice EUR
-                    </div>
-
-                    <div class="actions">
-                        <!-- бутоните ти остават същите -->
-                    </div>
-
-                </div>
-
+            <div class="@hiddenClass">
+                @await Html.PartialAsync("_OrderCard", order)
             </div>
         }
 

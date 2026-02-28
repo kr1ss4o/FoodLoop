@@ -1,6 +1,7 @@
 ﻿using FoodLoop.Data;
 using FoodLoop.Data.Seed;
 using FoodLoop.Models.Entities;
+using FoodLoop.Services;
 using FoodLoop.Services.Implementations;
 using FoodLoop.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -15,6 +16,7 @@ builder.Services.AddScoped<IDashboardAnalyticsService, DashboardAnalyticsService
 // DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<AdminDeleteService>();
 
 // Identity
 builder.Services
