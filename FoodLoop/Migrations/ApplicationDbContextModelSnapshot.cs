@@ -102,9 +102,6 @@ namespace FoodLoop.Migrations
                     b.Property<int>("QuantityAvailable")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("RestaurantId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -112,8 +109,6 @@ namespace FoodLoop.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
-
-                    b.HasIndex("RestaurantId");
 
                     b.ToTable("Offers");
                 });
@@ -161,6 +156,9 @@ namespace FoodLoop.Migrations
                     b.Property<string>("RecipientPhone")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("RestaurantId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -174,6 +172,8 @@ namespace FoodLoop.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("OfferId");
+
+                    b.HasIndex("RestaurantId");
 
                     b.HasIndex("UserId");
 
@@ -760,7 +760,7 @@ namespace FoodLoop.Migrations
 
                     b.Navigation("RestaurantsOwned");
                 });
-#pragma warning restore 612, 618
+            #pragma warning restore 612, 618
         }
     }
 }

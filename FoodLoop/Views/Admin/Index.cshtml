@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<FoodLoop.Models.Entities.Restaurant>
+@using FoodLoop.Models.ViewModels;
 @{
     ViewData["Title"] = "Restaurants";
 }
@@ -47,3 +48,13 @@
         }
     </tbody>
 </table>
+
+@await Html.PartialAsync("_SectionPagination",
+new PaginationViewModel
+{
+    CurrentPage = ViewBag.CurrentPage ?? 1,
+    TotalPages = ViewBag.TotalPages ?? 1,
+    Action = ViewContext.RouteData.Values["action"]?.ToString(),
+    Controller = "Admin",
+    Query = ViewBag.Search
+})

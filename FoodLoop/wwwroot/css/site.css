@@ -137,6 +137,23 @@ img {
         border-radius: 999px;
         padding: 0.35em 0.55em;
     }
+/* NAVBAR ADMIN DROPDOWN */
+
+    .navbar .dropdown-menu {
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        border: none;
+        padding: 8px;
+    }
+
+    .navbar .dropdown-item {
+        border-radius: 8px;
+        transition: 0.2s ease;
+    }
+
+        .navbar .dropdown-item:hover {
+            background-color: #f1f5f9;
+        }
 
 /* =========================
    LEGACY NAVBAR (IF ANY PAGES STILL USE IT)

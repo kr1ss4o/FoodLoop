@@ -5,7 +5,7 @@
 
 @{
     /* =====================================================
-       GET CURRENT USER (ASYNC SAFE)
+    GET CURRENT USER (ASYNC SAFE)
     ===================================================== */
 
     User? user = await UserManager.GetUserAsync(User);
@@ -20,7 +20,8 @@
         role = roles.FirstOrDefault() ?? "Client";
     }
 
-    bool isBusiness = role == "Restaurant";
+    bool isAdmin = role == "Admin";
+    bool isBusiness = role == "Restaurant" && !isAdmin;
 
     /* =====================================================
        ACTIVE PAGE DETECTION
@@ -68,17 +69,6 @@
 
             <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
                 
-                <!-- ADMIN PANEL -->
-
-                @if (User.IsInRole("Admin"))
-                {
-                    <li class="nav-item">
-                        <a asp-controller="Admin" asp-action="Index" class="nav-link">
-                            <i class="bi bi-shield-lock"></i> Admin
-                        </a>
-                    </li>
-                }
-
                 <!-- MARKETPLACE (OFFERS) -->
 
                 <li class="nav-item">
@@ -90,10 +80,97 @@
                     </a>
                 </li>
 
-                @if (!isBusiness)
+                @if (isAdmin) // Admin panel
                 {
-                    <!-- CLIENT LINKS -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle @(controller == "Admin" ? "active fw-semibold" : "")"
+                           href="#"
+                           role="button"
+                           data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            <i class="bi bi-shield-lock"></i> Admin
+                        </a>
 
+                        <ul class="dropdown-menu dropdown-menu-end">
+
+                            <li>
+                                <a class="dropdown-item"
+                                   asp-controller="Admin"
+                                   asp-action="Dashboard">
+                                    <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item"
+                                   asp-controller="Admin"
+                                   asp-action="Index">
+                                    <i class="bi bi-shop me-2"></i> Restaurants
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item"
+                                   asp-controller="Admin"
+                                   asp-action="Offers">
+                                    <i class="bi bi-megaphone me-2"></i> Offers
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item"
+                                   asp-controller="Admin"
+                                   asp-action="Reservations">
+                                    <i class="bi bi-receipt me-2"></i> Orders
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item"
+                                   asp-controller="Admin"
+                                   asp-action="Reviews">
+                                    <i class="bi bi-star me-2"></i> Reviews
+                                </a>
+                            </li>
+
+                        </ul>
+                    </li>
+                }
+                else if (isBusiness) // Business nav-bar
+                {
+                    <li class="nav-item">
+                        <a asp-controller="OrderManager"
+                           asp-action="Index"
+                           class="nav-link @(isOrderManagerActive ? "active fw-semibold" : "")">
+
+                            <i class="bi bi-receipt"></i> Orders
+
+                            <span id="cartBadge"
+                                  class="badge bg-success ms-1 @(ViewBag.CartCount > 0 ? "" : "d-none")">
+                                @(ViewBag.CartCount ?? 0)
+                            </span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a asp-controller="RestaurantDashboard"
+                           asp-action="Index"
+                           class="nav-link @(controller == "RestaurantDashboard" ? "active fw-semibold" : "")">
+                            <i class="bi bi-graph-up"></i> Dashboard
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a asp-controller="OfferManager"
+                           asp-action="Index"
+                           class="nav-link @(isOfferManagerActive ? "active fw-semibold" : "")">
+
+                            <i class="bi bi-megaphone"></i> Offers
+                        </a>
+                    </li>
+                }
+                else // Client nav-bar
+                {
                     <li class="nav-item position-relative">
 
                         <a asp-controller="Cart"
@@ -123,45 +200,10 @@
 
                     <li class="nav-item">
                         <a asp-controller="Restaurant"
-                            asp-action="Index"
-                            class="nav-link">
+                           asp-action="Index"
+                           class="nav-link">
                             <i class="bi bi-shop"></i>
                             Restaurants
-                        </a>
-                    </li>
-
-                }
-                else
-                {
-                    <!-- BUSINESS LINKS -->
-
-                    <li class="nav-item">
-                        <a asp-controller="OrderManager"
-                           asp-action="Index"
-                           class="nav-link @(isOrderManagerActive ? "active fw-semibold" : "")">
-
-                            <i class="bi bi-receipt"></i> Orders
-
-                            <span id="cartBadge"
-                                  class="badge bg-success ms-1 @(ViewBag.CartCount > 0 ? "" : "d-none")">
-                                @(ViewBag.CartCount ?? 0)
-                            </span>
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a asp-controller="OfferManager"
-                           asp-action="Index"
-                           class="nav-link @(isOfferManagerActive ? "active fw-semibold" : "")">
-
-                            <i class="bi bi-megaphone"></i> Offers
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a asp-controller="RestaurantDashboard"
-                           asp-action="Index"
-                           class="nav-link @(controller == "RestaurantDashboard" ? "active fw-semibold" : "")">
-                            <i class="bi bi-graph-up"></i> Dashboard
                         </a>
                     </li>
                 }

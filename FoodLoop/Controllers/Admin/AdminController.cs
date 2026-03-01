@@ -37,6 +37,121 @@ namespace FoodLoop.Controllers
             return View(restaurants);
         }
 
+        // ================== DASHBOARD ==================
+
+        public async Task<IActionResult> Dashboard()
+        {
+            var stats = new
+            {
+                Restaurants = await _context.Restaurants.CountAsync(),
+                Offers = await _context.Offers.CountAsync(),
+                Reservations = await _context.Reservations.CountAsync(),
+                Reviews = await _context.Reviews.CountAsync()
+            };
+
+            return View(stats);
+        }
+
+        // ================== OFFERS ==================
+
+        public async Task<IActionResult> Offers(string? search, int page = 1)
+        {
+            const int pageSize = 10;
+
+            var query = _context.Offers
+                .Include(o => o.Restaurant)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(o =>
+                    o.Title.Contains(search) ||
+                    o.Restaurant.Name.Contains(search));
+            }
+
+            var totalItems = await query.CountAsync();
+
+            var offers = await query
+                .OrderByDescending(o => o.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+            ViewBag.Search = search;
+
+            return View(offers);
+        }
+
+        public async Task<IActionResult> Reservations(string? search, int page = 1)
+        {
+            const int pageSize = 10;
+
+            var query = _context.Reservations
+                .Include(r => r.User)
+                .Include(r => r.Items)
+                    .ThenInclude(i => i.Offer)
+                        .ThenInclude(o => o.Restaurant)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(r =>
+                    r.User.Email.Contains(search) ||
+                    r.Items.Any(i =>
+                        i.Offer.Restaurant.Name.Contains(search)));
+            }
+
+            var totalItems = await query.CountAsync();
+
+            var reservations = await query
+                .OrderByDescending(r => r.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+            ViewBag.Search = search;
+
+            return View(reservations);
+        }
+
+        public async Task<IActionResult> Reviews(string? search, int page = 1)
+        {
+            const int pageSize = 10;
+
+            var query = _context.Reviews
+                .Include(r => r.Reservation)
+                    .ThenInclude(res => res.Items)
+                        .ThenInclude(i => i.Offer)
+                            .ThenInclude(o => o.Restaurant)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(r =>
+                    (r.Comment != null && r.Comment.Contains(search)) ||
+                    r.Reservation.Items.Any(i =>
+                        i.Offer.Restaurant.Name.Contains(search)));
+            }
+
+            var totalItems = await query.CountAsync();
+
+            var reviews = await query
+                .OrderByDescending(r => r.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+            ViewBag.Search = search;
+
+            return View(reviews);
+        }
+
         // ================== CREATE ==================
 
         [HttpGet]

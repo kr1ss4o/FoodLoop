@@ -27,15 +27,18 @@ namespace FoodLoop.Services
             if (restaurant == null)
                 return;
 
-            // Всички Offer-и на ресторанта
-            var offerIds = await _context.Offers
+            var ownerUserId = restaurant.OwnerUserId;
+
+            // Всички Offers на ресторанта
+            var offers = await _context.Offers
                 .Where(o => o.RestaurantId == restaurantId)
-                .Select(o => o.Id)
                 .ToListAsync();
+
+            var offerIds = offers.Select(o => o.Id).ToList();
 
             if (offerIds.Any())
             {
-                // ReservationItems за тези offers
+                // ReservationItems
                 var reservationItems = await _context.Set<ReservationItem>()
                     .Where(i => offerIds.Contains(i.OfferId))
                     .ToListAsync();
@@ -45,24 +48,22 @@ namespace FoodLoop.Services
                     .Distinct()
                     .ToList();
 
-                // Reviews (през Reservation)
+                // Reviews
                 var reviews = await _context.Reviews
                     .Where(rv => reservationIds.Contains(rv.ReservationId))
                     .ToListAsync();
 
                 _context.Reviews.RemoveRange(reviews);
 
-                // Status logs
+                // Status Logs
                 var logs = await _context.Set<ReservationStatusLog>()
                     .Where(l => reservationIds.Contains(l.ReservationId))
                     .ToListAsync();
 
-                _context.Set<ReservationStatusLog>()
-                    .RemoveRange(logs);
+                _context.Set<ReservationStatusLog>().RemoveRange(logs);
 
-                // 5️⃣ ReservationItems
-                _context.Set<ReservationItem>()
-                    .RemoveRange(reservationItems);
+                // ReservationItems
+                _context.Set<ReservationItem>().RemoveRange(reservationItems);
 
                 // Reservations
                 var reservations = await _context.Reservations
@@ -78,22 +79,16 @@ namespace FoodLoop.Services
 
                 _context.OfferTags.RemoveRange(offerTags);
 
-                // 8️⃣ Offers
-                var offers = await _context.Offers
-                    .Where(o => offerIds.Contains(o.Id))
-                    .ToListAsync();
-
+                // Offers
                 _context.Offers.RemoveRange(offers);
             }
 
-            // Restaurant
-
-            // Remove the restaurant
+            // Restaurant (първо трием него, защото User може да има FK към него)
             _context.Restaurants.Remove(restaurant);
 
-            // Remove the user identity
+            // User (накрая)
             var ownerUser = await _context.Users
-                .FirstOrDefaultAsync(u => u.Id == restaurant.OwnerUserId);
+                .FirstOrDefaultAsync(u => u.Id == ownerUserId);
 
             if (ownerUser != null)
             {

@@ -35,6 +35,12 @@
     <link rel="stylesheet" href="~/css/auth.css" />
     <link rel="stylesheet" href="~/css/edit-profile-modal.css" />
 
+    <!-- Special admin design -->
+    @if (User.IsInRole("Admin"))
+    {
+        <link rel="stylesheet" href="~/css/admin.css" />
+    }
+
 </head>
 
 <body class="@ViewData["BodyClass"]">
