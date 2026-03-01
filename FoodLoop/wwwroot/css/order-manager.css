@@ -293,3 +293,26 @@
     font-size: 15px;
     font-weight: 700;
 }
+
+/* =============================
+   MINI COUNTDOWN BADGE
+============================= */
+
+.pending-countdown {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 5px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #fff3e0;
+    color: #e65100;
+    min-width: 70px;
+    text-align: center;
+    transition: 0.3s ease;
+}
+
+    .pending-countdown.warning {
+        background: #ffebee;
+        color: #c62828;
+    }

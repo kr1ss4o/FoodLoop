@@ -38,8 +38,7 @@
                 <strong>Вид доставка:</strong> @Model.DeliveryType
             </div>
 
-            @if (Model.DeliveryType == "Delivery" &&
-                        !string.IsNullOrEmpty(Model.DeliveryAddress))
+            @if (Model.DeliveryType == "Delivery" && !string.IsNullOrEmpty(Model.DeliveryAddress))
             {
                 <div class="order-meta-line">
                     <strong>Адрес:</strong> @Model.DeliveryAddress
@@ -51,6 +50,21 @@
         <div class="order-right">
             <span class="status-badge @GetStatusClass(Model.Status)">
                 @Model.Status.GetDisplayName()
+
+                <!-- EXPIRATION BADGE -->
+
+                @if (Model.Status == ReservationStatus.Pending)
+                {
+                    var expiresAt = DateTime.SpecifyKind(
+                    Model.CreatedAt,
+                    DateTimeKind.Utc
+                    ).AddMinutes(30);
+
+                    <span class="pending-countdown"
+                          data-expires="@expiresAt.ToString("yyyy-MM-ddTHH:mm:ssZ")">
+                        00:00
+                    </span>
+                }
             </span>
         </div>
 
@@ -66,68 +80,91 @@
         }
     </div>
 
-    <div class="client-timeline modern">
-
-        @{
-            var steps = new List<ReservationStatus>
-                {
-                ReservationStatus.Pending,
-                ReservationStatus.Confirmed,
-                ReservationStatus.OutForDelivery,
-                ReservationStatus.Finished
-                };
-
-            if (Model.Status == ReservationStatus.Canceled)
-            {
-                steps.Add(ReservationStatus.Canceled);
-            }
-        }
-
-        @foreach (var step in steps)
-        {
-            if (step == ReservationStatus.OutForDelivery &&
-            Model.DeliveryType != "Delivery")
-            {
-                continue;
-            }
-
-            var reached = Model.StatusLogs.Any(l => l.NewStatus == step)
-            || Model.Status == step
-            || step == ReservationStatus.Pending;
-
-            var time = Model.StatusLogs
-            .Where(l => l.NewStatus == step)
-            .OrderBy(l => l.ChangedAt)
-            .Select(l => (DateTime?)l.ChangedAt)
-            .FirstOrDefault();
-
-            <div class="timeline-step @(reached ? "done" : "")
-                                            @(step == ReservationStatus.Canceled ? "cancel" : "")">
-
-                <div class="circle"></div>
-
-                <span>@step.GetDisplayName()</span>
-
-                @if (time != null)
-                {
-                    <small class="timeline-time">
-                        @time.Value.ToLocalTime().ToString("HH:mm")
-                    </small>
-                }
-            </div>
-
-            if (step != steps.Last())
-            {
-                <div class="timeline-line"></div>
-            }
-        }
-
-    </div>
-
     <div class="order-card-footer">
+
         <div class="order-total">
             Обща сума: @Model.TotalPrice EUR
         </div>
+
+        <div class="actions">
+
+            @* PENDING *@
+            @if (Model.Status == ReservationStatus.Pending)
+            {
+                <form asp-action="Confirm" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn-action confirm-btn">
+                        Потвърди
+                    </button>
+                </form>
+
+                <form asp-action="Cancel" method="post" class="d-inline ms-2">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn-action cancel-btn">
+                        Откажи
+                    </button>
+                </form>
+            }
+
+            @* CONFIRMED *@
+            @if (Model.Status == ReservationStatus.Confirmed)
+            {
+                if (Model.DeliveryType.Equals("Delivery", StringComparison.OrdinalIgnoreCase))
+                {
+                    <!-- Delivery order - only Send + Cancel -->
+                    <form asp-action="OutForDelivery" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button type="submit" class="btn-action delivery-btn">
+                            Изпрати
+                        </button>
+                    </form>
+
+                    <form asp-action="Cancel" method="post" class="d-inline ms-2">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button type="submit" class="btn-action cancel-btn">
+                            Откажи
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <!-- Pickup order -->
+                    <form asp-action="Finish" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button type="submit" class="btn-action finish-btn">
+                            Завърши
+                        </button>
+                    </form>
+
+                    <form asp-action="Cancel" method="post" class="d-inline ms-2">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button type="submit" class="btn-action cancel-btn">
+                            Откажи
+                        </button>
+                    </form>
+                }
+            }
+
+            @if (Model.Status == ReservationStatus.OutForDelivery)
+            {
+                <!-- Only Finish -->
+                <form asp-action="Finish" method="post" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn-action finish-btn">
+                        Завърши
+                    </button>
+                </form>
+            }
+
+        </div>
+
     </div>
 
 </div>

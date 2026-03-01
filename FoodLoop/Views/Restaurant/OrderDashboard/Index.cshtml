@@ -152,5 +152,44 @@
             });
             this.style.display = "none";
         });
+
+        // 30 min expiration timer
+
+                document.addEventListener("DOMContentLoaded", function () {
+
+            const timers = document.querySelectorAll(".pending-countdown");
+
+            timers.forEach(timer => {
+
+                const expiresAt = new Date(timer.dataset.expires);
+
+                function updateTimer() {
+
+                    const now = new Date();
+                    const diff = Math.floor((expiresAt - now) / 1000);
+
+                    if (diff <= 0) {
+                        timer.textContent = "00:00";
+                        timer.classList.add("warning");
+                        return;
+                    }
+
+                    const minutes = Math.floor(diff / 60);
+                    const seconds = diff % 60;
+
+                    timer.textContent =
+                        String(minutes).padStart(2, '0') + ":" +
+                        String(seconds).padStart(2, '0');
+
+                    if (diff <= 300) {
+                        timer.classList.add("warning");
+                    }
+                }
+
+                updateTimer();
+                setInterval(updateTimer, 1000);
+            });
+
+        });
     </script>
 }

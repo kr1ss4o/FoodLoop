@@ -70,5 +70,18 @@ namespace FoodLoop.Controllers
 
             return View(vm);
         }
+        public async Task<IActionResult> Details(Guid id)
+        {
+            var offer = await _context.Offers
+                .Include(o => o.Restaurant)
+                .Include(o => o.OfferTags)
+                    .ThenInclude(ot => ot.Tag)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (offer == null)
+                return NotFound();
+
+            return View(offer);
+        }
     }
 }
