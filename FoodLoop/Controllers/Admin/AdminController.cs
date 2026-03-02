@@ -26,9 +26,9 @@ namespace FoodLoop.Controllers
             _userManager = userManager;
         }
 
-        // ================== INDEX ==================
+        // ================== RESTAURANTS ==================
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Restaurants()
         {
             var restaurants = await _context.Restaurants
                 .AsNoTracking()

@@ -45,7 +45,7 @@
 
 <body class="@ViewData["BodyClass"]">
 
-    @if (!hideUI && isLogged)
+    @if (!hideUI)
     {
         @await Html.PartialAsync("_Navbar")
     }

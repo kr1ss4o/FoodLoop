@@ -4,50 +4,58 @@
     ViewData["Title"] = "Offers";
 }
 
-<h1>Offers</h1>
+<div class="admin-wrapper">
 
-<form method="get" class="admin-search">
-    <input type="text" name="search" value="@ViewBag.Search" placeholder="Search..." />
-    <button type="submit">Search</button>
-</form>
+    <div class="admin-header">
+        <h1 class="admin-title">Offers</h1>
+    </div>
 
-<table class="admin-table">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Restaurant</th>
-            <th>Price</th>
-            <th>Ends</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var o in Model)
-        {
-            <tr>
-                <td>@o.Title</td>
-                <td>@o.Restaurant.Name</td>
-                <td>@o.DiscountedPrice</td>
-                <td>@o.EndsAt.ToString("dd.MM.yyyy HH:mm")</td>
-                <td>
-                    <form asp-action="DeleteOffer"
-                          method="post"
-                          onsubmit="return confirmDelete();">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="id" value="@o.Id" />
-                        <button class="btn-danger">Delete</button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-@await Html.PartialAsync("_SectionPagination",
-new PaginationViewModel
-{
-    CurrentPage = ViewBag.CurrentPage,
-    TotalPages = ViewBag.TotalPages,
-    Action = ViewContext.RouteData.Values["action"]?.ToString(),
-    Controller = "Admin",
-    Query = ViewBag.Search
-})
+    <form method="get" class="admin-search">
+        <input type="text" name="search" value="@ViewBag.Search" placeholder="Search offers..." />
+        <button type="submit">Search</button>
+    </form>
+
+    <div class="admin-table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Restaurant</th>
+                    <th>Price</th>
+                    <th>Ends</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var o in Model)
+                {
+                    <tr>
+                        <td>@o.Title</td>
+                        <td>@o.Restaurant?.Name</td>
+                        <td>@o.DiscountedPrice</td>
+                        <td>@o.EndsAt.ToString("dd.MM.yyyy HH:mm")</td>
+                        <td>
+                            <a asp-action="OfferDetails" asp-route-id="@o.Id" class="btn-details">Details</a>
+                            <form asp-action="DeleteOffer" method="post" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@o.Id" />
+                                <button class="btn-delete">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @await Html.PartialAsync("_SectionPagination",
+    new PaginationViewModel
+    {
+        CurrentPage = ViewBag.CurrentPage,
+        TotalPages = ViewBag.TotalPages,
+        Action = "Offers",
+        Controller = "Admin",
+        Query = ViewBag.Search
+    })
+
+</div>
