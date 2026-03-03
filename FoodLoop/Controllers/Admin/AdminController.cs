@@ -1,287 +1,235 @@
-﻿using FoodLoop.Data;
-using FoodLoop.Models.Entities;
-using FoodLoop.Models.ViewModels.Admin;
-using FoodLoop.Services;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using FoodLoop.Data;
+using FoodLoop.Models.Entities;
 
-namespace FoodLoop.Controllers
+[Authorize(Roles = "Admin")]
+public class AdminController : Controller
 {
-    [Authorize(Roles = "Admin")]
-    public class AdminController : Controller
+    private readonly ApplicationDbContext _context;
+    private const int pageSize = 10;
+
+    public AdminController(ApplicationDbContext context)
     {
-        private readonly AdminDeleteService _deleteService;
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<User> _userManager;
+        _context = context;
+    }
 
-        public AdminController(
-            AdminDeleteService deleteService,
-            ApplicationDbContext context,
-            UserManager<User> userManager)
+    // =====================================================
+    // DASHBOARD
+    // =====================================================
+
+    public async Task<IActionResult> Dashboard()
+    {
+        var model = new
         {
-            _deleteService = deleteService;
-            _context = context;
-            _userManager = userManager;
+            Restaurants = await _context.Restaurants.CountAsync(),
+            Offers = await _context.Offers.CountAsync(),
+            Reservations = await _context.Reservations.CountAsync(),
+            Reviews = await _context.Reviews.CountAsync()
+        };
+
+        return View(model);
+    }
+
+    // =====================================================
+    // RESTAURANTS
+    // =====================================================
+
+    public async Task<IActionResult> Restaurants(string? search, int page = 1)
+    {
+        var query = _context.Restaurants
+            .Include(r => r.Owner)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(r =>
+                r.Name.Contains(search) ||
+                r.BusinessEmail.Contains(search));
         }
 
-        // ================== RESTAURANTS ==================
+        var total = await query.CountAsync();
 
-        public async Task<IActionResult> Restaurants()
+        var restaurants = await query
+            .OrderBy(r => r.Name)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        ViewBag.CurrentPage = page;
+        ViewBag.TotalPages = (int)Math.Ceiling(total / (double)pageSize);
+        ViewBag.Search = search;
+
+        return View(restaurants);
+    }
+
+    public async Task<IActionResult> Details(Guid id)
+    {
+        var restaurant = await _context.Restaurants
+            .Include(r => r.Owner)
+            .Include(r => r.Offers)
+            .FirstOrDefaultAsync(r => r.Id == id);
+
+        if (restaurant == null)
+            return NotFound();
+
+        return View(restaurant);
+    }
+
+    // =====================================================
+    // OFFERS
+    // =====================================================
+
+    public async Task<IActionResult> Offers(string? search, int page = 1)
+    {
+        var query = _context.Offers
+            .Include(o => o.Restaurant)
+            .Include(o => o.Category)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(search))
         {
-            var restaurants = await _context.Restaurants
-                .AsNoTracking()
-                .ToListAsync();
-
-            return View(restaurants);
+            query = query.Where(o =>
+                o.Title.Contains(search) ||
+                o.Restaurant.Name.Contains(search));
         }
 
-        // ================== DASHBOARD ==================
+        var total = await query.CountAsync();
 
-        public async Task<IActionResult> Dashboard()
+        var offers = await query
+            .OrderByDescending(o => o.EndsAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        ViewBag.CurrentPage = page;
+        ViewBag.TotalPages = (int)Math.Ceiling(total / (double)pageSize);
+        ViewBag.Search = search;
+
+        return View(offers);
+    }
+
+    public async Task<IActionResult> OfferDetails(Guid id)
+    {
+        var offer = await _context.Offers
+            .Include(o => o.Restaurant)
+            .Include(o => o.Category)                     
+            .Include(o => o.OfferTags)                    
+                .ThenInclude(ot => ot.Tag)                
+            .FirstOrDefaultAsync(o => o.Id == id);
+
+        if (offer == null)
+            return NotFound();
+
+        return View(offer);
+    }
+
+    // =====================================================
+    // RESERVATIONS (ORDERS)
+    // =====================================================
+
+    public async Task<IActionResult> Reservations(string? search, int page = 1)
+    {
+        var query = _context.Reservations
+            .Include(r => r.User)
+            .Include(r => r.Items)
+                .ThenInclude(i => i.Offer)
+                    .ThenInclude(o => o.Restaurant)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(search))
         {
-            var stats = new
-            {
-                Restaurants = await _context.Restaurants.CountAsync(),
-                Offers = await _context.Offers.CountAsync(),
-                Reservations = await _context.Reservations.CountAsync(),
-                Reviews = await _context.Reviews.CountAsync()
-            };
-
-            return View(stats);
+            query = query.Where(r =>
+                r.Id.ToString().Contains(search) ||
+                r.User.Email.Contains(search) ||
+                r.Items.Any(i => i.Offer.Restaurant.Name.Contains(search)));
         }
 
-        // ================== OFFERS ==================
+        var total = await query.CountAsync();
 
-        public async Task<IActionResult> Offers(string? search, int page = 1)
-        {
-            const int pageSize = 10;
+        var reservations = await query
+            .OrderByDescending(r => r.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
 
-            var query = _context.Offers
-                .Include(o => o.Restaurant)
-                .AsQueryable();
+        ViewBag.CurrentPage = page;
+        ViewBag.TotalPages = (int)Math.Ceiling(total / (double)pageSize);
+        ViewBag.Search = search;
 
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                query = query.Where(o =>
-                    o.Title.Contains(search) ||
-                    o.Restaurant.Name.Contains(search));
-            }
+        return View(reservations);
+    }
 
-            var totalItems = await query.CountAsync();
+    public async Task<IActionResult> ReservationDetails(Guid id)
+    {
+        var reservation = await _context.Reservations
+            .Include(r => r.User)                         
+            .Include(r => r.Items)
+                .ThenInclude(i => i.Offer)
+                    .ThenInclude(o => o.Restaurant)
+            .Include(r => r.Review)
+            .FirstOrDefaultAsync(r => r.Id == id);
 
-            var offers = await query
-                .OrderByDescending(o => o.CreatedAt)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+        if (reservation == null)
+            return NotFound();
 
-            ViewBag.CurrentPage = page;
-            ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
-            ViewBag.Search = search;
+        return View(reservation);
+    }
 
-            return View(offers);
-        }
+    // =====================================================
+    // REVIEWS
+    // =====================================================
 
-        public async Task<IActionResult> Reservations(string? search, int page = 1)
-        {
-            const int pageSize = 10;
-
-            var query = _context.Reservations
-                .Include(r => r.User)
-                .Include(r => r.Items)
+    public async Task<IActionResult> Reviews(string? search, int page = 1)
+    {
+        var query = _context.Reviews
+            .Include(r => r.Reservation)
+                .ThenInclude(res => res.User)
+            .Include(r => r.Reservation)
+                .ThenInclude(res => res.Items)
                     .ThenInclude(i => i.Offer)
                         .ThenInclude(o => o.Restaurant)
-                .AsQueryable();
+            .AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                query = query.Where(r =>
-                    r.User.Email.Contains(search) ||
-                    r.Items.Any(i =>
-                        i.Offer.Restaurant.Name.Contains(search)));
-            }
-
-            var totalItems = await query.CountAsync();
-
-            var reservations = await query
-                .OrderByDescending(r => r.CreatedAt)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-
-            ViewBag.CurrentPage = page;
-            ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
-            ViewBag.Search = search;
-
-            return View(reservations);
-        }
-
-        public async Task<IActionResult> Reviews(string? search, int page = 1)
+        if (!string.IsNullOrWhiteSpace(search))
         {
-            const int pageSize = 10;
-
-            var query = _context.Reviews
-                .Include(r => r.Reservation)
-                    .ThenInclude(res => res.Items)
-                        .ThenInclude(i => i.Offer)
-                            .ThenInclude(o => o.Restaurant)
-                .AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                query = query.Where(r =>
-                    (r.Comment != null && r.Comment.Contains(search)) ||
-                    r.Reservation.Items.Any(i =>
-                        i.Offer.Restaurant.Name.Contains(search)));
-            }
-
-            var totalItems = await query.CountAsync();
-
-            var reviews = await query
-                .OrderByDescending(r => r.CreatedAt)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-
-            ViewBag.CurrentPage = page;
-            ViewBag.TotalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
-            ViewBag.Search = search;
-
-            return View(reviews);
+            query = query.Where(r =>
+                (r.Comment != null && r.Comment.Contains(search)) ||
+                r.Reservation.User.Email.Contains(search) ||
+                r.Reservation.Items.Any(i =>
+                    i.Offer.Restaurant.Name.Contains(search)));
         }
 
-        // ================== CREATE ==================
+        var total = await query.CountAsync();
 
-        [HttpGet]
-        public IActionResult Create()
-        {
-            return View();
-        }
+        var reviews = await query
+            .OrderByDescending(r => r.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateRestaurantViewModel model)
-        {
-            if (!ModelState.IsValid)
-                return View(model);
+        ViewBag.CurrentPage = page;
+        ViewBag.TotalPages = (int)Math.Ceiling(total / (double)pageSize);
+        ViewBag.Search = search;
 
-            var user = new User
-            {
-                UserName = model.Email,
-                Email = model.Email,
-                FullName = model.OwnerFullName
-            };
+        return View(reviews);
+    }
 
-            var result = await _userManager.CreateAsync(user, model.Password);
+    public async Task<IActionResult> ReviewDetails(Guid id)
+    {
+        var review = await _context.Reviews
+            .Include(r => r.Reservation)
+                .ThenInclude(res => res.User)          
+            .Include(r => r.Reservation)
+                .ThenInclude(res => res.Items)
+                    .ThenInclude(i => i.Offer)
+                        .ThenInclude(o => o.Restaurant)
+            .FirstOrDefaultAsync(r => r.Id == id);
 
-            if (!result.Succeeded)
-            {
-                foreach (var error in result.Errors)
-                    ModelState.AddModelError("", error.Description);
+        if (review == null)
+            return NotFound();
 
-                return View(model);
-            }
-
-            var roleResult = await _userManager.AddToRoleAsync(user, "Restaurant");
-
-            var restaurant = new Restaurant
-            {
-                Name = model.RestaurantName,
-                BusinessEmail = model.BusinessEmail,
-                Phone = model.Phone,
-                Address = model.Address,
-                ImageUrl = model.ImageUrl,
-                OwnerUserId = user.Id
-            };
-
-            _context.Restaurants.Add(restaurant);
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        // ================== EDIT ==================
-
-        [HttpGet]
-        public async Task<IActionResult> Edit(Guid id)
-        {
-            var restaurant = await _context.Restaurants
-                .FirstOrDefaultAsync(r => r.Id == id);
-
-            if (restaurant == null)
-                return NotFound();
-
-            var vm = new EditRestaurantViewModel
-            {
-                Id = restaurant.Id,
-                Name = restaurant.Name,
-                BusinessEmail = restaurant.BusinessEmail,
-                Phone = restaurant.Phone,
-                Address = restaurant.Address,
-                ImageUrl = restaurant.ImageUrl
-            };
-
-            return View(vm);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(EditRestaurantViewModel model)
-        {
-            if (!ModelState.IsValid)
-                return View(model);
-
-            var restaurant = await _context.Restaurants
-                .FirstOrDefaultAsync(r => r.Id == model.Id);
-
-            if (restaurant == null)
-                return NotFound();
-
-            restaurant.Name = model.Name;
-            restaurant.BusinessEmail = model.BusinessEmail;
-            restaurant.Phone = model.Phone;
-            restaurant.Address = model.Address;
-            restaurant.ImageUrl = model.ImageUrl;
-
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        // ================== DELETE ==================
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteRestaurant(Guid id)
-        {
-            await _deleteService.DeleteRestaurantAsync(id);
-            return RedirectToAction(nameof(Index));
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteOffer(Guid id)
-        {
-            await _deleteService.DeleteOfferAsync(id);
-            return RedirectToAction(nameof(Index));
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteOrder(Guid id)
-        {
-            await _deleteService.DeleteReservationAsync(id);
-            return RedirectToAction(nameof(Index));
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteReview(Guid id)
-        {
-            await _deleteService.DeleteReviewAsync(id);
-            return RedirectToAction(nameof(Index));
-        }
+        return View(review);
     }
 }

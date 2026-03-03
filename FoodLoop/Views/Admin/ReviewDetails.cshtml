@@ -1,0 +1,48 @@
+﻿@model FoodLoop.Models.Entities.Review
+@{
+    ViewData["Title"] = "Review";
+    var reservation = Model.Reservation;
+    var restaurant = reservation.Items.FirstOrDefault()?.Offer?.Restaurant?.Name ?? "N/A";
+}
+
+<div class="admin-wrapper">
+
+    <div class="admin-header">
+        <h1 class="admin-title">Review</h1>
+        <a asp-action="Reviews" class="btn-details">Back</a>
+    </div>
+
+    <div class="admin-card">
+
+        <div class="details-grid">
+
+            <div class="details-block">
+                <div class="details-label">Review ID</div>
+                <div class="details-value">@Model.Id</div>
+            </div>
+
+            <div class="details-block">
+                <div class="details-label">Restaurant</div>
+                <div class="details-value">@restaurant</div>
+            </div>
+
+            <div class="details-block">
+                <div class="details-label">Client</div>
+                <div class="details-value">@reservation.User?.Email</div>
+            </div>
+
+            <div class="details-block">
+                <div class="details-label">Rating</div>
+                <div class="details-value">@Model.Rating ⭐</div>
+            </div>
+
+            <div class="details-block details-block-wide">
+                <div class="details-label">Comment</div>
+                <div class="details-value">@Model.Comment</div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

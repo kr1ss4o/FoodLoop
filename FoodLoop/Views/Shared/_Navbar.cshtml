@@ -76,7 +76,7 @@
                        asp-action="Index"
                        class="nav-link">
                         <i class="bi bi-shop"></i>
-                        Offers
+                         Оферти
                     </a>
                 </li>
 
@@ -88,7 +88,7 @@
                            role="button"
                            data-bs-toggle="dropdown"
                            aria-expanded="false">
-                            <i class="bi bi-shield-lock"></i> Admin
+                            <i class="bi bi-shield-lock"></i> Администратор
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-end">
@@ -97,7 +97,7 @@
                                 <a class="dropdown-item"
                                    asp-controller="Admin"
                                    asp-action="Dashboard">
-                                    <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                                    <i class="bi bi-speedometer2 me-2"></i> Табло
                                 </a>
                             </li>
 
@@ -105,7 +105,7 @@
                                 <a class="dropdown-item"
                                    asp-controller="Admin"
                                    asp-action="Restaurants">
-                                    <i class="bi bi-shop me-2"></i> Restaurants
+                                    <i class="bi bi-shop me-2"></i> Ресторанти
                                 </a>
                             </li>
 
@@ -113,7 +113,7 @@
                                 <a class="dropdown-item"
                                    asp-controller="Admin"
                                    asp-action="Offers">
-                                    <i class="bi bi-megaphone me-2"></i> Offers
+                                    <i class="bi bi-megaphone me-2"></i> Оферти
                                 </a>
                             </li>
 
@@ -121,7 +121,7 @@
                                 <a class="dropdown-item"
                                    asp-controller="Admin"
                                    asp-action="Reservations">
-                                    <i class="bi bi-receipt me-2"></i> Orders
+                                    <i class="bi bi-receipt me-2"></i> Поръчки
                                 </a>
                             </li>
 
@@ -129,7 +129,7 @@
                                 <a class="dropdown-item"
                                    asp-controller="Admin"
                                    asp-action="Reviews">
-                                    <i class="bi bi-star me-2"></i> Reviews
+                                    <i class="bi bi-star me-2"></i> Ревюта
                                 </a>
                             </li>
 
@@ -143,7 +143,7 @@
                            asp-action="Index"
                            class="nav-link @(isOrderManagerActive ? "active fw-semibold" : "")">
 
-                            <i class="bi bi-receipt"></i> Orders
+                            <i class="bi bi-receipt"></i> Поръчки
 
                             <span id="cartBadge"
                                   class="badge bg-success ms-1 @(ViewBag.CartCount > 0 ? "" : "d-none")">
@@ -156,7 +156,7 @@
                         <a asp-controller="RestaurantDashboard"
                            asp-action="Index"
                            class="nav-link @(controller == "RestaurantDashboard" ? "active fw-semibold" : "")">
-                            <i class="bi bi-graph-up"></i> Dashboard
+                            <i class="bi bi-graph-up"></i> Статистика
                         </a>
                     </li>
 
@@ -165,7 +165,7 @@
                            asp-action="Index"
                            class="nav-link @(isOfferManagerActive ? "active fw-semibold" : "")">
 
-                            <i class="bi bi-megaphone"></i> Offers
+                            <i class="bi bi-megaphone"></i> Мойте оферти
                         </a>
                     </li>
                 }
@@ -178,7 +178,7 @@
                            class="nav-link"
                            id="cartLink">
 
-                            <i class="bi bi-bag"></i> Cart
+                            <i class="bi bi-bag"></i> Количка
 
                             <span id="cartBadge"
                                   class="badge bg-success ms-1 d-none">0</span>
@@ -203,7 +203,7 @@
                            asp-action="Index"
                            class="nav-link">
                             <i class="bi bi-shop"></i>
-                            Restaurants
+                            Търговци
                         </a>
                     </li>
                 }
@@ -216,7 +216,7 @@
                         <a asp-controller="BusinessProfile"
                            asp-action="Index"
                            class="nav-link @(isProfileActive ? "active fw-semibold" : "")">
-                            <i class="bi bi-person-circle"></i> Profile
+                            <i class="bi bi-person-circle"></i> Профил
                         </a>
                     }
                     else
@@ -224,7 +224,7 @@
                         <a asp-controller="Profile"
                            asp-action="Index"
                            class="nav-link @(isProfileActive ? "active fw-semibold" : "")">
-                            <i class="bi bi-person-circle"></i> Profile
+                            <i class="bi bi-person-circle"></i> Профил
                         </a>
                     }
                 </li>
@@ -234,7 +234,7 @@
                 <li class="nav-item">
                     <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
                         <button type="submit" class="nav-link border-0 bg-transparent">
-                            <i class="bi bi-box-arrow-right"></i> Logout
+                            <i class="bi bi-box-arrow-right"></i> Изход
                         </button>
                     </form>
                 </li>

@@ -1,0 +1,68 @@
+﻿@model FoodLoop.Models.Entities.Reservation
+@{
+    ViewData["Title"] = "Order Details";
+    var restaurant = Model.Items.FirstOrDefault()?.Offer?.Restaurant?.Name ?? "N/A";
+}
+
+<div class="admin-wrapper">
+
+    <div class="admin-header">
+        <div>
+            <h1 class="admin-title">Order</h1>
+            <div class="admin-subtitle">@restaurant</div>
+        </div>
+        <a asp-action="Reservations" class="btn-details">Back</a>
+    </div>
+
+    <div class="admin-card">
+
+        <div class="details-grid">
+
+            <div class="details-block">
+                <div class="details-label">Order ID</div>
+                <div class="details-value">@Model.Id</div>
+            </div>
+
+            <div class="details-block">
+                <div class="details-label">Client</div>
+                <div class="details-value">@Model.User?.Email</div>
+            </div>
+
+            <div class="details-block">
+                <div class="details-label">Status</div>
+                <div class="details-value">@Model.Status</div>
+            </div>
+
+            <div class="details-block">
+                <div class="details-label">Delivery Type</div>
+                <div class="details-value">@Model.DeliveryType</div>
+            </div>
+
+            <div class="details-block">
+                <div class="details-label">Delivery Address</div>
+                <div class="details-value">@Model.DeliveryAddress ?? "—"</div>
+            </div>
+
+            <div class="details-block">
+                <div class="details-label">Total Price</div>
+                <div class="details-value">@Model.TotalPrice</div>
+            </div>
+
+            @if (Model.IsForSomeoneElse)
+            {
+                <div class="details-block">
+                    <div class="details-label">Recipient Name</div>
+                    <div class="details-value">@Model.RecipientFullName</div>
+                </div>
+
+                <div class="details-block">
+                    <div class="details-label">Recipient Phone</div>
+                    <div class="details-value">@Model.RecipientPhone</div>
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>
