@@ -2,7 +2,7 @@
 @model IEnumerable<FoodLoop.Models.Entities.Offer>
 
 @{
-    Layout = "_AdminLayout";
+    Layout = "_Layout";
 }
 
 <div class="admin-section">
@@ -31,8 +31,10 @@
 
     </div>
 
-    <partial name="_AdminTable"
-             model="Model.Cast<object>()" />
+    <div class="admin-card">
+        <partial name="_AdminTable"
+                 model="Model.Cast<object>()" />
+    </div>
 
     <partial name="_SectionPagination"
              model="(PaginationViewModel)ViewBag.Pagination" />

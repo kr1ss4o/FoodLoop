@@ -1,225 +1,215 @@
-﻿/* =========================================
-   ADMIN LAYOUT
-========================================= */
+﻿/* ================================
+   FOODLOOP ADMIN DESIGN
+================================ */
 
-.admin-layout {
-    display: flex;
-    min-height: 100vh;
-    background: #f7f9fc;
+.admin-container {
+    max-width: 1350px;
+    margin: auto;
+    padding: 40px 30px;
 }
 
-/* =========================================
-   SIDEBAR
-========================================= */
 
-.admin-sidebar {
-    width: 240px;
-    background: #111827;
-    color: white;
-    padding: 30px 20px;
-}
+/* PAGE HEADER */
 
-.admin-logo {
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 30px;
-}
-
-.admin-sidebar nav {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.admin-sidebar a {
-    color: #d1d5db;
-    text-decoration: none;
-    padding: 10px 12px;
-    border-radius: 6px;
-    transition: 0.15s;
-}
-
-    .admin-sidebar a:hover {
-        background: #1f2937;
-        color: white;
-    }
-
-/* =========================================
-   MAIN CONTENT
-========================================= */
-
-.admin-main {
-    flex: 1;
-    padding: 40px;
-}
-
-/* =========================================
-   HEADERS
-========================================= */
-
-.admin-header {
+.admin-page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
-.admin-title {
-    font-size: 26px;
+.admin-page-title {
+    font-size: 28px;
     font-weight: 700;
+    color: #1E2F2B;
 }
 
-/* =========================================
-   CARDS
-========================================= */
+
+
+/* SEARCH BAR */
+
+.admin-search {
+    display: flex;
+    gap: 10px;
+}
+
+    .admin-search input {
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid #DCE8E4;
+        background: white;
+        width: 220px;
+    }
+
+    .admin-search button {
+        padding: 8px 14px;
+        border-radius: 8px;
+        border: none;
+        background: #00B67A;
+        color: white;
+    }
+
+
+
+/* TABLE CARD */
 
 .admin-card {
     background: white;
-    border-radius: 10px;
-    padding: 25px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+    padding: 20px;
 }
 
-/* =========================================
-   TABLE
-========================================= */
+
+
+/* TABLE */
 
 .admin-table {
     width: 100%;
     border-collapse: collapse;
 }
 
+    .admin-table thead {
+        border-bottom: 2px solid #E8F2EE;
+    }
+
     .admin-table th {
-        text-align: left;
+        font-weight: 600;
         font-size: 14px;
-        color: #6b7280;
-        padding: 12px;
-        border-bottom: 1px solid #e5e7eb;
+        color: #4B5E59;
+        padding: 14px;
+        text-align: left;
     }
 
     .admin-table td {
-        padding: 12px;
-        border-bottom: 1px solid #f1f1f1;
+        padding: 16px 14px;
+        border-bottom: 1px solid #F0F5F3;
+        font-size: 14px;
     }
 
-    .admin-table tr:hover {
-        background: #f9fafb;
+    .admin-table tbody tr {
+        transition: all .15s ease;
     }
 
-/* =========================================
-   DETAILS TABLE
-========================================= */
+        .admin-table tbody tr:hover {
+            background: #F6FBF9;
+        }
 
-.admin-details-table {
-    width: 100%;
+
+
+/* ACTIONS */
+
+.admin-actions {
+    display: flex;
+    gap: 8px;
 }
 
-    .admin-details-table th {
-        width: 200px;
-        text-align: left;
-        padding: 12px;
-        background: #f9fafb;
-    }
 
-    .admin-details-table td {
-        padding: 12px;
-    }
 
-/* =========================================
-   BUTTONS
-========================================= */
+/* BUTTONS */
 
 .admin-btn {
-    display: inline-block;
-    padding: 8px 14px;
-    border-radius: 6px;
-    font-size: 14px;
-    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
     border: none;
 }
 
-.admin-btn-sm {
-    padding: 6px 10px;
-    font-size: 13px;
-}
-
 .admin-btn-primary {
-    background: #10b981;
+    background: #00B67A;
     color: white;
 }
 
     .admin-btn-primary:hover {
-        background: #059669;
+        background: #009a68;
     }
 
-.admin-btn-secondary {
-    background: #e5e7eb;
-    color: #111827;
+.admin-btn-edit {
+    background: #E6F7F1;
+    color: #00B67A;
 }
 
-.admin-btn-danger {
-    background: #ef4444;
+    .admin-btn-edit:hover {
+        background: #D8F3E8;
+    }
+
+.admin-btn-delete {
+    background: #FFECEC;
+    color: #D64545;
+}
+
+    .admin-btn-delete:hover {
+        background: #FFDADA;
+    }
+
+
+
+/* CREATE BUTTON */
+
+.admin-create-btn {
+    background: #00B67A;
     color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
 }
 
-/* =========================================
-   DASHBOARD STATS
-========================================= */
 
-.admin-stats {
-    display: grid;
-    grid-template-columns: repeat(4,1fr);
-    gap: 20px;
-}
 
-.admin-stat-card {
-    background: white;
-    padding: 25px;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-}
+/* DETAILS TABLE */
 
-.admin-stat-number {
-    font-size: 28px;
-    font-weight: 700;
-}
-
-.admin-stat-label {
-    font-size: 14px;
-    color: #6b7280;
-}
-
-/* =========================================
-   ADMIN FORM
-========================================= */
-
-.admin-form-group {
-    margin-bottom: 18px;
-}
-
-.admin-label {
-    display: block;
-    font-size: 14px;
-    margin-bottom: 6px;
-    color: #374151;
-}
-
-.admin-input {
+.admin-details-table {
     width: 100%;
-    padding: 10px 12px;
-    border-radius: 6px;
-    border: 1px solid #e5e7eb;
+    border-collapse: collapse;
 }
 
-    .admin-input:focus {
-        outline: none;
-        border-color: #10b981;
+    .admin-details-table th {
+        width: 240px;
+        font-weight: 600;
+        color: #4A5E59;
+        padding: 14px;
     }
 
-.admin-search input {
-    padding: 8px 12px;
-    border: 1px solid #e5e7eb;
-    border-radius: 6px;
-    width: 220px;
+    .admin-details-table td {
+        padding: 14px;
+        border-bottom: 1px solid #EEF4F2;
+    }
+
+
+
+/* PAGINATION */
+
+.pagination {
+    margin-top: 25px;
+}
+
+    .pagination .page-link {
+        border-radius: 8px;
+        color: #00B67A;
+        border: 1px solid #E4ECE8;
+    }
+
+    .pagination .page-item.active .page-link {
+        background: #00B67A;
+        border-color: #00B67A;
+    }
+
+
+
+/* MOBILE */
+
+@media (max-width:900px) {
+
+    .admin-page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .admin-search input {
+        width: 100%;
+    }
 }
