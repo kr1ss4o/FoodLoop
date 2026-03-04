@@ -421,3 +421,4 @@ C:\Users\Kris\Desktop\FoodLoop\FoodLoop\obj\Debug\net8.0\refint\FoodLoop.dll
 C:\Users\Kris\Desktop\FoodLoop\FoodLoop\obj\Debug\net8.0\FoodLoop.pdb
 C:\Users\Kris\Desktop\FoodLoop\FoodLoop\obj\Debug\net8.0\FoodLoop.genruntimeconfig.cache
 C:\Users\Kris\Desktop\FoodLoop\FoodLoop\obj\Debug\net8.0\ref\FoodLoop.dll
+C:\Users\Kris\Desktop\FoodLoop\FoodLoop\bin\Debug\net8.0\appsettings.Production.json

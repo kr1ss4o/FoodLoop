@@ -1,0 +1,99 @@
+﻿@using System.Reflection
+@model IEnumerable<object>
+
+@{
+    var items = Model?.Cast<object>().ToList();
+
+    if (items == null || !items.Any())
+    {
+        <p>No data available.</p>
+        return;
+    }
+
+    var type = items.First().GetType();
+
+    var props = type.GetProperties()
+        .Where(p =>
+            p.PropertyType.IsPrimitive ||
+            p.PropertyType == typeof(string) ||
+            p.PropertyType == typeof(decimal) ||
+            p.PropertyType == typeof(DateTime) ||
+            p.PropertyType == typeof(Guid) ||
+            p.PropertyType.IsEnum)
+        .ToList();
+}
+
+<table class="admin-table">
+
+    <thead>
+        <tr>
+
+            @foreach (var prop in props)
+            {
+                <th>@prop.Name</th>
+            }
+
+            <th>Actions</th>
+
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var item in items)
+        {
+            <tr>
+
+                @foreach (var prop in props)
+                {
+                    var value = prop.GetValue(item);
+
+                    <td>
+                        @(value ?? "-")
+                    </td>
+                }
+
+                @{
+                    var idProp = type.GetProperty("Id");
+                    var id = idProp?.GetValue(item);
+                }
+
+                <td class="admin-actions">
+
+                    @if (type.Name != "Category")
+                    {
+                        <a asp-action="Details"
+                           asp-route-id="@id"
+                           class="btn btn-sm btn-outline-primary">
+                            Details
+                        </a>
+                    }
+
+                    @if (type.Name != "Review" && type.Name != "Reservation")
+                    {
+                        <a asp-action="Edit"
+                           asp-route-id="@id"
+                           class="btn btn-sm btn-outline-warning">
+                            Edit
+                        </a>
+
+                        <form asp-action="Delete"
+                              asp-route-id="@id"
+                              method="post"
+                              style="display:inline">
+
+                            <button class="btn btn-sm btn-outline-danger">
+                                Delete
+                            </button>
+
+                        </form>
+                    }
+
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>

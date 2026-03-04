@@ -1,5 +1,5 @@
 ﻿@using FoodLoop.Models.ViewModels
-@model IEnumerable<FoodLoop.Models.Entities.Offer>
+@model IEnumerable<FoodLoop.Models.Entities.Category>
 
 @{
     Layout = "_AdminLayout";
@@ -9,14 +9,14 @@
 
     <div class="admin-header">
 
-        <h2>Offers</h2>
+        <h2>Categories</h2>
 
         <form method="get" class="admin-search">
 
             <input type="text"
                    name="query"
                    value="@Context.Request.Query["query"]"
-                   placeholder="Search offer..." />
+                   placeholder="Search category..." />
 
             <button type="submit">
                 Search
@@ -26,7 +26,7 @@
 
         <a asp-action="Create"
            class="admin-btn admin-btn-primary">
-            Create Offer
+            Create Category
         </a>
 
     </div>

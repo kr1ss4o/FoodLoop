@@ -99,6 +99,23 @@ namespace FoodLoop.Services
             await transaction.CommitAsync();
         }
 
+    // =====================================================
+    // CATEGORY
+    // =====================================================
+
+    public async Task DeleteCategoryAsync(Guid id)
+        {
+            var category = await _context.Categories
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (category == null)
+                return;
+
+            _context.Categories.Remove(category);
+
+            await _context.SaveChangesAsync();
+        }
+
         // =====================================================
         // DELETE OFFER
         // =====================================================

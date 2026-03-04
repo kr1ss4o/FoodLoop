@@ -1,0 +1,46 @@
+﻿@model object
+
+@{
+    var type = Model.GetType();
+
+    var properties = type.GetProperties()
+        .Where(p =>
+            p.Name != "Id" &&
+            p.PropertyType == typeof(string) ||
+            p.PropertyType == typeof(decimal) ||
+            p.PropertyType == typeof(int) ||
+            p.PropertyType == typeof(DateTime) ||
+            p.PropertyType == typeof(Guid) ||
+            p.PropertyType == typeof(Guid?)
+        );
+}
+
+<div class="admin-card">
+
+    <form method="post">
+
+        @foreach (var prop in properties)
+        {
+            var name = prop.Name;
+            var value = prop.GetValue(Model);
+
+            <div class="admin-form-group">
+
+                <label class="admin-label">
+                    @name
+                </label>
+
+                <input name="@name"
+                       value="@value"
+                       class="admin-input" />
+
+            </div>
+        }
+
+        <button class="admin-btn admin-btn-primary">
+            Save
+        </button>
+
+    </form>
+
+</div>

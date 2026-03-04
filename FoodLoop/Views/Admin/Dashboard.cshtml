@@ -1,34 +1,33 @@
 ﻿@model dynamic
+
 @{
-    ViewData["Title"] = "Dashboard";
+    Layout = "_AdminLayout";
 }
 
-<div class="admin-wrapper">
+<div class="admin-dashboard">
 
-    <div class="admin-header">
-        <h1 class="admin-title">Admin Dashboard</h1>
-    </div>
+    <h2>Admin Dashboard</h2>
 
-    <div class="stats-grid">
+    <div class="admin-cards">
 
-        <div class="stat-card">
-            <h3>Total Restaurants</h3>
-            <p>@Model.Restaurants</p>
+        <div class="admin-card">
+            <h3>Restaurants</h3>
+            <span>@Model.Restaurants</span>
         </div>
 
-        <div class="stat-card">
-            <h3>Total Offers</h3>
-            <p>@Model.Offers</p>
+        <div class="admin-card">
+            <h3>Offers</h3>
+            <span>@Model.Offers</span>
         </div>
 
-        <div class="stat-card">
-            <h3>Total Orders</h3>
-            <p>@Model.Reservations</p>
+        <div class="admin-card">
+            <h3>Reservations</h3>
+            <span>@Model.Reservations</span>
         </div>
 
-        <div class="stat-card">
-            <h3>Total Reviews</h3>
-            <p>@Model.Reviews</p>
+        <div class="admin-card">
+            <h3>Reviews</h3>
+            <span>@Model.Reviews</span>
         </div>
 
     </div>

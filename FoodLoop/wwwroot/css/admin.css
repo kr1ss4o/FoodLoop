@@ -1,221 +1,225 @@
-﻿/* =====================================================
-   ADMIN LIGHT THEME – FOODLOOP
-===================================================== */
+﻿/* =========================================
+   ADMIN LAYOUT
+========================================= */
 
-:root {
-    --admin-bg: #f4f7f5;
-    --admin-card: #ffffff;
-    --admin-text: #1f2937;
-    --admin-muted: #6b7280;
-    --admin-border: #e5e7eb;
-    --admin-green: #2ecc71;
-    --admin-green-dark: #27ae60;
-    --admin-danger: #e74c3c;
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+    background: #f7f9fc;
 }
 
-body {
-    background: var(--admin-bg);
-    color: var(--admin-text);
+/* =========================================
+   SIDEBAR
+========================================= */
+
+.admin-sidebar {
+    width: 240px;
+    background: #111827;
+    color: white;
+    padding: 30px 20px;
 }
 
-/* =====================================================
-   WRAPPER
-===================================================== */
-
-.admin-wrapper {
-    max-width: 1200px;
-    margin: 40px auto;
-    padding: 0 20px;
+.admin-logo {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 30px;
 }
 
-/* =====================================================
-   HEADER
-===================================================== */
+.admin-sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.admin-sidebar a {
+    color: #d1d5db;
+    text-decoration: none;
+    padding: 10px 12px;
+    border-radius: 6px;
+    transition: 0.15s;
+}
+
+    .admin-sidebar a:hover {
+        background: #1f2937;
+        color: white;
+    }
+
+/* =========================================
+   MAIN CONTENT
+========================================= */
+
+.admin-main {
+    flex: 1;
+    padding: 40px;
+}
+
+/* =========================================
+   HEADERS
+========================================= */
 
 .admin-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
 .admin-title {
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 700;
 }
 
-.admin-subtitle {
-    font-size: 14px;
-    color: var(--admin-muted);
-}
-
-/* =====================================================
-   CARD
-===================================================== */
+/* =========================================
+   CARDS
+========================================= */
 
 .admin-card {
-    background: var(--admin-card);
-    border: 1px solid var(--admin-border);
-    border-radius: 14px;
-    padding: 28px;
-}
-
-/* =====================================================
-   DETAILS GRID
-===================================================== */
-
-.details-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 20px;
-}
-
-.details-block {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.details-block-wide {
-    grid-column: 1 / -1;
-}
-
-.details-label {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--admin-muted);
-    text-transform: uppercase;
-}
-
-.details-value {
-    font-size: 15px;
-}
-
-/* =====================================================
-   IMAGES
-===================================================== */
-
-.admin-thumb {
-    width: 120px;
+    background: white;
     border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
-.admin-thumb-large {
-    max-width: 350px;
-    width: 100%;
-    border-radius: 12px;
-}
-
-/* =====================================================
-   TABLES
-===================================================== */
+/* =========================================
+   TABLE
+========================================= */
 
 .admin-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 14px;
 }
-
-    .admin-table thead {
-        background: #f9fafb;
-    }
-
-    .admin-table th,
-    .admin-table td {
-        padding: 12px 14px;
-        border-bottom: 1px solid var(--admin-border);
-    }
 
     .admin-table th {
         text-align: left;
-        font-weight: 600;
-        color: var(--admin-muted);
+        font-size: 14px;
+        color: #6b7280;
+        padding: 12px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .admin-table td {
+        padding: 12px;
+        border-bottom: 1px solid #f1f1f1;
     }
 
     .admin-table tr:hover {
-        background: #f0fdf4;
+        background: #f9fafb;
     }
 
-/* =====================================================
+/* =========================================
+   DETAILS TABLE
+========================================= */
+
+.admin-details-table {
+    width: 100%;
+}
+
+    .admin-details-table th {
+        width: 200px;
+        text-align: left;
+        padding: 12px;
+        background: #f9fafb;
+    }
+
+    .admin-details-table td {
+        padding: 12px;
+    }
+
+/* =========================================
    BUTTONS
-===================================================== */
+========================================= */
 
-.btn-details {
-    background: var(--admin-green);
-    color: white;
-    border: none;
-    padding: 8px 14px;
-    border-radius: 8px;
-    font-size: 13px;
-    text-decoration: none;
-    transition: 0.2s ease;
-}
-
-    .btn-details:hover {
-        background: var(--admin-green-dark);
-        color: white;
-    }
-
-.btn-delete {
-    background: var(--admin-danger);
-    color: white;
-    border: none;
-    padding: 8px 14px;
-    border-radius: 8px;
-    font-size: 13px;
-}
-
-/* =====================================================
-   SEARCH BAR
-===================================================== */
-
-.admin-search {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-    .admin-search input {
-        flex: 1;
-        padding: 10px 14px;
-        border-radius: 8px;
-        border: 1px solid var(--admin-border);
-        font-size: 14px;
-    }
-
-        .admin-search input:focus {
-            outline: none;
-            border-color: var(--admin-green);
-        }
-
-/* =====================================================
-   PILLS
-===================================================== */
-
-.pill {
+.admin-btn {
     display: inline-block;
-    padding: 4px 10px;
-    font-size: 12px;
-    border-radius: 20px;
-    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    text-decoration: none;
+    border: none;
 }
 
-.pill-success {
-    background: #d1fae5;
-    color: #065f46;
+.admin-btn-sm {
+    padding: 6px 10px;
+    font-size: 13px;
 }
 
-.pill-danger {
-    background: #fee2e2;
-    color: #991b1b;
+.admin-btn-primary {
+    background: #10b981;
+    color: white;
 }
 
-.pill-warning {
-    background: #fef3c7;
-    color: #92400e;
-}
+    .admin-btn-primary:hover {
+        background: #059669;
+    }
 
-.pill-neutral {
+.admin-btn-secondary {
     background: #e5e7eb;
+    color: #111827;
+}
+
+.admin-btn-danger {
+    background: #ef4444;
+    color: white;
+}
+
+/* =========================================
+   DASHBOARD STATS
+========================================= */
+
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 20px;
+}
+
+.admin-stat-card {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.admin-stat-number {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.admin-stat-label {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* =========================================
+   ADMIN FORM
+========================================= */
+
+.admin-form-group {
+    margin-bottom: 18px;
+}
+
+.admin-label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 6px;
     color: #374151;
+}
+
+.admin-input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+}
+
+    .admin-input:focus {
+        outline: none;
+        border-color: #10b981;
+    }
+
+.admin-search input {
+    padding: 8px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    width: 220px;
 }

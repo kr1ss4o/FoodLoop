@@ -1,162 +1,86 @@
-﻿@model FoodLoop.Models.Entities.Restaurant
+﻿@model object
+
 @{
-    ViewData["Title"] = "Restaurant Details";
-    var banner = !string.IsNullOrWhiteSpace(Model.BannerImageUrl) ? Model.BannerImageUrl : Model.ImageUrl;
+    ViewData["Title"] = "Details";
+
+    var type = Model.GetType();
+
+    var properties = type
+        .GetProperties()
+        .Where(p =>
+            p.PropertyType.IsPrimitive ||
+            p.PropertyType == typeof(string) ||
+            p.PropertyType == typeof(Guid) ||
+            p.PropertyType == typeof(Guid?) ||
+            p.PropertyType == typeof(DateTime) ||
+            p.PropertyType == typeof(DateTime?) ||
+            p.PropertyType == typeof(decimal) ||
+            p.PropertyType == typeof(decimal?) ||
+            p.PropertyType == typeof(int) ||
+            p.PropertyType == typeof(int?)
+        )
+        .ToList();
+
+    var idProperty = type.GetProperty("Id");
+    var id = idProperty?.GetValue(Model);
+
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
 }
 
-<div class="admin-wrapper">
+<div class="admin-container">
 
     <div class="admin-header">
-        <div>
-            <h1 class="admin-title">@Model.Name</h1>
-            <div class="admin-subtitle">Restaurant details</div>
-        </div>
+
+        <h2 class="admin-title">
+            @type.Name Details
+        </h2>
 
         <div class="admin-actions">
-            <a asp-action="Restaurants" class="btn-details">Back</a>
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-details">Edit</a>
+
+            @if (type.Name != "Review")
+            {
+                <a asp-controller="@controller"
+                   asp-action="Edit"
+                   asp-route-id="@id"
+                   class="admin-btn admin-btn-primary">
+                    Edit
+                </a>
+            }
+
+            <a asp-controller="@controller"
+               asp-action="@controller"
+               class="admin-btn admin-btn-secondary">
+                Back
+            </a>
+
         </div>
+
     </div>
 
-    <div class="admin-card admin-details">
+    <div class="admin-card">
 
-        <!-- Banner -->
-        <div class="details-block details-block-wide">
-            <div class="details-label">Banner</div>
-            <div class="details-value">
-                @if (!string.IsNullOrWhiteSpace(banner))
+        <table class="admin-details-table">
+
+            <tbody>
+
+                @foreach (var prop in properties)
                 {
-                    <img class="admin-thumb-large" src="@banner" alt="Banner" />
-                }
-                else
-                {
-                    <span class="muted">No banner</span>
-                }
-            </div>
-        </div>
+                    var value = prop.GetValue(Model);
 
-        <div class="details-grid">
-
-            <div class="details-block">
-                <div class="details-label">Restaurant ID</div>
-                <div class="details-value">@Model.Id</div>
-            </div>
-
-            <div class="details-block">
-                <div class="details-label">Rating</div>
-                <div class="details-value">@Model.Rating</div>
-            </div>
-
-            <div class="details-block">
-                <div class="details-label">Business Email</div>
-                <div class="details-value">@Model.BusinessEmail</div>
-            </div>
-
-            <div class="details-block">
-                <div class="details-label">Phone</div>
-                <div class="details-value">@Model.Phone</div>
-            </div>
-
-            <div class="details-block details-block-wide">
-                <div class="details-label">Address</div>
-                <div class="details-value">@Model.Address</div>
-            </div>
-
-            <div class="details-block details-block-wide">
-                <div class="details-label">Profile Image</div>
-                <div class="details-value">
-                    @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
-                    {
-                        <img class="admin-thumb-large" src="@Model.ImageUrl" alt="Restaurant image" />
-                    }
-                    else
-                    {
-                        <span class="muted">No image</span>
-                    }
-                </div>
-            </div>
-
-        </div>
-
-        <hr class="admin-divider" />
-
-        <div class="admin-section-head">
-            <div class="section-title">Owner</div>
-            <div class="section-subtitle">Login / account data</div>
-        </div>
-
-        <div class="details-grid">
-
-            <div class="details-block">
-                <div class="details-label">Owner User ID</div>
-                <div class="details-value">@Model.OwnerUserId</div>
-            </div>
-
-            <div class="details-block">
-                <div class="details-label">Owner Full Name</div>
-                <div class="details-value">@Model.Owner?.FullName</div>
-            </div>
-
-            <div class="details-block">
-                <div class="details-label">Owner Email (Login)</div>
-                <div class="details-value">@Model.Owner?.Email</div>
-            </div>
-
-            <div class="details-block">
-                <div class="details-label">Owner Phone</div>
-                <div class="details-value">@Model.Owner?.PhoneNumber</div>
-            </div>
-
-            <div class="details-block">
-                <div class="details-label">Owner Created At</div>
-                <div class="details-value">@Model.Owner?.CreatedAt</div>
-            </div>
-
-        </div>
-
-        <hr class="admin-divider" />
-
-        <div class="admin-section-head">
-            <div class="section-title">Offers</div>
-            <div class="section-subtitle">Owned offers</div>
-        </div>
-
-        <div class="admin-table-wrapper mt-3">
-            <table class="admin-table">
-                <thead>
                     <tr>
-                        <th>Title</th>
-                        <th>Discounted</th>
-                        <th>Qty</th>
-                        <th>Ends</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var o in Model.Offers ?? Enumerable.Empty<FoodLoop.Models.Entities.Offer>())
-                    {
-                        <tr>
-                            <td>@o.Title</td>
-                            <td>@o.DiscountedPrice</td>
-                            <td>@o.QuantityAvailable</td>
-                            <td>@o.EndsAt.ToString("dd.MM.yyyy HH:mm")</td>
-                            <td>
-                                <a asp-action="OfferDetails" asp-route-id="@o.Id" class="btn-details">Details</a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                        <th>
+                            @prop.Name
+                        </th>
 
-        <div class="admin-actions-row">
-            <form asp-action="DeleteRestaurant" method="post"
-                  onsubmit="return confirm('Delete this restaurant?');">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="id" value="@Model.Id" />
-                <button class="btn-delete" type="submit">Delete</button>
-            </form>
-        </div>
+                        <td>
+                            @(value ?? "-")
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
 
     </div>
 

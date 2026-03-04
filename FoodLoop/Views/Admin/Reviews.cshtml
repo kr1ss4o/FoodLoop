@@ -1,51 +1,35 @@
-﻿@model IEnumerable<FoodLoop.Models.Entities.Review>
-@using FoodLoop.Models.ViewModels
+﻿@using FoodLoop.Models.ViewModels
+@model IEnumerable<FoodLoop.Models.Entities.Review>
+
 @{
-    ViewData["Title"] = "Reviews";
+    Layout = "_AdminLayout";
 }
 
-<div class="admin-wrapper">
+<div class="admin-section">
 
     <div class="admin-header">
-        <h1 class="admin-title">Reviews</h1>
+
+        <h2>Reviews</h2>
+
+        <form method="get" class="admin-search">
+
+            <input type="text"
+                   name="query"
+                   value="@Context.Request.Query["query"]"
+                   placeholder="Search review..." />
+
+            <button type="submit">
+                Search
+            </button>
+
+        </form>
+
     </div>
 
-    <form method="get" class="admin-search">
-        <input type="text" name="search" value="@ViewBag.Search" placeholder="Search reviews..." />
-        <button type="submit">Search</button>
-    </form>
+    <partial name="_AdminTable"
+             model="Model.Cast<object>()" />
 
-    <div class="admin-table-wrapper">
-        <table class="admin-table">
-            <thead>
-                <tr>
-                    <th>Restaurant</th>
-                    <th>Rating</th>
-                    <th>Comment</th>
-                    <th>Date</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var r in Model)
-                {
-                    <tr>
-                        <td>@r.Reservation?.Items.FirstOrDefault()?.Offer?.Restaurant?.Name</td>
-                        <td>@r.Rating ⭐</td>
-                        <td>@(r.Comment?.Length > 40 ? r.Comment.Substring(0, 40) + "..." : r.Comment)</td>
-                        <td>@r.CreatedAt.ToString("dd.MM.yyyy")</td>
-                        <td>
-                            <a asp-action="ReviewDetails" asp-route-id="@r.Id" class="btn-details">Details</a>
-                            <form asp-action="DeleteReview" method="post" style="display:inline;">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="id" value="@r.Id" />
-                                <button class="btn-delete">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+    <partial name="_SectionPagination"
+             model="(PaginationViewModel)ViewBag.Pagination" />
 
 </div>

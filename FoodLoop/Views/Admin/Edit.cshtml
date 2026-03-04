@@ -1,39 +1,13 @@
-﻿@model FoodLoop.Models.ViewModels.Admin.EditRestaurantViewModel
+﻿@model object
 
 @{
-    ViewData["Title"] = "Admin - Edit";
+    Layout = "_AdminLayout";
 }
 
-<h2>Редакция на ресторант</h2>
+<div class="admin-header">
 
-<form method="post">
-    @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="Id" />
+    <h2>Edit @Model.GetType().Name</h2>
 
-    <div class="mb-3">
-        <label class="form-label">Име</label>
-        <input asp-for="Name" class="form-control" />
-    </div>
+</div>
 
-    <div class="mb-3">
-        <label class="form-label">Бизнес имейл</label>
-        <input asp-for="BusinessEmail" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Телефон</label>
-        <input asp-for="Phone" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Адрес</label>
-        <input asp-for="Address" class="form-control" />
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Image URL</label>
-        <input asp-for="ImageUrl" class="form-control" />
-    </div>
-
-    <button class="btn btn-primary">Запази</button>
-</form>
+<partial name="_AdminForm" model="Model" />

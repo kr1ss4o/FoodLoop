@@ -1,54 +1,35 @@
-﻿@model IEnumerable<FoodLoop.Models.Entities.Reservation>
-@using FoodLoop.Models.ViewModels
+﻿@using FoodLoop.Models.ViewModels
+@model IEnumerable<FoodLoop.Models.Entities.Reservation>
+
 @{
-    ViewData["Title"] = "Orders";
+    Layout = "_AdminLayout";
 }
 
-<div class="admin-wrapper">
+<div class="admin-section">
 
     <div class="admin-header">
-        <h1 class="admin-title">Orders</h1>
+
+        <h2>Reservations</h2>
+
+        <form method="get" class="admin-search">
+
+            <input type="text"
+                   name="query"
+                   value="@Context.Request.Query["query"]"
+                   placeholder="Search reservation..." />
+
+            <button type="submit">
+                Search
+            </button>
+
+        </form>
+
     </div>
 
-    <form method="get" class="admin-search">
-        <input type="text" name="search" value="@ViewBag.Search" placeholder="Search orders..." />
-        <button type="submit">Search</button>
-    </form>
+    <partial name="_AdminTable"
+             model="Model.Cast<object>()" />
 
-    <div class="admin-table-wrapper">
-        <table class="admin-table">
-            <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Restaurant</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                    <th>Type</th>
-                    <th>Date</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var o in Model)
-                {
-                    <tr>
-                        <td>@o.Id.ToString().Substring(0, 8)</td>
-                        <td>@o.Items.FirstOrDefault()?.Offer?.Restaurant?.Name</td>
-                        <td>@o.TotalPrice</td>
-                        <td>@o.Status</td>
-                        <td>@o.DeliveryType</td>
-                        <td>@o.CreatedAt.ToString("dd.MM.yyyy")</td>
-                        <td>
-                            <a asp-action="ReservationDetails"
-                               asp-route-id="@o.Id"
-                               class="btn-details">
-                                Details
-                            </a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+    <partial name="_SectionPagination"
+             model="(PaginationViewModel)ViewBag.Pagination" />
 
 </div>

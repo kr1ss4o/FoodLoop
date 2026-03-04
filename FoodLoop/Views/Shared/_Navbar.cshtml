@@ -80,14 +80,14 @@
                     </a>
                 </li>
 
-                @if (isAdmin) // Admin panel
+                @if (isAdmin)
                 {
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle @(controller == "Admin" ? "active fw-semibold" : "")"
+                        <a class="nav-link dropdown-toggle"
                            href="#"
                            role="button"
-                           data-bs-toggle="dropdown"
-                           aria-expanded="false">
+                           data-bs-toggle="dropdown">
+
                             <i class="bi bi-shield-lock"></i> Администратор
                         </a>
 
@@ -95,41 +95,49 @@
 
                             <li>
                                 <a class="dropdown-item"
-                                   asp-controller="Admin"
-                                   asp-action="Dashboard">
-                                    <i class="bi bi-speedometer2 me-2"></i> Табло
+                                   asp-controller="AdminDashboard"
+                                   asp-action="Index">
+                                    Табло
                                 </a>
                             </li>
 
                             <li>
                                 <a class="dropdown-item"
-                                   asp-controller="Admin"
+                                   asp-controller="AdminCategories"
+                                   asp-action="Categories">
+                                    Категории
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item"
+                                   asp-controller="AdminRestaurants"
                                    asp-action="Restaurants">
-                                    <i class="bi bi-shop me-2"></i> Ресторанти
+                                    Ресторанти
                                 </a>
                             </li>
 
                             <li>
                                 <a class="dropdown-item"
-                                   asp-controller="Admin"
+                                   asp-controller="AdminOffers"
                                    asp-action="Offers">
-                                    <i class="bi bi-megaphone me-2"></i> Оферти
+                                    Оферти
                                 </a>
                             </li>
 
                             <li>
                                 <a class="dropdown-item"
-                                   asp-controller="Admin"
+                                   asp-controller="AdminReservations"
                                    asp-action="Reservations">
-                                    <i class="bi bi-receipt me-2"></i> Поръчки
+                                    Поръчки
                                 </a>
                             </li>
 
                             <li>
                                 <a class="dropdown-item"
-                                   asp-controller="Admin"
+                                   asp-controller="AdminReviews"
                                    asp-action="Reviews">
-                                    <i class="bi bi-star me-2"></i> Ревюта
+                                    Ревюта
                                 </a>
                             </li>
 
