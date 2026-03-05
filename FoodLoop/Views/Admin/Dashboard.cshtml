@@ -1,35 +1,101 @@
 ﻿@model dynamic
 
 @{
+    ViewData["Title"] = "Admin Dashboard";
     Layout = "_Layout";
 }
 
-<div class="admin-dashboard">
+<div class="admin-page">
 
-    <h2>Admin Dashboard</h2>
-
-    <div class="admin-cards">
-
-        <div class="admin-card">
-            <h3>Restaurants</h3>
-            <span>@Model.Restaurants</span>
+    <div class="admin-page-head">
+        <div>
+            <h1 class="admin-page-title">Admin Dashboard</h1>
+            <div class="admin-page-subtitle">Overview of the platform</div>
         </div>
-
-        <div class="admin-card">
-            <h3>Offers</h3>
-            <span>@Model.Offers</span>
-        </div>
-
-        <div class="admin-card">
-            <h3>Reservations</h3>
-            <span>@Model.Reservations</span>
-        </div>
-
-        <div class="admin-card">
-            <h3>Reviews</h3>
-            <span>@Model.Reviews</span>
-        </div>
-
     </div>
 
+    <div class="admin-kpi-grid">
+
+        <a class="admin-kpi" asp-controller="AdminRestaurants" asp-action="Restaurants">
+            <div class="admin-kpi-icon">
+                <i class="bi bi-shop"></i>
+            </div>
+            <div class="admin-kpi-body">
+                <div class="admin-kpi-label">Restaurants</div>
+                <div class="admin-kpi-value js-count" data-count="@Model.Restaurants">0</div>
+            </div>
+            <div class="admin-kpi-arrow">
+                <i class="bi bi-arrow-right-short"></i>
+            </div>
+        </a>
+
+        <a class="admin-kpi" asp-controller="AdminOffers" asp-action="Offers">
+            <div class="admin-kpi-icon">
+                <i class="bi bi-megaphone"></i>
+            </div>
+            <div class="admin-kpi-body">
+                <div class="admin-kpi-label">Offers</div>
+                <div class="admin-kpi-value js-count" data-count="@Model.Offers">0</div>
+            </div>
+            <div class="admin-kpi-arrow">
+                <i class="bi bi-arrow-right-short"></i>
+            </div>
+        </a>
+
+        <a class="admin-kpi" asp-controller="AdminReservations" asp-action="Reservations">
+            <div class="admin-kpi-icon">
+                <i class="bi bi-receipt"></i>
+            </div>
+            <div class="admin-kpi-body">
+                <div class="admin-kpi-label">Reservations</div>
+                <div class="admin-kpi-value js-count" data-count="@Model.Reservations">0</div>
+            </div>
+            <div class="admin-kpi-arrow">
+                <i class="bi bi-arrow-right-short"></i>
+            </div>
+        </a>
+
+        <a class="admin-kpi" asp-controller="AdminReviews" asp-action="Reviews">
+            <div class="admin-kpi-icon">
+                <i class="bi bi-star"></i>
+            </div>
+            <div class="admin-kpi-body">
+                <div class="admin-kpi-label">Reviews</div>
+                <div class="admin-kpi-value js-count" data-count="@Model.Reviews">0</div>
+            </div>
+            <div class="admin-kpi-arrow">
+                <i class="bi bi-arrow-right-short"></i>
+            </div>
+        </a>
+
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        (function () {
+          const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+          function animate(el) {
+            const target = parseInt(el.dataset.count || "0", 10) || 0;
+            if (reduce) { el.textContent = target.toString(); return; }
+
+            const duration = 700; // ms
+            const start = performance.now();
+            const from = 0;
+
+            function tick(now) {
+              const t = Math.min(1, (now - start) / duration);
+              // easeOutCubic
+              const eased = 1 - Math.pow(1 - t, 3);
+              const val = Math.round(from + (target - from) * eased);
+              el.textContent = val.toString();
+              if (t < 1) requestAnimationFrame(tick);
+            }
+            requestAnimationFrame(tick);
+          }
+
+          document.querySelectorAll(".js-count").forEach(animate);
+        })();
+    </script>
+}

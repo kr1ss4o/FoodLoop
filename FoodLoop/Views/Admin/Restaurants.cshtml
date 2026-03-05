@@ -7,24 +7,35 @@
 
 <div class="admin-section">
 
-    <div class="admin-header">
+    <div class="admin-page-head">
 
-        <h2>Restaurants</h2>
+        <div>
+            <h2 class="admin-page-title">Restaurants</h2>
+            <p class="admin-page-subtitle">Manage all restaurants</p>
+        </div>
 
-        <form method="get">
+        <div class="admin-toolbar">
 
-            <input name="query"
-                   value="@Context.Request.Query["query"]"
-                   placeholder="Search..." />
+            <form method="get" class="admin-search">
 
-            <button type="submit">Search</button>
+                <i class="bi bi-search"></i>
 
-        </form>
+                <input type="text"
+                       name="query"
+                       value="@Context.Request.Query["query"]"
+                       placeholder="Search restaurant..." />
 
-        <a asp-action="Create"
-           class="admin-btn admin-btn-primary">
-            Create Restaurant
-        </a>
+            </form>
+
+            <a asp-action="Create"
+               class="admin-btn admin-btn-primary">
+
+                <i class="bi bi-plus-lg"></i>
+                Create
+
+            </a>
+
+        </div>
 
     </div>
 

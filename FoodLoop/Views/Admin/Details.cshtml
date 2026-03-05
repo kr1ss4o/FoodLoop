@@ -1,4 +1,6 @@
-﻿@model object
+﻿@using System.Reflection
+@using System.ComponentModel.DataAnnotations;
+@model object
 
 @{
     ViewData["Title"] = "Details";
@@ -6,20 +8,11 @@
 
     var type = Model.GetType();
 
+    
+
     var properties = type
         .GetProperties()
-        .Where(p =>
-            p.PropertyType.IsPrimitive ||
-            p.PropertyType == typeof(string) ||
-            p.PropertyType == typeof(Guid) ||
-            p.PropertyType == typeof(Guid?) ||
-            p.PropertyType == typeof(DateTime) ||
-            p.PropertyType == typeof(DateTime?) ||
-            p.PropertyType == typeof(decimal) ||
-            p.PropertyType == typeof(decimal?) ||
-            p.PropertyType == typeof(int) ||
-            p.PropertyType == typeof(int?)
-        )
+        .Where(p => p.GetCustomAttribute<DisplayAttribute>() != null)
         .ToList();
 
     var idProperty = type.GetProperty("Id");
@@ -32,8 +25,8 @@
 
     <div class="admin-header">
 
-        <h2 class="admin-title">
-            @type.Name Details
+        <h2 class="admin-page-title">
+            @type.Name
         </h2>
 
         <div class="admin-actions">
@@ -47,12 +40,6 @@
                     Edit
                 </a>
             }
-
-            <a asp-controller="@controller"
-               asp-action="@controller"
-               class="admin-btn admin-btn-secondary">
-                Back
-            </a>
 
         </div>
 
@@ -69,12 +56,30 @@
                     var value = prop.GetValue(Model);
 
                     <tr>
+                        @{
+                            var display = prop.GetCustomAttribute<DisplayAttribute>();
+                            var label = display?.Name ?? prop.Name;
+                        }
+
                         <th>
-                            @prop.Name
+                            @label
                         </th>
 
                         <td>
-                            @(value ?? "-")
+
+                            @if (value is DateTime dt)
+                            {
+                                @dt.ToString("dd.MM.yyyy HH:mm")
+                            }
+                            else if (value is bool b)
+                            {
+                                @(b ? "Да" : "Не")
+                            }
+                            else
+                            {
+                                @(value ?? "-")
+                            }
+
                         </td>
                     </tr>
                 }

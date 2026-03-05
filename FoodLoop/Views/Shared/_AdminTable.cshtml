@@ -1,4 +1,5 @@
 ﻿@using System.Reflection
+@using System.ComponentModel.DataAnnotations;
 @model IEnumerable<object>
 
 @{
@@ -11,15 +12,22 @@
     }
 
     var type = items.First().GetType();
+    var hiddenColumns = new[]
+    {
+        "IconUrl",
+        "ImageUrl",
+        "BannerImageUrl",
+        "OwnerUserId",
+        "RestaurantId",
+        "CategoryId",
+        "UserId",
+        "IsLowStock"
+    };
 
     var props = type.GetProperties()
         .Where(p =>
-            p.PropertyType.IsPrimitive ||
-            p.PropertyType == typeof(string) ||
-            p.PropertyType == typeof(decimal) ||
-            p.PropertyType == typeof(DateTime) ||
-            p.PropertyType == typeof(Guid) ||
-            p.PropertyType.IsEnum)
+            p.GetCustomAttribute<DisplayAttribute>() != null &&
+            !hiddenColumns.Contains(p.Name))
         .ToList();
 }
 
@@ -30,7 +38,10 @@
 
             @foreach (var prop in props)
             {
-                <th>@prop.Name</th>
+                var display = prop.GetCustomAttribute<DisplayAttribute>();
+                var name = display?.Name ?? prop.Name;
+
+                <th>@name</th>
             }
 
             <th>Actions</th>
@@ -48,9 +59,18 @@
                 {
                     var value = prop.GetValue(item);
 
-                    <td>
-                        @(value ?? "-")
-                    </td>
+                    if (value is DateTime dt)
+                    {
+                        <td>@dt.ToString("dd.MM.yyyy HH:mm")</td>
+                    }
+                    else if (value != null && !value.GetType().IsPrimitive && value is not string)
+                    {
+                        <td>-</td>
+                    }
+                    else
+                    {
+                        <td>@(value ?? "-")</td>
+                    }
                 }
 
                 @{
@@ -64,8 +84,11 @@
                     {
                         <a asp-action="Details"
                            asp-route-id="@id"
-                           class="btn btn-sm btn-outline-primary">
-                            Details
+                           class="admin-mini-btn"
+                           title="Details">
+
+                            <i class="bi bi-eye"></i>
+
                         </a>
                     }
 
@@ -73,8 +96,11 @@
                     {
                         <a asp-action="Edit"
                            asp-route-id="@id"
-                           class="btn btn-sm btn-outline-warning">
-                            Edit
+                           class="admin-mini-btn"
+                           title="Edit">
+
+                            <i class="bi bi-pencil"></i>
+
                         </a>
 
                         <form asp-action="Delete"
@@ -82,8 +108,11 @@
                               method="post"
                               style="display:inline">
 
-                            <button class="btn btn-sm btn-outline-danger">
-                                Delete
+                            <button class="admin-mini-btn admin-mini-btn--danger"
+                                    title="Delete">
+
+                                <i class="bi bi-trash"></i>
+
                             </button>
 
                         </form>

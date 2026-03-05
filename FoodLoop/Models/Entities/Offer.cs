@@ -1,23 +1,41 @@
-﻿namespace FoodLoop.Models.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace FoodLoop.Models.Entities
 {
     public class Offer : BaseEntity
     {
+        [Display(Name = "Заглавие")]
         public string Title { get; set; } = "";
+
+        [Display(Name = "Описание")]
         public string Description { get; set; } = "";
 
+        [Display(Name = "Редовна цена")]
         public decimal OriginalPrice { get; set; }
+
+        [Display(Name = "Намалена цена")]
         public decimal DiscountedPrice { get; set; }
+
+        [Display(Name = "Количество")]
         public int QuantityAvailable { get; set; }
 
+
+        [Display(Name = "Приключва")]
         public DateTime EndsAt { get; set; }
+
+        [Display(Name = "Адрес на изобр.")]
         public string? ImageUrl { get; set; }
 
         // FK to Restaurant
         public Guid RestaurantId { get; set; }
+
+        [Display(Name = "Ресторант")]
         public Restaurant? Restaurant { get; set; }
 
         // FK to Category
         public Guid CategoryId { get; set; }
+
+        [Display(Name = "Категория")]
         public Category? Category { get; set; }
 
         // Many-to-Many

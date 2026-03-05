@@ -14,11 +14,14 @@ namespace FoodLoop.Models.Entities
         public Reservation Reservation { get; set; } = null!;
 
         [Range(1, 5)]
+        [Display(Name = "Оценка")]
         public int Rating { get; set; }
 
         [MaxLength(1000)]
+        [Display(Name = "Коментар")]
         public string? Comment { get; set; }
 
+        [Display(Name = "Създадено на")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

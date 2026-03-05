@@ -1,4 +1,3 @@
-wwwroot\css\admin.css
 wwwroot\css\auth.css
 wwwroot\css\business-profile.css
 wwwroot\css\cart.css
@@ -132,3 +131,4 @@ wwwroot\lib\jquery\dist\jquery.js
 wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
+wwwroot\css\admin.css
