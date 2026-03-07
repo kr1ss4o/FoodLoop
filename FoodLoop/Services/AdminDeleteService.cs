@@ -227,5 +227,27 @@ namespace FoodLoop.Services
                 await _context.SaveChangesAsync();
             }
         }
+        // =====================================================
+        // DELETE TAG
+        // =====================================================
+        public async Task DeleteTagAsync(Guid id)
+        {
+            var tag = await _context.Tags
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (tag == null)
+                return;
+
+            // премахваме връзките OfferTags
+            var offerTags = await _context.OfferTags
+                .Where(x => x.TagId == id)
+                .ToListAsync();
+
+            _context.OfferTags.RemoveRange(offerTags);
+
+            _context.Tags.Remove(tag);
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

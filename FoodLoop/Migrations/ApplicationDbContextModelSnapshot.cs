@@ -47,7 +47,7 @@ namespace FoodLoop.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CartItems");
+                    b.ToTable("CartItems", (string)null);
                 });
 
             modelBuilder.Entity("FoodLoop.Models.Entities.Category", b =>
@@ -68,7 +68,7 @@ namespace FoodLoop.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("FoodLoop.Models.Entities.Offer", b =>
@@ -102,6 +102,9 @@ namespace FoodLoop.Migrations
                     b.Property<int>("QuantityAvailable")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("RestaurantId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -110,7 +113,9 @@ namespace FoodLoop.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Offers");
+                    b.HasIndex("RestaurantId");
+
+                    b.ToTable("Offers", (string)null);
                 });
 
             modelBuilder.Entity("FoodLoop.Models.Entities.OfferTag", b =>
@@ -125,7 +130,7 @@ namespace FoodLoop.Migrations
 
                     b.HasIndex("TagId");
 
-                    b.ToTable("OfferTags");
+                    b.ToTable("OfferTags", (string)null);
                 });
 
             modelBuilder.Entity("FoodLoop.Models.Entities.Reservation", b =>
@@ -156,9 +161,6 @@ namespace FoodLoop.Migrations
                     b.Property<string>("RecipientPhone")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("RestaurantId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -173,11 +175,9 @@ namespace FoodLoop.Migrations
 
                     b.HasIndex("OfferId");
 
-                    b.HasIndex("RestaurantId");
-
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reservations");
+                    b.ToTable("Reservations", (string)null);
                 });
 
             modelBuilder.Entity("FoodLoop.Models.Entities.ReservationItem", b =>
@@ -207,7 +207,7 @@ namespace FoodLoop.Migrations
 
                     b.HasIndex("ReservationId");
 
-                    b.ToTable("ReservationItems");
+                    b.ToTable("ReservationItems", (string)null);
                 });
 
             modelBuilder.Entity("FoodLoop.Models.Entities.ReservationStatusLog", b =>
@@ -238,7 +238,7 @@ namespace FoodLoop.Migrations
 
                     b.HasIndex("ReservationId");
 
-                    b.ToTable("ReservationStatusLogs");
+                    b.ToTable("ReservationStatusLogs", (string)null);
                 });
 
             modelBuilder.Entity("FoodLoop.Models.Entities.Restaurant", b =>
@@ -286,7 +286,7 @@ namespace FoodLoop.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Restaurants");
+                    b.ToTable("Restaurants", (string)null);
                 });
 
             modelBuilder.Entity("FoodLoop.Models.Entities.Review", b =>
@@ -313,7 +313,7 @@ namespace FoodLoop.Migrations
                     b.HasIndex("ReservationId")
                         .IsUnique();
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Reviews", (string)null);
                 });
 
             modelBuilder.Entity("FoodLoop.Models.Entities.Tag", b =>
@@ -331,7 +331,7 @@ namespace FoodLoop.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tags");
+                    b.ToTable("Tags", (string)null);
                 });
 
             modelBuilder.Entity("FoodLoop.Models.Entities.User", b =>
@@ -760,7 +760,7 @@ namespace FoodLoop.Migrations
 
                     b.Navigation("RestaurantsOwned");
                 });
-            #pragma warning restore 612, 618
+#pragma warning restore 612, 618
         }
     }
 }

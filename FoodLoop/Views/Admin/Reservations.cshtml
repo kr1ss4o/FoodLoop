@@ -10,8 +10,8 @@
     <div class="admin-page-head">
 
         <div>
-            <h2 class="admin-page-title">Orders</h2>
-            <p class="admin-page-subtitle">Manage all orders</p>
+            <h2 class="admin-page-title">Поръчки</h2>
+            <p class="admin-page-subtitle">Управлявай всички поръчки</p>
         </div>
 
         <div class="admin-toolbar">
@@ -23,17 +23,9 @@
                 <input type="text"
                        name="query"
                        value="@Context.Request.Query["query"]"
-                       placeholder="Search order..." />
+                       placeholder="Търси поръчка..." />
 
             </form>
-
-            <a asp-action="Create"
-               class="admin-btn admin-btn-primary">
-
-                <i class="bi bi-plus-lg"></i>
-                Create
-
-            </a>
 
         </div>
 

@@ -28,7 +28,7 @@ namespace FoodLoop.Models.Entities
         // FK to Owner (User)
         [Display(Name = "Собственик ID")]
         public string OwnerUserId { get; set; }
-        public User Owner { get; set; }
+        public User? Owner { get; set; }
 
         // Navigation
         public ICollection<Offer>? Offers { get; set; }

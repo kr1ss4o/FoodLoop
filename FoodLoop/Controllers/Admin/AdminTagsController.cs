@@ -1,22 +1,22 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using FoodLoop.Data;
 using FoodLoop.Models.Entities;
 using FoodLoop.Models.ViewModels;
-using FoodLoop.Data;
 using FoodLoop.Services;
 using FoodLoop.ViewModels.Admin;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FoodLoop.Controllers.Admin;
 
-public class AdminCategoriesController : AdminBaseController
+public class AdminTagsController : AdminBaseController
 {
     private const int PageSize = 10;
+
     private readonly AdminDeleteService _deleteService;
 
-    public AdminCategoriesController(
+    public AdminTagsController(
         ApplicationDbContext context,
-        AdminDeleteService deleteService)
-        : base(context)
+        AdminDeleteService deleteService) : base(context)
     {
         _deleteService = deleteService;
     }
@@ -25,22 +25,22 @@ public class AdminCategoriesController : AdminBaseController
     // LIST
     // =====================================================
 
-    public async Task<IActionResult> Categories(string? query, int page = 1)
+    public async Task<IActionResult> Tags(string? query, int page = 1)
     {
-        var categoriesQuery = _context.Categories
+        var tagsQuery = _context.Tags
             .AsNoTracking()
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(query))
         {
-            categoriesQuery = categoriesQuery.Where(c =>
-                c.Name.Contains(query));
+            tagsQuery = tagsQuery.Where(t =>
+                t.Name.Contains(query));
         }
 
-        var totalItems = await categoriesQuery.CountAsync();
+        var totalItems = await tagsQuery.CountAsync();
 
-        var categories = await categoriesQuery
-            .OrderBy(c => c.Name)
+        var tags = await tagsQuery
+            .OrderBy(t => t.Name)
             .Skip((page - 1) * PageSize)
             .Take(PageSize)
             .ToListAsync();
@@ -49,12 +49,28 @@ public class AdminCategoriesController : AdminBaseController
         {
             CurrentPage = page,
             TotalPages = (int)Math.Ceiling(totalItems / (double)PageSize),
-            Controller = "AdminCategories",
-            Action = "Categories",
+            Controller = "AdminTags",
+            Action = "Tags",
             Query = query
         };
 
-        return AdminView("Categories", categories);
+        return AdminView("Tags", tags);
+    }
+
+    // =====================================================
+    // DETAILS
+    // =====================================================
+
+    public async Task<IActionResult> Details(Guid id)
+    {
+        var tag = await _context.Tags
+            .AsNoTracking()
+            .FirstOrDefaultAsync(t => t.Id == id);
+
+        if (tag == null)
+            return NotFound();
+
+        return AdminDetails(tag);
     }
 
     // =====================================================
@@ -66,7 +82,7 @@ public class AdminCategoriesController : AdminBaseController
     {
         var vm = new AdminFormViewModel
         {
-            Type = "Category"
+            Type = "Tag"
         };
 
         return AdminCreate(vm);
@@ -76,17 +92,16 @@ public class AdminCategoriesController : AdminBaseController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(AdminFormViewModel vm)
     {
-        var category = new Category
+        var tag = new Tag
         {
-            Name = vm.Name,
-            IconUrl = vm.Icon
+            Name = vm.Name
         };
 
-        _context.Categories.Add(category);
+        _context.Tags.Add(tag);
 
         await _context.SaveChangesAsync();
 
-        return RedirectToAction(nameof(Categories));
+        return RedirectToAction(nameof(Tags));
     }
 
     // =====================================================
@@ -96,19 +111,18 @@ public class AdminCategoriesController : AdminBaseController
     [HttpGet]
     public async Task<IActionResult> Edit(Guid id)
     {
-        var category = await _context.Categories
+        var tag = await _context.Tags
             .AsNoTracking()
-            .FirstOrDefaultAsync(c => c.Id == id);
+            .FirstOrDefaultAsync(t => t.Id == id);
 
-        if (category == null)
+        if (tag == null)
             return NotFound();
 
         var vm = new AdminFormViewModel
         {
-            Type = "Category",
-            Id = category.Id,
-            Name = category.Name,
-            Icon = category.IconUrl
+            Type = "Tag",
+            Id = tag.Id,
+            Name = tag.Name
         };
 
         return AdminEdit(vm);
@@ -121,18 +135,17 @@ public class AdminCategoriesController : AdminBaseController
         if (vm.Id == null)
             return BadRequest();
 
-        var category = await _context.Categories
-            .FirstOrDefaultAsync(c => c.Id == vm.Id);
+        var tag = await _context.Tags
+            .FirstOrDefaultAsync(t => t.Id == vm.Id);
 
-        if (category == null)
+        if (tag == null)
             return NotFound();
 
-        category.Name = vm.Name;
-        category.IconUrl = vm.Icon;
+        tag.Name = vm.Name;
 
         await _context.SaveChangesAsync();
 
-        return RedirectToAction(nameof(Categories));
+        return RedirectToAction(nameof(Tags));
     }
 
     // =====================================================
@@ -140,10 +153,11 @@ public class AdminCategoriesController : AdminBaseController
     // =====================================================
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(Guid id)
     {
-        await _deleteService.DeleteCategoryAsync(id);
+        await _deleteService.DeleteTagAsync(id);
 
-        return RedirectToAction(nameof(Categories));
+        return RedirectToAction(nameof(Tags));
     }
 }

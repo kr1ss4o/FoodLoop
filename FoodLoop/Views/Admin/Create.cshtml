@@ -1,13 +1,11 @@
-﻿@model object
+﻿@model FoodLoop.ViewModels.Admin.AdminFormViewModel
 
 @{
     Layout = "_Layout";
 }
 
 <div class="admin-header">
-
-    <h2>Create @Model.GetType().Name</h2>
-
+    <h2>Create @Model.Type</h2>
 </div>
 
 <partial name="_AdminForm" model="Model" />

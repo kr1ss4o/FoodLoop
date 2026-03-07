@@ -1,5 +1,5 @@
 ﻿@using FoodLoop.Models.ViewModels
-@model IEnumerable<FoodLoop.Models.Entities.Restaurant>
+@model IEnumerable<FoodLoop.Models.Entities.Tag>
 
 @{
     Layout = "_Layout";
@@ -10,8 +10,8 @@
     <div class="admin-page-head">
 
         <div>
-            <h2 class="admin-page-title">Ресторанти</h2>
-            <p class="admin-page-subtitle">Управлявай всички ресторанти</p>
+            <h2 class="admin-page-title">Тагове</h2>
+            <p class="admin-page-subtitle">Управлявай всички тагове</p>
         </div>
 
         <div class="admin-toolbar">
@@ -23,17 +23,9 @@
                 <input type="text"
                        name="query"
                        value="@Context.Request.Query["query"]"
-                       placeholder="Търси ресторант..." />
+                       placeholder="Търси таг..." />
 
             </form>
-
-            <a asp-action="Create"
-               class="admin-btn admin-btn-primary">
-
-                <i class="bi bi-plus-lg"></i>
-                Създай
-
-            </a>
 
         </div>
 

@@ -120,7 +120,7 @@ namespace FoodLoop.Controllers
             var user = await _userManager.FindByEmailAsync(model.Email);
 
             if (await _userManager.IsInRoleAsync(user, "Admin"))
-                return RedirectToAction("Dashboard", "Admin");
+                return RedirectToAction("Index", "AdminDashboard");
 
             if (await _userManager.IsInRoleAsync(user, "Restaurant"))
                 return RedirectToAction("Index", "RestaurantDashboard");

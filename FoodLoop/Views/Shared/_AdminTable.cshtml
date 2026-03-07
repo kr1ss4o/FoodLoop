@@ -80,7 +80,7 @@
 
                 <td class="admin-actions">
 
-                    @if (type.Name != "Category")
+                    @if (type.Name != "Category" && type.Name != "Tag")
                     {
                         <a asp-action="Details"
                            asp-route-id="@id"
@@ -103,6 +103,9 @@
 
                         </a>
 
+                    }
+                    @if (type.Name != "Review")
+                    {
                         <form asp-action="Delete"
                               asp-route-id="@id"
                               method="post"
