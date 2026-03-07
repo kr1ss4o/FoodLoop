@@ -64,7 +64,8 @@ public class AdminTagsController : AdminBaseController
     public async Task<IActionResult> Details(Guid id)
     {
         var tag = await _context.Tags
-            .AsNoTracking()
+            .Include(t => t.OfferTags)
+            .ThenInclude(ot => ot.Offer)
             .FirstOrDefaultAsync(t => t.Id == id);
 
         if (tag == null)

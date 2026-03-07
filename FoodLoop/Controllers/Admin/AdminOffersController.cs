@@ -30,7 +30,6 @@ public class AdminOffersController : AdminBaseController
         var offersQuery = _context.Offers
             .Include(o => o.Restaurant)
             .Include(o => o.Category)
-            .AsNoTracking()
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(query))
@@ -71,7 +70,6 @@ public class AdminOffersController : AdminBaseController
             .Include(o => o.Category)
             .Include(o => o.OfferTags)
                 .ThenInclude(t => t.Tag)
-            .AsNoTracking()
             .FirstOrDefaultAsync(o => o.Id == id);
 
         if (offer == null)

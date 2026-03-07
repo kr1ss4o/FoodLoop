@@ -57,6 +57,20 @@ public class AdminCategoriesController : AdminBaseController
         return AdminView("Categories", categories);
     }
 
+    // DETAILS
+
+    public async Task<IActionResult> Details(Guid id)
+    {
+        var category = await _context.Categories
+            .Include(c => c.Offers)
+            .FirstOrDefaultAsync(c => c.Id == id);
+
+        if (category == null)
+            return NotFound();
+
+        return AdminDetails(category);
+    }
+
     // =====================================================
     // CREATE
     // =====================================================
@@ -76,6 +90,9 @@ public class AdminCategoriesController : AdminBaseController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(AdminFormViewModel vm)
     {
+        if (!ModelState.IsValid)
+            return AdminCreate(vm);
+
         var category = new Category
         {
             Name = vm.Name,
@@ -86,7 +103,7 @@ public class AdminCategoriesController : AdminBaseController
 
         await _context.SaveChangesAsync();
 
-        return RedirectToAction(nameof(Categories));
+        return RedirectToAction("Categories", "AdminCategories");
     }
 
     // =====================================================

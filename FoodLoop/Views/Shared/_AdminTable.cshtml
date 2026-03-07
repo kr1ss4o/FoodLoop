@@ -44,7 +44,7 @@
                 <th>@name</th>
             }
 
-            <th>Actions</th>
+            <th class="admin-actions-header" style="width:160px;">Действия</th>
 
         </tr>
     </thead>
@@ -57,20 +57,47 @@
 
                 @foreach (var prop in props)
                 {
-                    var value = prop.GetValue(item);
+                    <td>
 
-                    if (value is DateTime dt)
-                    {
-                        <td>@dt.ToString("dd.MM.yyyy HH:mm")</td>
-                    }
-                    else if (value != null && !value.GetType().IsPrimitive && value is not string)
-                    {
-                        <td>-</td>
-                    }
-                    else
-                    {
-                        <td>@(value ?? "-")</td>
-                    }
+                        @{
+                            var value = prop.GetValue(item);
+                        }
+
+                        @if (value == null)
+                        {
+                            <span>-</span>
+                        }
+
+                        else if (value.GetType().Namespace?.Contains("Entities") == true)
+                        {
+                            var nameProp = value.GetType().GetProperty("Name");
+
+                            if (nameProp != null)
+                            {
+                                @nameProp.GetValue(value)
+                            }
+                            else
+                            {
+                                @value.ToString()
+                            }
+                        }
+
+                        else if (value is DateTime dt)
+                        {
+                            @dt.ToString("dd.MM.yyyy HH:mm")
+                        }
+
+                        else if (value is decimal d)
+                        {
+                            @($"{d:F2} лв")
+                        }
+
+                        else
+                        {
+                            @value
+                        }
+
+                    </td>
                 }
 
                 @{
@@ -78,10 +105,10 @@
                     var id = idProp?.GetValue(item);
                 }
 
-                <td class="admin-actions">
+                <td class="admin-actions-cell">
 
-                    @if (type.Name != "Category" && type.Name != "Tag")
-                    {
+                    <div class="admin-actions">
+
                         <a asp-action="Details"
                            asp-route-id="@id"
                            class="admin-mini-btn"
@@ -90,36 +117,37 @@
                             <i class="bi bi-eye"></i>
 
                         </a>
-                    }
 
-                    @if (type.Name != "Review" && type.Name != "Reservation")
-                    {
-                        <a asp-action="Edit"
-                           asp-route-id="@id"
-                           class="admin-mini-btn"
-                           title="Edit">
+                        @if (type.Name != "Review" && type.Name != "Reservation")
+                        {
+                            <a asp-action="Edit"
+                               asp-route-id="@id"
+                               class="admin-mini-btn"
+                               title="Edit">
 
-                            <i class="bi bi-pencil"></i>
+                                <i class="bi bi-pencil"></i>
 
-                        </a>
+                            </a>
 
-                    }
-                    @if (type.Name != "Review")
-                    {
-                        <form asp-action="Delete"
-                              asp-route-id="@id"
-                              method="post"
-                              style="display:inline">
+                        }
+                        @if (type.Name != "Review")
+                        {
+                            <form asp-action="Delete"
+                                  asp-route-id="@id"
+                                  method="post"
+                                  style="display:inline">
 
-                            <button class="admin-mini-btn admin-mini-btn--danger"
-                                    title="Delete">
+                                <button class="admin-mini-btn admin-mini-btn--danger"
+                                        title="Delete">
 
-                                <i class="bi bi-trash"></i>
+                                    <i class="bi bi-trash"></i>
 
-                            </button>
+                                </button>
 
-                        </form>
-                    }
+                            </form>
+                        }
+
+                    </div>
 
                 </td>
 

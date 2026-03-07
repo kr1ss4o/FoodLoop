@@ -132,6 +132,7 @@ body {
     border: 1px solid var(--admin-border);
     border-radius: var(--admin-radius);
     box-shadow: var(--admin-shadow);
+    overflow: hidden;
 }
 
 /* =========================================================
@@ -140,19 +141,26 @@ body {
 
 .admin-kpi-grid {
     display: grid;
-    grid-template-columns: repeat(4,1fr);
-    gap: 16px;
+    grid-template-columns: repeat(2,340px);
+    justify-content: center;
+    gap: 28px;
+    margin-top: 40px;
 }
 
 .admin-kpi {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 18px;
+    gap: 18px;
+    padding: 28px;
     border-radius: var(--admin-radius);
     border: 1px solid var(--admin-border);
     background: white;
     transition: .2s;
+    min-height: 120px;
+}
+.admin-kpi {
+    text-decoration: none;
+    color: inherit;
 }
 
     .admin-kpi:hover {
@@ -160,17 +168,18 @@ body {
     }
 
 .admin-kpi-icon {
-    width: 52px;
-    height: 52px;
+    width: 64px;
+    height: 64px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 16px;
+    border-radius: 18px;
     background: var(--admin-green-soft);
+    font-size: 24px;
 }
 
 .admin-kpi-value {
-    font-size: 34px;
+    font-size: 40px;
     font-weight: 900;
 }
 
@@ -178,6 +187,24 @@ body {
     font-size: 13px;
     color: var(--admin-muted);
 }
+
+.admin-kpi {
+    text-decoration: none;
+    color: inherit;
+    transition: all .18s ease;
+}
+
+    .admin-kpi:hover {
+        transform: translateY(-2px);
+        border-color: var(--admin-green);
+    }
+
+        .admin-kpi:hover .admin-kpi-label,
+        .admin-kpi:hover .admin-kpi-value,
+        .admin-kpi:hover .admin-kpi-arrow {
+            color: var(--admin-green);
+        }
+
 
 /* =========================================================
    TABLES
@@ -210,9 +237,19 @@ body {
         background: rgba(34,197,94,.06);
     }
 
+    .admin-table th:last-child,
+    .admin-table td:last-child {
+        width: 160px;
+        text-align: right;
+        padding-right: 20px;
+    }
+
+/* actions */
+
 .admin-actions {
     display: flex;
-    gap: 6px;
+    justify-content: flex-end;
+    gap: 8px;
 }
 
 .admin-mini-btn {
@@ -230,24 +267,114 @@ body {
    DETAILS
 ========================================================= */
 
-.admin-details {
+.admin-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.admin-details-title {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.admin-details-meta {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.admin-badge {
+    background: #eef2ff;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.admin-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(230px,1fr));
+    gap: 18px;
+}
+
+.admin-detail-card {
+    background: white;
     padding: 18px;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
 }
 
-.admin-details-table {
-    width: 100%;
+.admin-detail-label {
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 6px;
 }
 
-    .admin-details-table th {
-        width: 220px;
-        padding: 12px;
-        font-size: 12px;
-        background: rgba(34,197,94,.05);
-    }
+.admin-detail-value {
+    font-size: 15px;
+    font-weight: 500;
+}
 
-    .admin-details-table td {
-        padding: 12px;
-    }
+.admin-detail-image {
+    max-width: 220px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.admin-detail-icon {
+    width: 40px;
+    height: 40px;
+}
+
+.admin-null {
+    color: #9ca3af;
+    font-style: italic;
+}
+
+.admin-details-hero {
+    height: 180px;
+    border-radius: 12px;
+    background-size: cover;
+    background-position: center;
+    margin-bottom: 25px;
+}
+
+.admin-details-section {
+    margin-top: 35px;
+}
+
+.admin-section-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.admin-media-grid {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* =========================================================
+   TAGS
+========================================================= */
+
+.admin-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.admin-tag {
+    background: #eef2ff;
+    color: #4338ca;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
 
 /* =========================================================
    FORMS
@@ -283,41 +410,8 @@ body {
 }
 
 /* =========================================================
-   TAG PILLS
+   IMAGE UPLOAD
 ========================================================= */
-
-.tag-pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.tag-pill {
-    padding: 8px 14px;
-    border-radius: 999px;
-    background: #f0fdf4;
-    border: 1px solid rgba(34,197,94,.25);
-}
-
-/* =========================================================
-   IMAGE UPLOAD (NEW DRAG & DROP DESIGN)
-========================================================= */
-.admin-url-input {
-    width: 100%;
-    height: 46px;
-    padding: 0 16px;
-    border-radius: 12px;
-    border: 1px solid #e5e7eb;
-    background: #fff;
-    font-size: 15px;
-    transition: all 0.2s ease;
-}
-
-    .admin-url-input:focus {
-        outline: none;
-        border-color: #22c55e;
-        box-shadow: 0 0 0 3px rgba(34,197,94,0.15);
-    }
 
 .admin-image-grid {
     display: grid;
@@ -330,8 +424,6 @@ body {
     flex-direction: column;
     gap: 10px;
 }
-
-/* drop zone */
 
 .drop-zone {
     position: relative;
@@ -350,39 +442,25 @@ body {
     transition: .2s;
 }
 
-    /* hover */
-
     .drop-zone:hover {
         border-color: #22c55e;
         background: #f0fdf4;
     }
-
-    /* drag active */
 
     .drop-zone.drag {
         border-color: #22c55e;
         background: #ecfdf5;
     }
 
-    /* hide file input */
-
     .drop-zone input {
         display: none;
     }
-
-    /* preview */
 
     .drop-zone.preview {
         background-size: cover;
         background-position: center;
         color: transparent;
     }
-
-/* url field */
-
-.admin-url {
-    width: 100%;
-}
 
 /* =========================================================
    PAGINATION
@@ -403,21 +481,18 @@ body {
 ========================================================= */
 
 @media(max-width:1100px) {
-
     .admin-kpi-grid {
         grid-template-columns: 1fr 1fr;
     }
 }
 
 @media(max-width:860px) {
-
     .admin-form-grid {
         grid-template-columns: 1fr;
     }
 }
 
 @media(max-width:560px) {
-
     .admin-kpi-grid {
         grid-template-columns: 1fr;
     }

@@ -1,8 +1,9 @@
 ﻿@model FoodLoop.ViewModels.Admin.AdminFormViewModel
+@using FoodLoop.Helpers
 
 <div class="admin-card">
 
-    <form asp-controller="Admin@(Model.Type)s"
+    <form asp-controller="@AdminControllerHelper.Get(Model.Type)"
           asp-action="@(Model.Id == null ? "Create" : "Edit")"
           method="post"
           enctype="multipart/form-data"
@@ -10,12 +11,11 @@
 
         @Html.AntiForgeryToken()
 
+        <div asp-validation-summary="All" class="text-danger"></div>
+
         <input type="hidden" asp-for="Id" />
         <input type="hidden" asp-for="Type" />
 
-        <!-- ========================= -->
-        <!-- RESTAURANT -->
-        <!-- ========================= -->
         @if (Model.Type == "Restaurant")
         {
 
@@ -25,22 +25,32 @@
 
                 <div class="admin-field">
                     <label>Име на ресторант</label>
-                    <input asp-for="RestaurantName" class="admin-input" />
+                    <input asp-for="RestaurantName" class="admin-input" required />
+                    <span asp-validation-for="RestaurantName" class="text-danger"></span>
                 </div>
 
                 <div class="admin-field">
                     <label>Бизнес имейл</label>
-                    <input asp-for="BusinessEmail" class="admin-input" />
+                    <input asp-for="BusinessEmail" class="admin-input" required />
+                    <span asp-validation-for="BusinessEmail" class="text-danger"></span>
                 </div>
 
                 <div class="admin-field">
                     <label>Бизнес телефон</label>
-                    <input asp-for="Phone" class="admin-input" />
+                    <input asp-for="Phone"
+                           class="admin-input"
+                           maxlength="10"
+                           pattern="[0-9]{10}"
+                           inputmode="numeric"
+                           oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+                           required />
+                    <span asp-validation-for="Phone" class="text-danger"></span>
                 </div>
 
                 <div class="admin-field">
                     <label>Адрес</label>
-                    <input asp-for="Address" class="admin-input" />
+                    <input asp-for="Address" class="admin-input" required />
+                    <span asp-validation-for="Address" class="text-danger"></span>
                 </div>
 
             </div>
@@ -51,24 +61,34 @@
 
                 <div class="admin-field">
                     <label>Име на собственика</label>
-                    <input asp-for="OwnerFullName" />
+                    <input asp-for="OwnerFullName" class="admin-input" required />
+                    <span asp-validation-for="OwnerFullName" class="text-danger"></span>
                 </div>
 
                 <div class="admin-field">
                     <label>Имейл за вход</label>
-                    <input asp-for="OwnerEmail" />
+                    <input asp-for="OwnerEmail" class="admin-input" required />
+                    <span asp-validation-for="OwnerEmail" class="text-danger"></span>
                 </div>
 
                 <div class="admin-field">
                     <label>Телефон</label>
-                    <input asp-for="OwnerPhone" />
+                    <input asp-for="OwnerPhone"
+                           class="admin-input"
+                           maxlength="10"
+                           pattern="[0-9]{10}"
+                           inputmode="numeric"
+                           oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+                           required />
+                    <span asp-validation-for="OwnerPhone" class="text-danger"></span>
                 </div>
 
                 @if (Model.Id == null)
                 {
                     <div class="admin-field">
                         <label>Парола</label>
-                        <input asp-for="OwnerPassword" type="password" />
+                        <input asp-for="OwnerPassword" type="password" class="admin-input" required />
+                        <span asp-validation-for="OwnerPassword" class="text-danger"></span>
                     </div>
                 }
 
@@ -95,7 +115,7 @@
 
                         <label>Или URL</label>
 
-                        <input asp-for="Icon"
+                        <input asp-for="ImageUrl"
                                class="admin-input admin-url-input"
                                placeholder="https://example.com/icon.png" />
 
@@ -120,179 +140,15 @@
 
                         <label>Или URL</label>
 
-                        <input asp-for="Icon"
+                        <input asp-for="BannerImageUrl"
                                class="admin-input admin-url-input"
-                               placeholder="https://example.com/icon.png" />
+                               placeholder="https://example.com/banner.png" />
 
                     </div>
 
                 </div>
 
             </div>
-        }
-
-        <!-- ========================= -->
-        <!-- OFFER -->
-        <!-- ========================= -->
-        @if (Model.Type == "Offer")
-        {
-
-            <h3 class="admin-section-title">Оферта</h3>
-
-            <div class="admin-form-grid">
-
-                <div class="admin-field">
-                    <label>Заглавие</label>
-                    <input asp-for="Title" class="admin-input" />
-                </div>
-
-                <div class="admin-field">
-                    <label>Описание</label>
-                    <input asp-for="Description" class="admin-input" />
-                </div>
-
-                <div class="admin-field">
-                    <label>Оригинална цена</label>
-                    <input asp-for="OriginalPrice"
-                           type="number"
-                           step="0.01"
-                           class="admin-input" />
-                </div>
-
-                <div class="admin-field">
-                    <label>Цена</label>
-                    <input asp-for="DiscountedPrice"
-                           type="number"
-                           step="0.01"
-                           class="admin-input" />
-                </div>
-
-                <div class="admin-field">
-                    <label>Количество</label>
-                    <input asp-for="QuantityAvailable" class="admin-input" />
-                </div>
-
-                <div class="admin-field">
-                    <label>Край</label>
-                    <input asp-for="EndsAt"
-                           type="datetime-local"
-                           class="admin-input" />
-                </div>
-
-                <div class="admin-field">
-                    <label>Ресторант</label>
-
-                    <select asp-for="RestaurantId"
-                            class="admin-input"
-                            asp-items="@(new SelectList(ViewBag.Restaurants, "Id", "Name"))">
-                    </select>
-
-                </div>
-
-                <div class="admin-field">
-                    <label>Категория</label>
-
-                    <select asp-for="CategoryId"
-                            class="admin-input"
-                            asp-items="@(new SelectList(ViewBag.Categories, "Id", "Name"))">
-                    </select>
-
-                </div>
-
-            </div>
-
-            <h3 class="admin-section-title">Изображение</h3>
-
-            <div class="admin-upload">
-
-                <div class="drop-zone @(string.IsNullOrWhiteSpace(Model.ImageUrl) ? "" : "preview")"
-                     style="background-image:url('@Model.ImageUrl')">
-
-                    <span>Плъзни изображение</span>
-
-                    <input type="file"
-                           name="ImageUpload"
-                           accept="image/*">
-
-                </div>
-
-                <div class="admin-field">
-
-                    <label>Или URL</label>
-
-                    <input asp-for="Icon"
-                           class="admin-input admin-url-input"
-                           placeholder="https://example.com/icon.png" />
-
-                </div>
-
-            </div>
-
-        }
-
-        <!-- ========================= -->
-        <!-- CATEGORY -->
-        <!-- ========================= -->
-        @if (Model.Type == "Category")
-        {
-
-            <h3 class="admin-section-title">Категория</h3>
-
-            <div class="admin-form-grid">
-
-                <div class="admin-field">
-                    <label>Име</label>
-                    <input asp-for="Name" class="admin-input" />
-                </div>
-
-            </div>
-
-            <h3 class="admin-section-title">Икона</h3>
-
-            <div class="admin-upload">
-
-                <div class="drop-zone @(string.IsNullOrWhiteSpace(Model.Icon) ? "" : "preview")"
-                     style="background-image:url('@Model.Icon')">
-
-                    <span>Плъзни икона или кликни</span>
-
-                    <input type="file"
-                           name="IconUpload"
-                           accept="image/*">
-
-                </div>
-
-                <div class="admin-field">
-
-                    <label>Или URL</label>
-
-                    <input asp-for="Icon"
-                           class="admin-input admin-url-input"
-                           placeholder="https://example.com/icon.png" />
-
-                </div>
-
-            </div>
-
-        }
-
-        <!-- ========================= -->
-        <!-- TAG -->
-        <!-- ========================= -->
-        @if (Model.Type == "Tag")
-        {
-
-            <h3 class="admin-section-title">Таг</h3>
-
-            <div class="admin-form-grid">
-
-                <div class="admin-field">
-                    <label>Име</label>
-                    <input asp-for="Name" class="admin-input" />
-                </div>
-
-            </div>
-
         }
 
         <button type="submit" class="admin-btn admin-btn-primary">
@@ -302,66 +158,3 @@
     </form>
 
 </div>
-
-<script>
-
-    document.addEventListener("DOMContentLoaded", () => {
-
-        document.querySelectorAll(".drop-zone").forEach(zone => {
-
-            const input = zone.querySelector("input");
-
-            zone.addEventListener("click", () => input.click());
-
-            zone.addEventListener("dragover", e => {
-                e.preventDefault();
-                zone.classList.add("drag");
-            });
-
-            zone.addEventListener("dragleave", () => {
-                zone.classList.remove("drag");
-            });
-
-            zone.addEventListener("drop", e => {
-
-                e.preventDefault();
-                zone.classList.remove("drag");
-
-                const file = e.dataTransfer.files[0];
-                if (!file) return;
-
-                input.files = e.dataTransfer.files;
-
-                preview(zone, file);
-
-            });
-
-            input.addEventListener("change", () => {
-
-                const file = input.files[0];
-                if (!file) return;
-
-                preview(zone, file);
-
-            });
-
-        });
-
-        function preview(zone, file){
-
-            const reader = new FileReader();
-
-            reader.onload = e => {
-
-                zone.classList.add("preview");
-                zone.style.backgroundImage = `url('${e.target.result}')`;
-
-            };
-
-            reader.readAsDataURL(file);
-
-        }
-
-    });
-
-</script>

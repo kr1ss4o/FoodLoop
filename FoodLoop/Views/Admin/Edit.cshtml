@@ -2,10 +2,19 @@
 
 @{
     Layout = "_Layout";
+
+    var modelName = Model.Type switch
+    {
+        "Restaurant" => "ресторант",
+        "Offer" => "оферта",
+        "Category" => "категория",
+        "Tag" => "таг",
+        _ => Model.Type.ToLower()
+    };
 }
 
 <div class="admin-header">
-    <h2>Edit Restaurant</h2>
+    <h2>Редактирай @modelName</h2>
 </div>
 
 <partial name="_AdminForm" model="Model" />

@@ -1,92 +1,243 @@
 ﻿@using System.Reflection
-@using System.ComponentModel.DataAnnotations;
+@using System.ComponentModel.DataAnnotations
+@using FoodLoop.Helpers
 @model object
 
 @{
-    ViewData["Title"] = "Details";
     Layout = "_Layout";
 
     var type = Model.GetType();
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
 
-    
+    var id = type.GetProperty("Id")?.GetValue(Model);
 
-    var properties = type
-        .GetProperties()
-        .Where(p => p.GetCustomAttribute<DisplayAttribute>() != null)
+    var properties = type.GetProperties()
+        .Select(p => new
+        {
+            Property = p,
+            Display = p.GetCustomAttribute<DisplayAttribute>()
+        })
+        .Where(x => x.Display != null)
         .ToList();
 
-    var idProperty = type.GetProperty("Id");
-    var id = idProperty?.GetValue(Model);
+    var banner = properties
+        .FirstOrDefault(p => p.Property.Name.Contains("BannerImageUrl"));
 
-    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var mediaProps = properties
+        .Where(p => p.Property.Name.Contains("ImageUrl") || p.Property.Name.Contains("IconUrl"))
+        .ToList();
+
+    var normalProps = properties
+        .Where(p => !p.Property.Name.Contains("ImageUrl") &&
+                    !p.Property.Name.Contains("IconUrl") &&
+                    !p.Property.Name.Contains("BannerImageUrl"))
+        .ToList();
+}
+
+@functions {
+
+    string BgName(string type)
+    {
+        return type switch
+        {
+            "Restaurant" => "Ресторант",
+            "Offer" => "Оферта",
+            "Category" => "Категория",
+            "Tag" => "Таг",
+            "Review" => "Ревю",
+            "Reservation" => "Резервация",
+            "Order" => "Поръчка",
+            "User" => "Потребител",
+            _ => type
+        };
+    }
 }
 
 <div class="admin-container">
 
-    <div class="admin-header">
+    <!-- HERO / BANNER -->
+    @if (banner != null)
+    {
+        var bannerValue = banner.Property.GetValue(Model);
 
-        <h2 class="admin-page-title">
-            @type.Name
-        </h2>
+        if (bannerValue != null)
+        {
+            <div class="admin-details-hero"
+                 style="background-image:url('@bannerValue')">
+            </div>
+        }
+    }
 
-        <div class="admin-actions">
+    <!-- HEADER -->
 
-            @if (type.Name != "Review")
-            {
-                <a asp-controller="@controller"
-                   asp-action="Edit"
-                   asp-route-id="@id"
-                   class="admin-btn admin-btn-primary">
-                    Edit
-                </a>
-            }
+    <div class="admin-details-header">
+
+        <div>
+
+            <h1 class="admin-details-title">
+                @BgName(type.Name)
+            </h1>
+
+            <div class="admin-details-meta">
+
+                <span class="admin-badge">
+                    ID: @id
+                </span>
+
+                <span class="admin-badge">
+                    Модел: @BgName(type.Name)
+                </span>
+
+            </div>
 
         </div>
 
+        @if (type.Name != "Review")
+        {
+            <a asp-controller="@controller"
+               asp-action="Edit"
+               asp-route-id="@id"
+               class="admin-btn admin-btn-primary">
+                Edit
+            </a>
+        }
+
     </div>
 
-    <div class="admin-card">
 
-        <table class="admin-details-table">
+    <!-- MEDIA -->
+    @if (mediaProps.Any())
+    {
+        <div class="admin-details-section">
 
-            <tbody>
+            <h3 class="admin-section-title">
+                Медиа
+            </h3>
 
-                @foreach (var prop in properties)
+            <div class="admin-media-grid">
+
+                @foreach (var item in mediaProps)
                 {
-                    var value = prop.GetValue(Model);
+                    var value = item.Property.GetValue(Model);
 
-                    <tr>
+                    if (value != null)
+                    {
+                        <img src="@value"
+                             class="admin-detail-image" />
+                    }
+                }
+
+            </div>
+
+        </div>
+    }
+
+
+    <!-- INFORMATION -->
+
+    <div class="admin-details-section">
+
+        <h3 class="admin-section-title">
+            Информация
+        </h3>
+
+        <div class="admin-details-grid">
+
+            @foreach (var item in normalProps)
+            {
+                var prop = item.Property;
+                var label = item.Display?.Name ?? prop.Name;
+                var value = prop.GetValue(Model);
+
+                <div class="admin-detail-card">
+
+                    <div class="admin-detail-label">
+                        @label
+                    </div>
+
+                    <div class="admin-detail-value">
+
                         @{
-                            var display = prop.GetCustomAttribute<DisplayAttribute>();
-                            var label = display?.Name ?? prop.Name;
+                            if (value == null)
+                            {
+                                <span class="admin-null">null</span>
+                                ;
+                                return;
+                            }
+
+                            var valueType = value.GetType();
                         }
 
-                        <th>
-                            @label
-                        </th>
+                        @* DATE *@
+                        @if (value is DateTime dt)
+                        {
+                            @dt.ToString("dd.MM.yyyy HH:mm")
+                        }
 
-                        <td>
+                        @* PRICE *@
+                        else if (value is decimal price)
+                        {
+                            @($"{price:F2} лв")
+                        }
 
-                            @if (value is DateTime dt)
+                        @* BOOLEAN *@
+                        else if (value is bool b)
+                        {
+                            @(b ? "Yes" : "No")
+                        }
+
+                        @* TAG COLLECTION *@
+                        else if (value is IEnumerable<object> list && prop.Name.Contains("Tags"))
+                        {
+                            <div class="admin-tags">
+
+                                @foreach (var tag in list)
+                                {
+                                    <span class="admin-tag">
+                                        @tag
+                                    </span>
+                                }
+
+                            </div>
+                        }
+
+                        @* NAVIGATION ENTITY *@
+                        else if (valueType.Namespace?.Contains("Entities") == true)
+                        {
+                            var nameProp = valueType.GetProperty("Name");
+                            var idProp = valueType.GetProperty("Id");
+
+                            var entityId = idProp?.GetValue(value);
+                            var entityName = valueType.Name;
+
+                            if (nameProp != null)
                             {
-                                @dt.ToString("dd.MM.yyyy HH:mm")
-                            }
-                            else if (value is bool b)
-                            {
-                                @(b ? "Да" : "Не")
+                                <a asp-controller="@AdminControllerHelper.Get(entityName)"
+                                   asp-action="Details"
+                                   asp-route-id="@entityId"
+                                   class="admin-link">
+
+                                    @nameProp.GetValue(value)
+
+                                </a>
                             }
                             else
                             {
-                                @(value ?? "-")
+                                @value
                             }
+                        }
 
-                        </td>
-                    </tr>
-                }
+                        else
+                        {
+                            @value
+                        }
 
-            </tbody>
+                    </div>
 
-        </table>
+                </div>
+            }
+
+        </div>
 
     </div>
 
