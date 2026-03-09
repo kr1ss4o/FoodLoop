@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FoodLoop.Models.Entities
 {
@@ -14,6 +15,7 @@ namespace FoodLoop.Models.Entities
         public decimal OriginalPrice { get; set; }
 
         [Display(Name = "Намалена цена")]
+        [Column(TypeName = "decimal(10,2)")]
         public decimal DiscountedPrice { get; set; }
 
         [Display(Name = "Количество")]

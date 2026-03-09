@@ -55,6 +55,18 @@ namespace FoodLoop.Data
                 .WithOne(r => r.Review)
                 .HasForeignKey<Review>(r => r.ReservationId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Offer>()
+                .Property(o => o.DiscountedPrice)
+                .HasColumnType("decimal(10,2)");
+
+            builder.Entity<Reservation>()
+                .Property(r => r.TotalPrice)
+                .HasColumnType("decimal(10,2)");
+
+            builder.Entity<ReservationItem>()
+                .Property(r => r.PriceSnapshot)
+                .HasColumnType("decimal(10,2)");
         }
     }
 }

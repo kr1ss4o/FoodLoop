@@ -148,8 +148,9 @@ namespace FoodLoop.Controllers
             }
 
             var newTotal = await _context.CartItems
-                .Where(c => c.UserId == user.Id)
-                .SumAsync(c => c.Quantity * c.Offer.DiscountedPrice);
+            .Where(c => c.UserId == user.Id)
+            .Select(c => c.Offer.DiscountedPrice * c.Quantity)
+            .SumAsync();
 
             return Json(new
             {

@@ -19,7 +19,7 @@
                     r.Status == ReservationStatus.Canceled)
         .ToList();
 
-    decimal total = cart.Sum(c => c.Offer.DiscountedPrice * c.Quantity);
+    decimal total = cart.Sum(c => (decimal)c.Offer.DiscountedPrice * c.Quantity);
 }
 
 @functions {
@@ -141,7 +141,7 @@
                         <span>Total</span>
                         <span class="fw-bold fs-5"
                               id="cartTotal"
-                              data-base-total="@total.ToString("F2")">
+                              data-base-total="@total.ToString(System.Globalization.CultureInfo.InvariantCulture)">
                             @total.ToString("F2") EUR
                         </span>
                     </div>
@@ -586,10 +586,17 @@
 
             // ------- helpers -------
             function getBaseTotal() {
-                const raw = totalEl.dataset.baseTotal ?? "0";
-                const val = parseFloat(raw);
-                return isNaN(val) ? 0 : val;
+
+                let raw = totalEl.dataset.baseTotal;
+
+                if (!raw) {
+                    raw = totalEl.textContent.replace("EUR","").trim();
             }
+
+            const val = Number(raw);
+
+            return isNaN(val) ? 0 : val;
+        }
 
             function setBaseTotal(v) {
                 const num = parseFloat(v);
