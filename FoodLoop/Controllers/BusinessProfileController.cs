@@ -125,6 +125,7 @@ namespace FoodLoop.Controllers
                 {
                     FullName = user.FullName,
                     PhoneNumber = user.PhoneNumber ?? "",
+                    BusinessPhone = restaurant.Phone,
                     IsRestaurant = true,
 
                     RestaurantName = restaurant.Name,
@@ -148,21 +149,12 @@ namespace FoodLoop.Controllers
                 return RedirectToAction("Login", "Account");
 
             var restaurant = await _context.Restaurants
-            .FirstOrDefaultAsync(r => r.OwnerUserId == user.Id);
+                .FirstOrDefaultAsync(r => r.OwnerUserId == user.Id);
 
             if (restaurant == null)
                 return RedirectToAction("Index");
 
-            // Update owner info
-            user.FullName = model.FullName;
-            user.PhoneNumber = model.PhoneNumber;
-
-            // Update restaurant info
-            restaurant.Name = model.RestaurantName ?? restaurant.Name;
-            restaurant.BusinessEmail = model.BusinessEmail ?? restaurant.BusinessEmail;
-            restaurant.Address = model.Address ?? restaurant.Address;
-
-            // Wrong password toast
+            // PASSWORD CHECK
             var passwordValid = await _userManager.CheckPasswordAsync(user, model.CurrentPassword);
 
             if (!passwordValid)
@@ -171,13 +163,22 @@ namespace FoodLoop.Controllers
                 return RedirectToAction("Index");
             }
 
-            // === IMAGE URL ===
+            // RESTAURANT INFO
+            restaurant.Name = model.RestaurantName ?? restaurant.Name;
+            restaurant.BusinessEmail = model.BusinessEmail ?? restaurant.BusinessEmail;
+            restaurant.Address = model.Address ?? restaurant.Address;
+            if (!string.IsNullOrWhiteSpace(model.BusinessPhone))
+            {
+                restaurant.Phone = model.BusinessPhone;
+            }
+
+            // PROFILE IMAGE URL
             if (!string.IsNullOrWhiteSpace(model.ProfileImageUrl))
             {
                 restaurant.ImageUrl = model.ProfileImageUrl.Trim();
             }
 
-            // === FILE UPLOAD ===
+            // PROFILE IMAGE FILE
             if (ProfileImage != null && ProfileImage.Length > 0)
             {
                 var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "restaurants");
@@ -186,23 +187,19 @@ namespace FoodLoop.Controllers
                 var fileName = $"{Guid.NewGuid()}{Path.GetExtension(ProfileImage.FileName)}";
                 var filePath = Path.Combine(uploadsFolder, fileName);
 
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await ProfileImage.CopyToAsync(stream);
-                }
+                using var stream = new FileStream(filePath, FileMode.Create);
+                await ProfileImage.CopyToAsync(stream);
 
                 restaurant.ImageUrl = $"/images/restaurants/{fileName}";
             }
 
-            // ===== BANNER =====
-
-            // 1️⃣ URL
+            // BANNER URL
             if (!string.IsNullOrWhiteSpace(model.BannerImageUrl))
             {
                 restaurant.BannerImageUrl = model.BannerImageUrl.Trim();
             }
 
-            // 2️⃣ FILE (priority)
+            // BANNER FILE
             if (BannerImage != null && BannerImage.Length > 0)
             {
                 var folder = Path.Combine(_environment.WebRootPath, "images", "banners");
@@ -219,6 +216,8 @@ namespace FoodLoop.Controllers
 
             await _userManager.UpdateAsync(user);
             await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Profile updated successfully.";
 
             return RedirectToAction("Index");
         }

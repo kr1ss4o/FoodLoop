@@ -1,5 +1,6 @@
 ﻿@model FoodLoop.Models.Entities.Reservation
 @using FoodLoop.Models.Enums
+@using FoodLoop.Helpers
 
 @{
     var steps = new List<ReservationStatus>
@@ -32,7 +33,7 @@
 
         <div class="timeline-step @(reached ? "done" : "") @(step == ReservationStatus.Canceled ? "cancel" : "")">
             <div class="circle"></div>
-            <span>@step</span>
+            <span>@step.ToBg()</span>
 
             @if (time != null)
             {

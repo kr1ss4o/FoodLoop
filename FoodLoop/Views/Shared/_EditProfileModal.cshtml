@@ -12,39 +12,58 @@
               asp-action="EditProfile">
             @Html.AntiForgeryToken()
 
-            <!-- OWNER FULL NAME (ALWAYS REQUIRED) -->
-            <div class="epm-field">
-                <label>Име</label>
-                <input id="epm-fullname"
-                       name="FullName"
-                       type="text"
-                       value="@Model.FullName"
-                       required />
-            </div>
-
-            <!-- PHONE -->
-            <div class="epm-field">
-                <label>Телефон:</label>
-                <input id="epm-phone"
-                       name="PhoneNumber"
-                       type="text"
-                       value="@Model.PhoneNumber"
-                       required />
-            </div>
-
-            <!-- BUSINESS-ONLY FIELDS -->
-
-            @if (Model.IsRestaurant)
+            <!-- Client changes his name, but business changes its buisness name -->
+            @if (!Model.IsRestaurant)
             {
                 <div class="epm-field">
-                    <label>Име на бизнес:</label>
+                    <label>Име</label>
+                    <input id="epm-fullname"
+                           name="FullName"
+                           type="text"
+                           value="@Model.FullName"
+                           required />
+                </div>
+            }
+            else
+            {
+                <div class="epm-field">
+                    <label>Име на ресторанта</label>
                     <input id="epm-businessname"
                            name="RestaurantName"
                            type="text"
                            value="@(Model.RestaurantName ?? "")"
                            required />
                 </div>
+            }
 
+            <!-- PHONE -->
+            @if (Model.IsRestaurant)
+            {
+                <div class="epm-field">
+                    <label>Телефон на бизнес</label>
+                    <input id="epm-businessphone"
+                           name="BusinessPhone"
+                           type="text"
+                           value="@(Model.BusinessPhone ?? "")"
+                           required />
+                </div>
+            }
+            else
+            {
+                <div class="epm-field">
+                    <label>Телефон</label>
+                    <input id="epm-phone"
+                           name="PhoneNumber"
+                           type="text"
+                           value="@Model.PhoneNumber"
+                           required />
+                </div>
+            }
+
+            <!-- BUSINESS-ONLY FIELDS -->
+
+            @if (Model.IsRestaurant)
+            {
                 <div class="epm-field">
                     <label>Бизнес имейл:</label>
                     <input id="epm-email"

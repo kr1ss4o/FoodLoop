@@ -1,6 +1,7 @@
 ﻿@using FoodLoop.Models.Enums
 @using FoodLoop.Models.Entities
 @model FoodLoop.Models.ViewModels.CartPageViewModel
+@using FoodLoop.Helpers
 
 @{
     ViewData["Title"] = "My Orders";
@@ -244,7 +245,7 @@
                                 Order #@o.Id.ToString().Substring(0, 6)
                             </span>
                             <span class="badge bg-warning text-dark">
-                                @o.Status
+                                @o.Status.ToBg()
                             </span>
                         </div>
 
@@ -278,7 +279,7 @@
 
                                 <div class="timeline-step @(reached ? "done" : "") @(step == ReservationStatus.Canceled ? "cancel" : "")">
                                     <div class="circle"></div>
-                                    <span>@step</span>
+                                    <span>@step.ToBg()</span>
 
                                     @if (time != null)
                                     {
@@ -357,7 +358,7 @@
                             </div>
 
                             <span class="badge @(h.Status == ReservationStatus.Finished ? "bg-success" : "bg-danger")">
-                                @h.Status
+                                @h.Status.ToBg()
                             </span>
 
                         </div>
@@ -443,7 +444,7 @@
 
                                 <div class="timeline-step @(reached && step != ReservationStatus.Canceled ? "done" : "") @(step == ReservationStatus.Canceled ? "cancel" : "")">
                                     <div class="circle"></div>
-                                    <span>@step</span>
+                                    <span>@step.ToBg()</span>
 
                                     @if (time != null)
                                     {
