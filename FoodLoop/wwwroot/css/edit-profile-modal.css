@@ -1,130 +1,256 @@
-﻿/* BACKDROP */
+﻿/* =========================================================
+   EDIT PROFILE MODAL — FOODLOOP
+   Clean SaaS style modal
+========================================================= */
+
+/* =========================================================
+   OVERLAY
+========================================================= */
+
 .epm-overlay {
     position: fixed;
     inset: 0;
-    backdrop-filter: blur(10px);
-    background: rgba(0,0,0,0.45);
+    background: rgba(15,23,42,.55);
+    backdrop-filter: blur(8px);
     display: none;
-    justify-content: center;
     align-items: center;
-    z-index: 3000;
+    justify-content: center;
+    z-index: 4000;
 }
 
     .epm-overlay.show {
-        display: flex !important;
+        display: flex;
     }
 
-/* MODAL */
+/* =========================================================
+   MODAL
+========================================================= */
+
 .epm-modal {
+    width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
     background: #ffffff;
-    width: 460px;
-    padding: 40px 45px;
-    border-radius: 28px;
-    box-shadow: 0 12px 45px rgba(0,0,0,0.25);
-    animation: fadeIn 0.25s ease-out;
+    border-radius: 22px;
+    padding: 36px 36px 30px;
+    box-shadow: 0 30px 60px rgba(0,0,0,.25);
+    animation: epmModal .25s ease;
 }
 
-@keyframes fadeIn {
+@keyframes epmModal {
     from {
         opacity: 0;
-        transform: translateY(12px);
+        transform: translateY(14px) scale(.97);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
     }
 }
 
+/* =========================================================
+   HEADER
+========================================================= */
+
 .epm-title {
-    font-size: 28px;
-    font-weight: 700;
+    font-size: 26px;
+    font-weight: 800;
     margin-bottom: 22px;
-    color: #0B3C49;
+    color: #0f172a;
 }
 
-/* FIELDS */
+/* =========================================================
+   FIELD GROUP
+========================================================= */
+
 .epm-field {
-    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 18px;
 }
 
     .epm-field label {
-        font-weight: 600;
-        margin-bottom: 6px;
-        display: block;
+        font-size: 13px;
+        font-weight: 700;
+        color: #475569;
     }
 
-    .epm-field input {
+    /* =========================================================
+   INPUTS
+========================================================= */
+
+    .epm-field input,
+    .epm-field textarea {
         width: 100%;
         padding: 12px 14px;
-        border-radius: 14px;
-        border: 2px solid #aaccc4;
-        background: #f9fffd;
-        transition: 0.2s;
+        border-radius: 12px;
+        border: 1px solid #d1e7df;
+        background: #f8fffd;
+        font-size: 14px;
+        transition: .18s;
     }
 
-        .epm-field input:focus {
-            border-color: #0CA678;
+        .epm-field input:focus,
+        .epm-field textarea:focus {
+            outline: none;
+            border-color: #16a34a;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(22,163,74,.15);
         }
 
-/* DROPZONE */
+/* =========================================================
+   DROPZONE
+========================================================= */
+
 .epm-dropzone {
-    background: #f2fffa;
+    border: 2px dashed #b6e3d7;
+    background: #f0fffa;
     border-radius: 16px;
-    border: 2px dashed #85c9b5;
-    text-align: center;
     padding: 24px;
+    text-align: center;
     cursor: pointer;
-    transition: 0.2s;
+    transition: .18s;
 }
 
-    .epm-dropzone.dragover {
-        background: #d7fff0;
-        border-color: #0CA678;
+    .epm-dropzone:hover {
+        border-color: #16a34a;
+        background: #ecfdf5;
     }
 
+    .epm-dropzone.dragover {
+        border-color: #16a34a;
+        background: #dcfce7;
+    }
+
+#epm-text {
+    font-size: 13px;
+    color: #64748b;
+}
+
+/* =========================================================
+   IMAGE PREVIEW
+========================================================= */
+
 .epm-preview {
-    display: none;
-    margin-top: 10px;
-    width: 150px;
-    height: 150px;
+    width: 120px;
+    height: 120px;
+    margin-top: 14px;
     border-radius: 16px;
     object-fit: cover;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 8px 20px rgba(0,0,0,.15);
 }
 
-/* BUTTONS */
+/* =========================================================
+   URL INPUT
+========================================================= */
+
+#epm-url {
+    margin-top: 6px;
+}
+
+/* =========================================================
+   ACTION BUTTONS
+========================================================= */
+
 .epm-actions {
-    margin-top: 25px;
+    margin-top: 26px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
-.epm-save {
-    background: #0CA678;
-    padding: 12px 24px;
-    border-radius: 14px;
-    border: none;
-    color: white;
-    font-weight: 700;
-}
-
-.epm-cancel {
-    background: #ddd;
-    padding: 12px 20px;
-    border-radius: 14px;
-    border: none;
-}
+/* reset */
 
 .epm-reset {
-    background: none;
     border: none;
-    color: #0CA678;
+    background: none;
+    color: #16a34a;
     font-weight: 600;
-    text-decoration: underline;
     cursor: pointer;
 }
 
-.epm-modal {
-    max-height: 90vh;
-    overflow-y: auto;
+/* cancel */
+
+.epm-cancel {
+    padding: 10px 18px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    font-weight: 600;
+}
+
+/* save */
+
+.epm-save {
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(135deg,#16a34a,#22c55e);
+    color: white;
+    font-weight: 700;
+    box-shadow: 0 8px 18px rgba(34,197,94,.25);
+}
+
+    .epm-save:hover {
+        transform: translateY(-1px);
+    }
+
+/* =========================================================
+   MEDIA SECTION
+========================================================= */
+
+.epm-media {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    margin-top: 10px;
+}
+
+.epm-media-block {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.epm-media-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #334155;
+}
+
+/* banner preview */
+
+.epm-banner-preview {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.12);
+}
+
+/* shared inputs */
+
+.epm-input {
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: 12px;
+    border: 1px solid #d1e7df;
+    background: #f8fffd;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:640px) {
+
+    .epm-modal {
+        width: 92%;
+        padding: 26px;
+    }
 }

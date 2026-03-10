@@ -1,7 +1,10 @@
-﻿
+﻿<div id="editProfileModal" class="epm-overlay">
 
-<div id="editProfileModal" class="epm-overlay">
     <div class="epm-modal">
+
+        <!-- =====================================================
+             TITLE
+        ===================================================== -->
 
         <h2 class="epm-title">Edit Profile</h2>
 
@@ -10,134 +13,215 @@
               enctype="multipart/form-data"
               asp-controller="@(User.IsInRole("Restaurant") ? "BusinessProfile" : "Profile")"
               asp-action="EditProfile">
+
             @Html.AntiForgeryToken()
 
-            <!-- Client changes his name, but business changes its buisness name -->
-            @if (!Model.IsRestaurant)
-            {
+            <div class="epm-fields">
+
+                <!-- =====================================================
+                     BASIC INFORMATION
+                ===================================================== -->
+                @if (!Model.IsRestaurant)
+                {
+                    <div class="epm-field">
+                        <label>Име</label>
+                        <input class="epm-input"
+                               id="epm-fullname"
+                               name="FullName"
+                               type="text"
+                               value="@Model.FullName"
+                               required />
+                    </div>
+                }
+                else
+                {
+                    <div class="epm-field">
+                        <label>Име на ресторанта</label>
+                        <input class="epm-input"
+                               id="epm-businessname"
+                               name="RestaurantName"
+                               type="text"
+                               value="@(Model.RestaurantName ?? "")"
+                               required />
+                    </div>
+                }
+
+
+                <!-- =====================================================
+                     PHONE
+                ===================================================== -->
+                @if (Model.IsRestaurant)
+                {
+                    <div class="epm-field">
+                        <label>Телефон на бизнес</label>
+                        <input class="epm-input"
+                               id="epm-businessphone"
+                               name="BusinessPhone"
+                               type="text"
+                               value="@(Model.BusinessPhone ?? "")"
+                               required />
+                    </div>
+                }
+                else
+                {
+                    <div class="epm-field">
+                        <label>Телефон</label>
+                        <input class="epm-input"
+                               id="epm-phone"
+                               name="PhoneNumber"
+                               type="text"
+                               value="@Model.PhoneNumber"
+                               required />
+                    </div>
+                }
+
+
+                <!-- =====================================================
+                     BUSINESS ONLY
+                ===================================================== -->
+                @if (Model.IsRestaurant)
+                {
+                    <div class="epm-field">
+                        <label>Бизнес имейл</label>
+                        <input class="epm-input"
+                               id="epm-email"
+                               name="BusinessEmail"
+                               type="email"
+                               value="@(Model.BusinessEmail ?? "")"
+                               required />
+                    </div>
+
+                    <div class="epm-field">
+                        <label>Адрес</label>
+                        <input class="epm-input"
+                               id="epm-address"
+                               name="Address"
+                               type="text"
+                               value="@(Model.Address ?? "")"
+                               required />
+                    </div>
+                }
+
+
+                <!-- =====================================================
+                     MEDIA SECTION
+                ===================================================== -->
+
+                <div class="epm-media">
+
+                    <!-- PROFILE IMAGE -->
+
+                    <div class="epm-media-block">
+
+                        <label class="epm-media-title">Профилна снимка</label>
+
+                        <div id="epm-dropzone" class="epm-dropzone">
+
+                            <p id="epm-text">
+                                Провлачи или натисни за прикачване
+                            </p>
+
+                            <img id="epm-preview"
+                                 class="epm-preview"
+                                 src="@(string.IsNullOrWhiteSpace(Model.ProfileImageUrl) ? "/images/placeholders/avatar.png" : Model.ProfileImageUrl)"
+                                 onerror="this.src='/images/placeholders/avatar.png';" />
+
+                        </div>
+
+                        <input type="file"
+                               id="epm-file"
+                               name="ProfileImage"
+                               hidden />
+
+                        <input type="text"
+                               id="epm-url"
+                               class="epm-input"
+                               name="ProfileImageUrl"
+                               placeholder="или използвай URL за снимка" />
+
+                    </div>
+
+
+                    <!-- BANNER IMAGE (ONLY RESTAURANTS) -->
+                    @if (Model.IsRestaurant)
+                    {
+                        <div class="epm-media-block">
+
+                            <label class="epm-media-title">Банер</label>
+
+                            <img id="epm-banner-preview"
+                                 class="epm-banner-preview"
+                                 src="@(string.IsNullOrWhiteSpace(Model.BannerImageUrl) ? "/images/placeholders/banner.jpg" : Model.BannerImageUrl)"
+                                 onerror="this.style.display='none';" />
+
+                            <input type="file"
+                                   name="BannerImage"
+                                   class="epm-input"
+                                   accept="image/*" />
+
+                            <input type="text"
+                                   class="epm-input"
+                                   name="BannerImageUrl"
+                                   value="@Model.BannerImageUrl"
+                                   placeholder="или използвай URL за банер" />
+
+                        </div>
+                    }
+
+                </div>
+
+
+                <!-- =====================================================
+                     PASSWORDS
+                ===================================================== -->
+
                 <div class="epm-field">
-                    <label>Име</label>
-                    <input id="epm-fullname"
-                           name="FullName"
-                           type="text"
-                           value="@Model.FullName"
+                    <label>Настояща парола *</label>
+                    <input class="epm-input"
+                           id="epm-currentpass"
+                           name="CurrentPassword"
+                           type="password"
                            required />
                 </div>
-            }
-            else
-            {
-                <div class="epm-field">
-                    <label>Име на ресторанта</label>
-                    <input id="epm-businessname"
-                           name="RestaurantName"
-                           type="text"
-                           value="@(Model.RestaurantName ?? "")"
-                           required />
-                </div>
-            }
-
-            <!-- PHONE -->
-            @if (Model.IsRestaurant)
-            {
-                <div class="epm-field">
-                    <label>Телефон на бизнес</label>
-                    <input id="epm-businessphone"
-                           name="BusinessPhone"
-                           type="text"
-                           value="@(Model.BusinessPhone ?? "")"
-                           required />
-                </div>
-            }
-            else
-            {
-                <div class="epm-field">
-                    <label>Телефон</label>
-                    <input id="epm-phone"
-                           name="PhoneNumber"
-                           type="text"
-                           value="@Model.PhoneNumber"
-                           required />
-                </div>
-            }
-
-            <!-- BUSINESS-ONLY FIELDS -->
-
-            @if (Model.IsRestaurant)
-            {
-                <div class="epm-field">
-                    <label>Бизнес имейл:</label>
-                    <input id="epm-email"
-                           name="BusinessEmail"
-                           type="email"
-                           value="@(Model.BusinessEmail ?? "")"
-                           required />
-                </div>
 
                 <div class="epm-field">
-                    <label>Адрес:</label>
-                    <input id="epm-address"
-                           name="Address"
-                           type="text"
-                           value="@(Model.Address ?? "")"
-                           required />
+                    <label>Нова парола (не задължително)</label>
+                    <input class="epm-input"
+                           id="epm-newpass"
+                           name="NewPassword"
+                           type="password" />
                 </div>
 
-                <div class="epm-field">
-                    <label>Банер (файл): </label>
-                    <input type="file" name="BannerImage" accept="image/*" />
-                </div>
-
-                <div class="epm-field">
-                    <label>или използвай адрес за банер:</label>
-                    <input type="text"
-                           name="BannerImageUrl"
-                           value="@Model.BannerImageUrl"
-                           placeholder="https://example.com/banner.jpg" />
-                </div>
-            }
-
-            <!-- IMAGE -->
-            <div class="epm-field">
-                <label>Снимка:</label>
-                <div id="epm-dropzone" class="epm-dropzone">
-                    <p id="epm-text">Провлачи или натисни за прикачване</p>
-
-                    <img id="epm-preview"
-                         class="epm-preview"
-                         src="@(string.IsNullOrWhiteSpace(Model.ProfileImageUrl) ? "/images/placeholders/avatar.png" : Model.ProfileImageUrl)"
-                         onerror="this.src='/images/placeholders/avatar.png';" />
-                </div>
-
-                <input type="file" id="epm-file" name="ProfileImage" hidden />
             </div>
 
-            <div class="mt-3">
-                <label class="form-label">или използвай адрес за снимка:</label>
-                <input type="text"
-                       id="epm-url"
-                       name="ProfileImageUrl"
-                       class="form-control"
-                       placeholder="https://example.com/image.jpg" />
-            </div>
 
-            <!-- PASSWORDS -->
-            <div class="epm-field">
-                <label>Настояща парола*</label>
-                <input id="epm-currentpass" name="CurrentPassword" type="password" required />
-            </div>
+            <!-- =====================================================
+                 ACTION BUTTONS
+            ===================================================== -->
 
-            <div class="epm-field">
-                <label>Нова парола (не задължително)</label>
-                <input id="epm-newpass" name="NewPassword" type="password" />
-            </div>
-
-            <!-- ACTION BUTTONS -->
             <div class="epm-actions">
-                <button type="button" id="epm-reset" class="epm-reset">Рестартирай</button>
-                <button type="button" id="epm-close" class="epm-cancel">Откажи</button>
-                <button type="submit" class="epm-save">Запази</button>
+
+                <button type="button"
+                        id="epm-reset"
+                        class="epm-reset">
+                    Рестартирай
+                </button>
+
+                <button type="button"
+                        id="epm-close"
+                        class="epm-cancel">
+                    Откажи
+                </button>
+
+                <button type="submit"
+                        class="epm-save">
+                    Запази
+                </button>
+
             </div>
 
         </form>
+
     </div>
+
 </div>

@@ -11,7 +11,6 @@ wwwroot\css\profile.css
 wwwroot\css\restaurant-details.css
 wwwroot\css\restaurant.css
 wwwroot\css\search.css
-wwwroot\css\site.css
 wwwroot\css\store.css
 wwwroot\css\timeline.css
 wwwroot\favicon.ico
@@ -70,6 +69,7 @@ wwwroot\images\restaurants\296696f1-f715-4e9e-952e-8eb5caf3aac8.jpg
 wwwroot\images\restaurants\38606411-4b1c-44c1-84fa-0976f9f42895.jpg
 wwwroot\images\restaurants\6e6f9a46-feb5-4e75-a792-6891a91c3c6a.png
 wwwroot\images\users\5a367764-40fc-41e2-acec-9472cc899eca.jpg
+wwwroot\js\admin-table.js
 wwwroot\js\cart.js
 wwwroot\js\order-dashboard.js
 wwwroot\js\profile-edit-modal.js
@@ -132,4 +132,4 @@ wwwroot\lib\jquery\dist\jquery.js
 wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
-wwwroot\js\admin-table.js
+wwwroot\css\site.css

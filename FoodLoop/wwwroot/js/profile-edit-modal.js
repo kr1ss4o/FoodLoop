@@ -1,4 +1,8 @@
-﻿document.addEventListener("DOMContentLoaded", function () {
+﻿document.addEventListener("DOMContentLoaded", () => {
+
+    /* =====================================================
+       ELEMENTS
+    ===================================================== */
 
     const modal = document.getElementById("editProfileModal");
     const openBtn = document.getElementById("epm-open");
@@ -6,226 +10,277 @@
     const resetBtn = document.getElementById("epm-reset");
     const form = document.getElementById("epm-form");
 
-    const fileInput = document.getElementById("epm-file");
     const dropzone = document.getElementById("epm-dropzone");
+    const fileInput = document.getElementById("epm-file");
     const preview = document.getElementById("epm-preview");
     const urlInput = document.getElementById("epm-url");
     const text = document.getElementById("epm-text");
+
+    const bannerInput = document.querySelector('input[name="BannerImage"]');
+    const bannerUrlInput = document.querySelector('input[name="BannerImageUrl"]');
+    const bannerPreview = document.getElementById("epm-banner-preview");
 
     const currentPassword = document.getElementById("epm-currentpass");
 
     if (!modal) return;
 
-    const PLACEHOLDER = "/images/placeholders/avatar.png";
+    /* =====================================================
+       CONSTANTS
+    ===================================================== */
 
-    // Ако preview вече е с реална снимка от server-side model, пазим я,
-    // за да може Reset да връща към нея (а не винаги към placeholder).
-    const initialPreviewSrc = (preview && preview.getAttribute("src")) ? preview.getAttribute("src") : PLACEHOLDER;
+    const AVATAR_PLACEHOLDER = "/images/placeholders/avatar.png";
 
-    let currentObjectUrl = null;
-    let urlDebounceTimer = null;
+    const initialAvatar = preview?.src || AVATAR_PLACEHOLDER;
+    const initialBanner = bannerPreview?.src || null;
 
-    function setPreviewSrc(src) {
+    let avatarObjectUrl = null;
+    let bannerObjectUrl = null;
+
+    /* =====================================================
+       HELPERS
+    ===================================================== */
+
+    function revokeObject(url) {
+        if (url) URL.revokeObjectURL(url);
+    }
+
+    function setAvatar(src) {
+
         if (!preview) return;
 
-        preview.src = src || PLACEHOLDER;
+        preview.src = src || AVATAR_PLACEHOLDER;
 
         if (text) {
-            text.style.display = (preview.src.includes(PLACEHOLDER)) ? "block" : "none";
+            text.style.display =
+                preview.src.includes(AVATAR_PLACEHOLDER)
+                    ? "block"
+                    : "none";
         }
     }
 
-    function clearObjectUrlIfAny() {
-        if (currentObjectUrl) {
-            URL.revokeObjectURL(currentObjectUrl);
-            currentObjectUrl = null;
-        }
+    function setBanner(src) {
+
+        if (!bannerPreview) return;
+
+        bannerPreview.src = src;
+
+        bannerPreview.style.display = src ? "block" : "none";
     }
 
-    function isValidHttpUrl(str) {
-        try {
-            const url = new URL(str);
-            return url.protocol === "http:" || url.protocol === "https:";
-        } catch {
-            return false;
-        }
+    function normalizeUrl(url) {
+
+        if (!url) return "";
+
+        let final = url.trim();
+
+        if (!/^https?:\/\//i.test(final))
+            final = "https://" + final;
+
+        return final;
     }
 
-    function isBlockedHost(urlString) {
-        // блокира localhost / 127.0.0.1 / ::1, за да не “виси” заявката
-        try {
-            const u = new URL(urlString);
-            const h = (u.hostname || "").toLowerCase();
-            return h === "localhost" || h === "127.0.0.1" || h === "::1";
-        } catch {
-            return false;
-        }
-    }
+    /* =====================================================
+       OPEN MODAL
+    ===================================================== */
 
-    // =========================
-    // OPEN MODAL
-    // =========================
     if (openBtn) {
-        openBtn.addEventListener("click", function () {
-            modal.style.display = "flex";
-        });
+        openBtn.onclick = () => modal.classList.add("show");
     }
 
-    // =========================
-    // CLOSE MODAL
-    // =========================
+    /* =====================================================
+       CLOSE MODAL
+    ===================================================== */
+
     if (closeBtn) {
-        closeBtn.addEventListener("click", function () {
-            modal.style.display = "none";
-        });
+        closeBtn.onclick = () => modal.classList.remove("show");
     }
 
-    window.addEventListener("click", function (e) {
-        if (e.target === modal) {
-            modal.style.display = "none";
-        }
+    window.addEventListener("click", (e) => {
+        if (e.target === modal)
+            modal.classList.remove("show");
     });
 
-    // =========================
-    // RESET BUTTON
-    // =========================
+    /* =====================================================
+       RESET FORM
+    ===================================================== */
+
     if (resetBtn) {
-        resetBtn.addEventListener("click", function () {
-            if (form) form.reset();
 
-            clearObjectUrlIfAny();
-            setPreviewSrc(initialPreviewSrc || PLACEHOLDER);
+        resetBtn.onclick = () => {
 
-            if (text) text.style.display = "block"; // ако initial е placeholder, ще си е block; ако не — setPreviewSrc ще го скрие
-        });
+            form?.reset();
+
+            revokeObject(avatarObjectUrl);
+            revokeObject(bannerObjectUrl);
+
+            setAvatar(initialAvatar);
+            setBanner(initialBanner);
+        };
     }
 
-    // =========================
-    // PASSWORD REQUIRED
-    // =========================
+    /* =====================================================
+       PASSWORD CHECK
+    ===================================================== */
+
     if (form) {
-        form.addEventListener("submit", function (e) {
-            if (currentPassword && !currentPassword.value.trim()) {
+
+        form.addEventListener("submit", (e) => {
+
+            if (!currentPassword?.value.trim()) {
+
                 e.preventDefault();
+
                 alert("You must enter your current password to save changes.");
+
                 currentPassword.focus();
             }
         });
     }
 
-    // =========================
-    // FILE PREVIEW (change)
-    // =========================
+    /* =====================================================
+       AVATAR FILE UPLOAD
+    ===================================================== */
+
     if (fileInput) {
-        fileInput.addEventListener("change", function () {
-            const file = this.files && this.files[0];
+
+        fileInput.addEventListener("change", () => {
+
+            const file = fileInput.files?.[0];
             if (!file) return;
 
-            // ако юзърът избере файл -> чистим URL input
             if (urlInput) urlInput.value = "";
 
-            clearObjectUrlIfAny();
-            currentObjectUrl = URL.createObjectURL(file);
-            setPreviewSrc(currentObjectUrl);
+            revokeObject(avatarObjectUrl);
+
+            avatarObjectUrl = URL.createObjectURL(file);
+
+            setAvatar(avatarObjectUrl);
         });
     }
 
-    // =========================
-    // DRAG & DROP
-    // =========================
+    /* =====================================================
+       AVATAR DROPZONE
+    ===================================================== */
+
     if (dropzone && fileInput) {
 
-        dropzone.addEventListener("click", () => fileInput.click());
+        dropzone.onclick = () => fileInput.click();
 
         dropzone.addEventListener("dragover", (e) => {
+
             e.preventDefault();
-            dropzone.classList.add("dragging");
+            dropzone.classList.add("dragover");
         });
 
         dropzone.addEventListener("dragleave", () => {
-            dropzone.classList.remove("dragging");
+
+            dropzone.classList.remove("dragover");
         });
 
         dropzone.addEventListener("drop", (e) => {
-            e.preventDefault();
-            dropzone.classList.remove("dragging");
 
-            const dt = e.dataTransfer;
-            const file = dt && dt.files && dt.files[0];
+            e.preventDefault();
+
+            dropzone.classList.remove("dragover");
+
+            const file = e.dataTransfer?.files?.[0];
             if (!file) return;
 
-            // задава файловете на input-а (за да се submit-нат)
-            fileInput.files = dt.files;
+            fileInput.files = e.dataTransfer.files;
 
-            // чистим URL input
             if (urlInput) urlInput.value = "";
 
-            clearObjectUrlIfAny();
-            currentObjectUrl = URL.createObjectURL(file);
-            setPreviewSrc(currentObjectUrl);
+            revokeObject(avatarObjectUrl);
+
+            avatarObjectUrl = URL.createObjectURL(file);
+
+            setAvatar(avatarObjectUrl);
         });
     }
 
-    // =========================
-    // URL LIVE PREVIEW (works while typing/paste)
-    // =========================
-    if (urlInput && preview) {
-        urlInput.addEventListener("input", function () {
-            clearTimeout(urlDebounceTimer);
+    /* =====================================================
+       AVATAR URL PREVIEW
+    ===================================================== */
 
-            urlDebounceTimer = setTimeout(() => {
-                const url = (urlInput.value || "").trim();
+    if (urlInput) {
 
-                // ако е празно -> връща initial/placeholder
-                if (!url) {
-                    clearObjectUrlIfAny();
-                    setPreviewSrc(initialPreviewSrc || PLACEHOLDER);
-                    return;
-                }
+        urlInput.addEventListener("input", () => {
 
-                // блокира localhost, за да не чака
-                const lower = url.toLowerCase();
-                if (lower.includes("localhost") || lower.includes("127.0.0.1")) {
-                    return;
-                }
+            let url = urlInput.value.trim();
 
-                // ако не започва с http, пробва да добави https (много хора paste-ват без протокол)
-                let finalUrl = url;
-                if (!/^https?:\/\//i.test(finalUrl)) {
-                    finalUrl = "https://" + finalUrl;
-                }
+            if (!url) {
+                setAvatar(initialAvatar);
+                return;
+            }
 
-                // чисти file input ако юзърът е тръгнал по URL вариант
-                if (fileInput) fileInput.value = "";
-                clearObjectUrlIfAny();
+            url = normalizeUrl(url);
 
-                // сетва preview
-                setPreviewSrc(finalUrl);
-            }, 150);
+            if (fileInput) fileInput.value = "";
+
+            revokeObject(avatarObjectUrl);
+
+            setAvatar(url);
         });
     }
 
-    // ако URL е счупен -> placeholder (или initial ако искаш)
+    /* =====================================================
+       AVATAR LOAD ERROR
+    ===================================================== */
+
     if (preview) {
-        preview.addEventListener("error", function () {
-            clearObjectUrlIfAny();
-            setPreviewSrc(PLACEHOLDER);
+
+        preview.addEventListener("error", () => {
+
+            revokeObject(avatarObjectUrl);
+
+            setAvatar(AVATAR_PLACEHOLDER);
+        });
+    }
+
+    /* =====================================================
+       BANNER FILE PREVIEW
+    ===================================================== */
+
+    if (bannerInput && bannerPreview) {
+
+        bannerInput.addEventListener("change", () => {
+
+            const file = bannerInput.files?.[0];
+            if (!file) return;
+
+            if (bannerUrlInput) bannerUrlInput.value = "";
+
+            revokeObject(bannerObjectUrl);
+
+            bannerObjectUrl = URL.createObjectURL(file);
+
+            setBanner(bannerObjectUrl);
+        });
+    }
+
+    /* =====================================================
+       BANNER URL PREVIEW
+    ===================================================== */
+
+    if (bannerUrlInput && bannerPreview) {
+
+        bannerUrlInput.addEventListener("input", () => {
+
+            let url = bannerUrlInput.value.trim();
+
+            if (!url) {
+                setBanner(initialBanner);
+                return;
+            }
+
+            url = normalizeUrl(url);
+
+            if (bannerInput) bannerInput.value = "";
+
+            revokeObject(bannerObjectUrl);
+
+            setBanner(url);
         });
     }
 
 });
-
-console.log("EPM script active");
-
-const debugUrl = document.getElementById("epm-url");
-const debugImg = document.getElementById("epm-preview");
-
-console.log("Found elements:", debugUrl, debugImg);
-
-if (debugUrl && debugImg) {
-    debugUrl.addEventListener("input", function () {
-        console.log("Typing:", debugUrl.value);
-        debugImg.src = debugUrl.value.trim();
-        console.log("New src:", debugImg.src);
-    });
-}

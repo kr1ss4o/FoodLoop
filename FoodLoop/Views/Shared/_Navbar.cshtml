@@ -152,37 +152,62 @@
                         </ul>
                     </li>
                 }
-                else if (isBusiness) // Business nav-bar
+                else if (isBusiness)
                 {
-                    <li class="nav-item">
-                        <a asp-controller="OrderManager"
-                           asp-action="Index"
-                           class="nav-link @(isOrderManagerActive ? "active fw-semibold" : "")">
+                    <li class="nav-item dropdown">
 
-                            <i class="bi bi-receipt"></i> Поръчки
+                        <a class="nav-link dropdown-toggle @(isOrderManagerActive || isOfferManagerActive || controller == "RestaurantDashboard" ? "active fw-semibold" : "")"
+                           href="#"
+                           role="button"
+                           data-bs-toggle="dropdown">
 
-                            <span id="cartBadge"
-                                  class="badge bg-success ms-1 @(ViewBag.CartCount > 0 ? "" : "d-none")">
-                                @(ViewBag.CartCount ?? 0)
-                            </span>
+                            <i class="bi bi-shop-window"></i> Бизнес панел
                         </a>
-                    </li>
 
-                    <li class="nav-item">
-                        <a asp-controller="RestaurantDashboard"
-                           asp-action="Index"
-                           class="nav-link @(controller == "RestaurantDashboard" ? "active fw-semibold" : "")">
-                            <i class="bi bi-graph-up"></i> Статистика
-                        </a>
-                    </li>
+                        <ul class="dropdown-menu dropdown-menu-end">
 
-                    <li class="nav-item">
-                        <a asp-controller="OfferManager"
-                           asp-action="Index"
-                           class="nav-link @(isOfferManagerActive ? "active fw-semibold" : "")">
+                            <li>
+                                <a class="dropdown-item"
+                                   asp-controller="RestaurantDashboard"
+                                   asp-action="Index">
 
-                            <i class="bi bi-megaphone"></i> Мойте оферти
-                        </a>
+                                    <i class="bi bi-graph-up-arrow me-2"></i>
+                                    Статистика
+
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item d-flex justify-content-between align-items-center"
+                                   asp-controller="OrderManager"
+                                   asp-action="Index">
+
+                                    <span>
+                                        <i class="bi bi-receipt-cutoff me-2"></i>
+                                        Поръчки
+                                    </span>
+
+                                    <span id="cartBadge"
+                                          class="badge bg-success @(ViewBag.CartCount > 0 ? "" : "d-none")">
+                                        @(ViewBag.CartCount ?? 0)
+                                    </span>
+
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item"
+                                   asp-controller="OfferManager"
+                                   asp-action="Index">
+
+                                    <i class="bi bi-megaphone me-2"></i>
+                                    Моите оферти
+
+                                </a>
+                            </li>
+
+                        </ul>
+
                     </li>
                 }
                 else // Client nav-bar

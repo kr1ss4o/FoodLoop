@@ -137,6 +137,10 @@ img {
         padding: 0.35em 0.55em;
     }
 
+.dropdown-item i {
+    width: 18px;
+}
+
 /* NAVBAR ADMIN DROPDOWN */
 
     .navbar .dropdown-menu {
