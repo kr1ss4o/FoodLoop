@@ -199,6 +199,66 @@
     }
 
     /* =====================================================
+   BANNER DROPZONE
+===================================================== */
+
+    const bannerDropzone = document.getElementById("epm-banner-dropzone");
+    const bannerFile = document.getElementById("epm-banner-file");
+    const bannerUrl = document.getElementById("epm-banner-url");
+
+    if (bannerDropzone && bannerFile && bannerPreview) {
+
+        bannerDropzone.onclick = () => bannerFile.click();
+
+        bannerDropzone.addEventListener("dragover", e => {
+            e.preventDefault();
+            bannerDropzone.classList.add("dragover");
+        });
+
+        bannerDropzone.addEventListener("dragleave", () => {
+            bannerDropzone.classList.remove("dragover");
+        });
+
+        bannerDropzone.addEventListener("drop", e => {
+
+            e.preventDefault();
+            bannerDropzone.classList.remove("dragover");
+
+            const file = e.dataTransfer.files[0];
+            if (!file) return;
+
+            bannerFile.files = e.dataTransfer.files;
+
+            const reader = new FileReader();
+
+            reader.onload = ev => {
+                bannerPreview.src = ev.target.result;
+            };
+
+            reader.readAsDataURL(file);
+
+        });
+
+    }
+
+    /* =====================================================
+       BANNER URL PREVIEW
+    ===================================================== */
+
+    if (bannerUrl && bannerPreview) {
+
+        bannerUrl.addEventListener("input", () => {
+
+            const url = bannerUrl.value.trim();
+            if (!url) return;
+
+            bannerPreview.src = url;
+
+        });
+
+    }
+
+    /* =====================================================
        AVATAR URL PREVIEW
     ===================================================== */
 

@@ -149,17 +149,27 @@
 
                             <label class="epm-media-title">Банер</label>
 
-                            <img id="epm-banner-preview"
-                                 class="epm-banner-preview"
-                                 src="@(string.IsNullOrWhiteSpace(Model.BannerImageUrl) ? "/images/placeholders/banner.jpg" : Model.BannerImageUrl)"
-                                 onerror="this.style.display='none';" />
+                            <div id="epm-banner-dropzone" class="epm-dropzone epm-banner-dropzone">
+
+                                <p class="epm-banner-text">
+                                    Провлачи или натисни за прикачване
+                                </p>
+
+                                <img id="epm-banner-preview"
+                                     class="epm-banner-preview"
+                                     src="@(string.IsNullOrWhiteSpace(Model.BannerImageUrl) ? "/images/placeholders/banner.jpg" : Model.BannerImageUrl)"
+                                     onerror="this.style.display='none';" />
+
+                            </div>
 
                             <input type="file"
+                                   id="epm-banner-file"
                                    name="BannerImage"
-                                   class="epm-input"
+                                   hidden
                                    accept="image/*" />
 
                             <input type="text"
+                                   id="epm-banner-url"
                                    class="epm-input"
                                    name="BannerImageUrl"
                                    value="@Model.BannerImageUrl"
@@ -204,7 +214,7 @@
                 <button type="button"
                         id="epm-reset"
                         class="epm-reset">
-                    Рестартирай
+                    Нулирай
                 </button>
 
                 <button type="button"
