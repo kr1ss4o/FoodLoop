@@ -27,6 +27,11 @@ public class AdminReviewsController : AdminBaseController
                 r.Comment.Contains(query));
         }
 
+        if (!string.IsNullOrWhiteSpace(query))
+        {
+            Info($"Резултати за търсене: {query}");
+        }
+
         var totalItems = await reviewsQuery.CountAsync();
 
         var reviews = await reviewsQuery

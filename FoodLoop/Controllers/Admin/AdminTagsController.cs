@@ -99,8 +99,9 @@ public class AdminTagsController : AdminBaseController
         };
 
         _context.Tags.Add(tag);
-
         await _context.SaveChangesAsync();
+
+        Success("Тагът беше създаден успешно.");
 
         return RedirectToAction(nameof(Tags));
     }
@@ -146,6 +147,8 @@ public class AdminTagsController : AdminBaseController
 
         await _context.SaveChangesAsync();
 
+        Success("Тагът беше редактиран успешно.");
+
         return RedirectToAction(nameof(Tags));
     }
 
@@ -158,6 +161,8 @@ public class AdminTagsController : AdminBaseController
     public async Task<IActionResult> Delete(Guid id)
     {
         await _deleteService.DeleteTagAsync(id);
+
+        Info("Тагът беше изтрит.");
 
         return RedirectToAction(nameof(Tags));
     }

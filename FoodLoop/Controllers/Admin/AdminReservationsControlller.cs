@@ -33,6 +33,11 @@ public class AdminReservationsController : AdminBaseController
                 r.User.Email.Contains(query));
         }
 
+        if (!string.IsNullOrWhiteSpace(query))
+        {
+            Info($"Резултати за търсене: {query}");
+        }
+
         var totalItems = await reservationsQuery.CountAsync();
 
         var reservations = await reservationsQuery
@@ -70,7 +75,10 @@ public class AdminReservationsController : AdminBaseController
             .FirstOrDefaultAsync(r => r.Id == id);
 
         if (reservation == null)
-            return NotFound();
+        {
+            Warning("Резервацията не беше намерена.");
+            return RedirectToAction(nameof(Reservations));
+        }
 
         return AdminDetails(reservation);
     }

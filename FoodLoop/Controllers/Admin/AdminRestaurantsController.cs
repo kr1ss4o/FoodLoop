@@ -103,7 +103,10 @@ public class AdminRestaurantsController : AdminBaseController
         IFormFile? BannerUpload)
     {
         if (!ModelState.IsValid)
+        {
+            Warning("Невалидни данни при създаване на ресторант.");
             return AdminCreate(vm);
+        }
 
         var user = new User
         {
@@ -117,6 +120,7 @@ public class AdminRestaurantsController : AdminBaseController
 
         if (!result.Succeeded)
         {
+            Error("Неуспешно създаване на собственик.");
             ModelState.AddModelError("", "Owner creation failed");
             return AdminCreate(vm);
         }
@@ -137,6 +141,8 @@ public class AdminRestaurantsController : AdminBaseController
 
         _context.Restaurants.Add(restaurant);
         await _context.SaveChangesAsync();
+
+        Success("Ресторантът беше създаден успешно.");
 
         return RedirectToAction(nameof(Restaurants));
     }
@@ -185,14 +191,20 @@ public class AdminRestaurantsController : AdminBaseController
         IFormFile? BannerUpload)
     {
         if (vm.Id == null)
-            return BadRequest();
+        {
+            Error("Невалиден идентификатор.");
+            return RedirectToAction(nameof(Restaurants));
+        }
 
         var restaurant = await _context.Restaurants
             .Include(r => r.Owner)
             .FirstOrDefaultAsync(r => r.Id == vm.Id);
 
         if (restaurant == null)
-            return NotFound();
+        {
+            Warning("Ресторантът не беше намерен.");
+            return RedirectToAction(nameof(Restaurants));
+        }
 
         // ======================
         // BUSINESS
@@ -222,6 +234,7 @@ public class AdminRestaurantsController : AdminBaseController
 
             if (!result.Succeeded)
             {
+                Error("Неуспешно обновяване на собственика.");
                 ModelState.AddModelError("", "Owner update failed");
                 return AdminEdit(vm);
             }
@@ -245,6 +258,8 @@ public class AdminRestaurantsController : AdminBaseController
 
         await _context.SaveChangesAsync();
 
+        Success("Ресторантът беше редактиран успешно.");
+
         return RedirectToAction(nameof(Details), new { id = restaurant.Id });
     }
 
@@ -256,6 +271,9 @@ public class AdminRestaurantsController : AdminBaseController
     public async Task<IActionResult> Delete(Guid id)
     {
         await _deleteService.DeleteRestaurantAsync(id);
+
+        Info("Ресторантът беше изтрит.");
+
         return RedirectToAction(nameof(Restaurants));
     }
 

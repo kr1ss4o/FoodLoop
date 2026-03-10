@@ -91,7 +91,10 @@
 
     @if (TempData["Info"] != null)
     {
-        <script>showToast("@TempData["Info"]", "info");</script>
+        <script>
+            showToast(@Html.Raw(Json.Serialize(TempData["Info"])), "info");
+        </script>
     }
+
 </body>
 </html>

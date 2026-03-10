@@ -39,6 +39,11 @@ public class AdminOffersController : AdminBaseController
                 o.Restaurant.Name.Contains(query));
         }
 
+        if (!string.IsNullOrWhiteSpace(query))
+        {
+            Info($"Резултати за търсене: {query}");
+        }
+
         var totalItems = await offersQuery.CountAsync();
 
         var offers = await offersQuery
@@ -104,6 +109,8 @@ public class AdminOffersController : AdminBaseController
 
         if (!ModelState.IsValid)
         {
+            Warning("Невалидни данни при създаване на оферта.");
+
             vm.Restaurants = await _context.Restaurants.ToListAsync();
             vm.Categories = await _context.Categories.ToListAsync();
             vm.AllTags = await _context.Tags.ToListAsync();
@@ -128,6 +135,8 @@ public class AdminOffersController : AdminBaseController
 
         _context.Offers.Add(offer);
         await _context.SaveChangesAsync();
+
+        Success("Офертата беше създадена успешно.");
 
         return RedirectToAction(nameof(Offers));
     }
@@ -176,6 +185,8 @@ public class AdminOffersController : AdminBaseController
 
         if (!ModelState.IsValid)
         {
+            Warning("Невалидни данни при редактиране на оферта.");
+
             vm.Restaurants = await _context.Restaurants.ToListAsync();
             vm.Categories = await _context.Categories.ToListAsync();
             vm.AllTags = await _context.Tags.ToListAsync();
@@ -210,6 +221,8 @@ public class AdminOffersController : AdminBaseController
 
         await _context.SaveChangesAsync();
 
+        Success("Офертата беше редактирана успешно.");
+
         return RedirectToAction(nameof(Details), new { id = offer.Id });
     }
 
@@ -221,6 +234,9 @@ public class AdminOffersController : AdminBaseController
     public async Task<IActionResult> Delete(Guid id)
     {
         await _deleteService.DeleteOfferAsync(id);
+
+        Info("Офертата беше изтрита.");
+
         return RedirectToAction(nameof(Offers));
     }
 

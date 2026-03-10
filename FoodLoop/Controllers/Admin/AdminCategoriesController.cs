@@ -85,13 +85,15 @@ public class AdminCategoriesController : AdminBaseController
 
         return AdminCreate(vm);
     }
-
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(AdminFormViewModel vm)
     {
         if (!ModelState.IsValid)
+        {
+            Warning("Невалидни данни при създаване на категория.");
             return AdminCreate(vm);
+        }
 
         var category = new Category
         {
@@ -100,10 +102,11 @@ public class AdminCategoriesController : AdminBaseController
         };
 
         _context.Categories.Add(category);
-
         await _context.SaveChangesAsync();
 
-        return RedirectToAction("Categories", "AdminCategories");
+        Success("Категорията беше създадена успешно.");
+
+        return RedirectToAction(nameof(Categories));
     }
 
     // =====================================================
@@ -136,18 +139,26 @@ public class AdminCategoriesController : AdminBaseController
     public async Task<IActionResult> Edit(AdminFormViewModel vm)
     {
         if (vm.Id == null)
-            return BadRequest();
+        {
+            Error("Невалиден идентификатор.");
+            return RedirectToAction(nameof(Categories));
+        }
 
         var category = await _context.Categories
             .FirstOrDefaultAsync(c => c.Id == vm.Id);
 
         if (category == null)
-            return NotFound();
+        {
+            Error("Категорията не беше намерена.");
+            return RedirectToAction(nameof(Categories));
+        }
 
         category.Name = vm.Name;
         category.IconUrl = vm.Icon;
 
         await _context.SaveChangesAsync();
+
+        Success("Категорията беше редактирана успешно.");
 
         return RedirectToAction(nameof(Categories));
     }
@@ -160,6 +171,8 @@ public class AdminCategoriesController : AdminBaseController
     public async Task<IActionResult> Delete(Guid id)
     {
         await _deleteService.DeleteCategoryAsync(id);
+
+        Info("Категорията беше изтрита.");
 
         return RedirectToAction(nameof(Categories));
     }
