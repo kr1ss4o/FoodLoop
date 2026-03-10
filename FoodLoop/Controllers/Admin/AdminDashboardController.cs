@@ -22,7 +22,10 @@ public class AdminDashboardController : Controller
             Restaurants = await _context.Restaurants.CountAsync(),
             Offers = await _context.Offers.CountAsync(),
             Reservations = await _context.Reservations.CountAsync(),
-            Reviews = await _context.Reviews.CountAsync()
+            Reviews = await _context.Reviews.CountAsync(),
+
+            Categories = await _context.Categories.CountAsync(),
+            Tags = await _context.Tags.CountAsync()
         };
 
         return View("~/Views/Admin/Dashboard.cshtml", model);

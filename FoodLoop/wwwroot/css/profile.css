@@ -1,165 +1,420 @@
-﻿/* ============================================
-   GLOBAL PAGE BACKGROUND
-============================================ */
+﻿/* =================================
+BACKGROUND
+================================= */
+
 .profile-body {
-    background: #ECFDF5;
     min-height: 100vh;
-    padding-bottom: 40px;
+    background: radial-gradient(circle at 20% 20%, rgba(0,163,108,.15), transparent 40%), radial-gradient(circle at 80% 30%, rgba(0,200,150,.12), transparent 40%), linear-gradient(180deg,#f4fffb,#e9fff7);
+    background-attachment: fixed;
 }
 
-/* ============================================
-   MAIN CONTAINER
-============================================ */
+    .profile-body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background-image: url("https://www.transparenttextures.com/patterns/cubes.png");
+        opacity: .35;
+        pointer-events: none;
+    }
+
+
+/* =================================
+CONTAINER
+================================= */
+
 .profile-container {
-    max-width: 1100px;
+    max-width: 1050px;
     margin: 40px auto;
     padding: 0 20px;
 }
 
-/* ============================================
-   HEADER (Avatar + Info)
-============================================ */
-.profile-header {
-    background: #ffffff;
-    padding: 32px;
-    border-radius: 22px;
-    display: flex;
-    gap: 32px;
-    align-items: center;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-}
 
-.profile-avatar-box {
-    flex-shrink: 0;
+/* =================================
+PROFILE BANNER
+================================= */
+
+.profile-banner {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    background: linear-gradient(135deg,#00A36C,#00c18d);
+    padding: 36px;
+    border-radius: 28px;
+    color: white;
+    box-shadow: 0 15px 40px rgba(0,0,0,.15);
 }
 
 .profile-avatar {
-    width: 140px;
-    height: 140px;
-    border-radius: 18px;
+    width: 120px;
+    height: 120px;
+    border-radius: 20px;
     object-fit: cover;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border: 4px solid white;
 }
 
-.profile-header-info {
-    flex: 1;
-}
-
-.profile-name {
+.profile-main h1 {
     font-size: 30px;
-    font-weight: 700;
-    color: #003B33;
     margin-bottom: 6px;
 }
 
-.profile-email,
-.profile-phone {
-    color: #4A4A4A;
+.profile-meta {
+    display: flex;
+    gap: 20px;
+    font-size: 14px;
+    opacity: .9;
+    margin-bottom: 12px;
+}
+
+    .profile-meta i {
+        margin-right: 6px;
+    }
+
+.btn-edit {
+    margin-top: 6px;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 12px;
+    background: white;
+    color: #00A36C;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+
+/* =================================
+SECTION HEADERS
+================================= */
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 45px;
+    margin-bottom: 14px;
+}
+
+    .section-header h3 {
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+.section-link {
+    font-size: 14px;
+    color: #00A36C;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+    .section-link:hover {
+        text-decoration: underline;
+    }
+
+
+/* =================================
+STATS
+================================= */
+
+.stats-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.profile-stats {
+    display: flex;
+    gap: 26px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.stat-badge {
+    width: 230px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px;
+    border-radius: 18px;
+    background: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,.08);
+    transition: .2s;
+}
+
+    .stat-badge:hover {
+        transform: translateY(-4px);
+    }
+
+.stat-icon {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    color: white;
+    font-size: 18px;
+}
+
+.stat-orders {
+    background: linear-gradient(135deg,#667eea,#764ba2);
+}
+
+.stat-money {
+    background: linear-gradient(135deg,#ff9a44,#fc6076);
+}
+
+.stat-date {
+    background: linear-gradient(135deg,#43e97b,#38f9d7);
+}
+
+.stat-info span {
+    font-size: 13px;
+    color: #666;
+}
+
+.stat-info strong {
+    display: block;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+
+/* =================================
+REVIEWS
+================================= */
+
+.reviews-box {
+    background: white;
+    border-radius: 24px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.08);
+    margin-bottom: 20px;
+}
+
+.reviews-empty {
+    text-align: center;
+    color: #6b7280;
+    padding: 30px;
     font-size: 15px;
+}
+
+.review-row {
+    padding: 16px;
+    border-bottom: 1px solid #f1f3f5;
+}
+
+    .review-row:last-child {
+        border-bottom: none;
+    }
+
+
+/* =================================
+ORDERS BOX
+================================= */
+
+.orders-box {
+    background: white;
+    border-radius: 24px;
+    padding: 14px;
+    box-shadow: 0 12px 30px rgba(0,0,0,.08);
+}
+
+
+/* =================================
+ORDER ROW
+================================= */
+
+.order-item-wrapper {
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.order-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+    .order-row:hover {
+        background: #f7f7f7;
+    }
+
+.order-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f3f4f6;
+    color: #00A36C;
+    font-size: 20px;
+}
+
+.order-content {
+    flex: 1;
+}
+
+.order-title {
+    font-weight: 600;
+}
+
+.order-meta {
+    font-size: 14px;
+    color: #6b7280;
     margin-bottom: 4px;
 }
 
-/* EDIT BUTTON */
-.btn-edit {
-    margin-top: 15px;
-    background: #00A36C;
-    padding: 12px 20px;
-    color: white;
+.order-status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 10px;
+    font-size: 12px;
     font-weight: 600;
-    border-radius: 12px;
-    border: none;
-    cursor: pointer;
-    transition: 0.2s;
 }
 
-    .btn-edit:hover {
-        background: #008B5A;
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-confirmed {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-finished {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-canceled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.order-arrow {
+    font-size: 18px;
+    color: #9ca3af;
+    transition: transform .25s;
+}
+
+
+/* =================================
+ORDER DETAILS (ACCORDION)
+================================= */
+
+.order-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .35s ease;
+}
+
+    .order-details.open {
+        max-height: 240px;
     }
 
-/* ============================================
-   INSIGHTS
-============================================ */
-
-.insights-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-    gap: 20px;
+.order-item-wrapper.open .order-arrow {
+    transform: rotate(180deg);
 }
 
-.insight-card {
-    background: white;
-    padding: 24px;
-    border-radius: 18px;
-    text-align: center;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-}
-
-.insight-label {
-    color: #6A6A6A;
+.order-details-inner {
+    padding: 12px 16px 16px 80px;
     font-size: 14px;
+    color: #374151;
+    line-height: 1.6;
 }
 
-.insight-value {
-    font-size: 26px;
-    margin-top: 6px;
+    .order-details-inner strong {
+        color: #111827;
+    }
+
+.order-total {
+    margin-top: 8px;
     font-weight: 700;
     color: #00A36C;
 }
 
-/* ============================================
-   ACTION BUTTONS
-============================================ */
-.profile-actions {
+
+/* =================================
+ACTIONS
+================================= */
+
+.profile-actions-box {
     margin-top: 40px;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.08);
+    overflow: hidden;
+}
+
+.action-row {
+    width: 100%;
     display: flex;
-    justify-content: space-between;
-}
-
-.btn-logout,
-.btn-delete {
-    padding: 12px 22px;
-    border-radius: 12px;
+    align-items: center;
+    gap: 12px;
+    padding: 18px;
     border: none;
+    background: white;
+    font-size: 15px;
     cursor: pointer;
-    font-weight: 700;
-    transition: 0.2s;
+    transition: .2s;
+    text-decoration: none; /* маха underline */
 }
 
-.btn-logout {
-    background: #004D66;
-    color: white;
-}
-
-    .btn-logout:hover {
-        background: #003B50;
+    .action-row:hover {
+        background: #f6f6f6;
     }
 
-.btn-delete {
-    background: #FF5C5C;
-    color: white;
-}
-
-    .btn-delete:hover {
-        background: #D94949;
+    .action-row.logout {
+        color: #004d66;
     }
 
-/* ============================================
-   RESPONSIVE
-============================================ */
-@media (max-width: 780px) {
+    .action-row.delete {
+        color: #e63946;
+        border-top: 1px solid #eee;
+    }
 
-    .profile-header {
+    .action-row i {
+        font-size: 18px;
+    }
+
+/* =========================
+REPORT BUTTON
+=========================*/
+
+    .action-row.report {
+        color: #004d66;
+        border-top: 1px solid #eee;
+    }
+
+        .action-row.report i {
+            color: #004d66;
+        }
+
+        .action-row.report:hover {
+            background: #f6f6f6;
+        }
+
+/* =================================
+RESPONSIVE
+================================= */
+
+@media(max-width:800px) {
+
+    .profile-banner {
         flex-direction: column;
         text-align: center;
     }
 
-    .profile-avatar {
-        width: 120px;
-        height: 120px;
+    .profile-meta {
+        justify-content: center;
     }
 
-    .profile-actions {
-        flex-direction: column;
-        gap: 12px;
+    .profile-stats {
+        justify-content: center;
     }
 }

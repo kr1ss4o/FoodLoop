@@ -68,6 +68,32 @@
             </div>
         </a>
 
+        <a class="admin-kpi" asp-controller="AdminCategories" asp-action="Index">
+            <div class="admin-kpi-icon">
+                <i class="bi bi-grid"></i>
+            </div>
+            <div class="admin-kpi-body">
+                <div class="admin-kpi-label">Общо категории</div>
+                <div class="admin-kpi-value js-count" data-count="@Model.Categories">0</div>
+            </div>
+            <div class="admin-kpi-arrow">
+                <i class="bi bi-arrow-right-short"></i>
+            </div>
+        </a>
+
+        <a class="admin-kpi" asp-controller="AdminTags" asp-action="Index">
+            <div class="admin-kpi-icon">
+                <i class="bi bi-tags"></i>
+            </div>
+            <div class="admin-kpi-body">
+                <div class="admin-kpi-label">Общо тагове</div>
+                <div class="admin-kpi-value js-count" data-count="@Model.Tags">0</div>
+            </div>
+            <div class="admin-kpi-arrow">
+                <i class="bi bi-arrow-right-short"></i>
+            </div>
+        </a>
+
     </div>
 </div>
 

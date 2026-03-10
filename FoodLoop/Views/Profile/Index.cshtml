@@ -10,126 +10,244 @@
 
     <!-- HEADER -->
 
-    <div class="profile-header">
-        <div class="profile-avatar-box">
-            <img id="prof-photo" src="@(string.IsNullOrEmpty(Model.ProfileImageUrl)
-                                         ? "/images/default-avatar.jpg"
-                                         : Model.ProfileImageUrl)"
+    <div class="profile-banner">
+
+        <div class="profile-avatar-wrap">
+            <img src="@(string.IsNullOrEmpty(Model.ProfileImageUrl)
+                             ? "/images/default-avatar.jpg"
+                             : Model.ProfileImageUrl)"
                  class="profile-avatar" />
         </div>
 
-        <div class="profile-header-info">
-            <h1 id="prof-name" class="profile-name">@Model.FullName</h1>
-            <p id="prof-email" class="profile-email">@Model.Email</p>
-            <p id="prof-phone" class="profile-phone">@Model.PhoneNumber</p>
+        <div class="profile-main">
 
-            <button id="epm-open" class="btn-edit">Edit profile</button>
-        </div>
-    </div>
+            <h1>@Model.FullName</h1>
 
-    <!-- INSIGHTS -->
+            <div class="profile-meta">
+                <span>
+                    <i class="bi bi-envelope"></i>
+                    @Model.Email
+                </span>
 
-    <h2 class="section-title">Your activity</h2>
+                <span>
+                    <i class="bi bi-telephone"></i>
+                    @Model.PhoneNumber
+                </span>
+            </div>
 
-    <div class="insights-grid">
+            <button id="epm-open" class="btn-edit">
+                Редактирай профил
+            </button>
 
-        <div class="insight-card">
-            <span class="insight-label">Total orders</span>
-            <span class="insight-value">@Model.TotalOrders</span>
-        </div>
-
-        <div class="insight-card">
-            <span class="insight-label">Money spent</span>
-            <span class="insight-value">@Model.MoneySpent EUR</span>
-        </div>
-
-        <div class="insight-card">
-            <span class="insight-label">Member since</span>
-            <span class="insight-value">@Model.AccountCreated.ToString("dd/MM/yyyy")</span>
         </div>
 
     </div>
 
-    <!-- CLIENT'S REVIEWS -->
+    <!-- STATS -->
 
-    <h4 class="mt-5">My Reviews</h4>
+    <div class="stats-wrapper">
 
-    @if (!Model.Reviews.Any())
-    {
-        <p>No reviews yet.</p>
-    }
-    else
-    {
-        @foreach (var review in Model.Reviews)
+        <div class="profile-stats">
+
+            <div class="stat-badge">
+                <div class="stat-icon stat-orders">
+                    <i class="bi bi-bag"></i>
+                </div>
+                <div class="stat-info">
+                    <span>Общо поръчки</span>
+                    <strong>@Model.TotalOrders</strong>
+                </div>
+            </div>
+
+            <div class="stat-badge">
+                <div class="stat-icon stat-money">
+                    <i class="bi bi-currency-euro"></i>
+                </div>
+                <div class="stat-info">
+                    <span>Общо похарчени</span>
+                    <strong>@Model.MoneySpent EUR</strong>
+                </div>
+            </div>
+
+            <div class="stat-badge">
+                <div class="stat-icon stat-date">
+                    <i class="bi bi-calendar3"></i>
+                </div>
+                <div class="stat-info">
+                    <span>Профил от</span>
+                    <strong>@Model.AccountCreated.ToString("dd.MM.yyyy")</strong>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- REVIEWS -->
+
+    <div class="section-header">
+        <h3>Моите ревюта</h3>
+
+        <a asp-controller="Reviews"
+           asp-action="MyReviews"
+           class="section-link">
+            Виж всички
+        </a>
+    </div>
+
+    <div class="reviews-box">
+
+        @if (!Model.Reviews.Any())
         {
-            <div class="review-card">
-                <strong>@review.RestaurantName</strong>
-                <div>⭐ @review.Rating</div>
-                <p>@review.Comment</p>
-                <small>@review.CreatedAt.ToString("dd MMM yyyy")</small>
+            <div class="reviews-empty">
+                Нямате ревюта
             </div>
         }
-
-        <!-- Pagination -->
-        <div class="pagination mt-3">
-            @for (int i = 1; i <= Model.TotalReviewPages; i++)
+        else
+        {
+            foreach (var review in Model.Reviews)
             {
-                <a asp-action="Index"
-                   asp-route-page="@i"
-                   class="btn btn-sm @(i == Model.ReviewsPage ? "btn-primary" : "btn-outline-primary")">
-                    @i
-                </a>
+                <div class="review-row">
+
+                    <div class="review-restaurant">
+                        @review.RestaurantName
+                    </div>
+
+                    <div class="review-rating">
+                        ⭐ @review.Rating
+                    </div>
+
+                    <div class="review-comment">
+                        @review.Comment
+                    </div>
+
+                </div>
             }
-        </div>
-    }
+        }
 
+    </div>
 
-    <!-- CLIENT'S LAST 3 ORDERS -->
+    <!-- ORDERS -->
 
-    <h4 class="mt-5">Last 3 Orders</h4>
+    <div class="section-header">
 
-    @if (!Model.RecentOrders.Any())
-    {
-        <p>No orders yet.</p>
-    }
-    else
-    {
+        <h3>Последни поръчки</h3>
+
+        <a asp-controller="Orders"
+           asp-action="MyOrders"
+           class="section-link">
+            Виж всички
+        </a>
+
+    </div>
+
+    <div class="orders-box">
+
         @foreach (var order in Model.RecentOrders)
         {
-            <div class="order-card">
-                <div>
-                    <strong>Order #@order.Id</strong>
-                    <span>@order.Status</span>
-                </div>
 
-                <div>
-                    @foreach (var item in order.Items)
-                    {
-                        <div>
-                            @item.OfferTitle x @item.Quantity
+            <div class="order-item-wrapper">
+
+                <!-- ORDER ROW -->
+
+                <div class="order-row js-order-toggle">
+
+                    <div class="order-image">
+                        <i class="bi bi-bag"></i>
+                    </div>
+
+                    <div class="order-content">
+
+                        <div class="order-title">
+                            Поръчка #@order.Id
                         </div>
-                    }
+
+                        <div class="order-meta">
+                            @order.TotalPrice EUR
+                        </div>
+
+                        <div class="order-status status-@order.Status.ToLower()">
+                            @order.Status
+                        </div>
+
+                    </div>
+
+                    <div class="order-arrow">
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
+
                 </div>
 
-                <div>
-                    Total: @order.TotalPrice EUR
+                <!-- ORDER DETAILS -->
+
+                <div class="order-details">
+
+                    <div class="order-details-inner">
+
+                        <div>
+                            <strong>Дата:</strong>
+                            @order.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+                        </div>
+
+                        <div>
+                            <strong>Ресторант:</strong>
+                            @order.RestaurantName
+                        </div>
+
+                        <div class="order-items">
+
+                            @foreach (var item in order.Items)
+                            {
+                                <div>
+                                    @item.OfferTitle × @item.Quantity
+                                </div>
+                            }
+
+                        </div>
+
+                        <div class="order-total">
+                            Общо: @order.TotalPrice EUR
+                        </div>
+
+                    </div>
+
                 </div>
+
             </div>
-        }
-    }
 
+        }
+
+    </div>
 
     <!-- ACTIONS -->
 
-    <div class="profile-actions">
+    <div class="profile-actions-box">
+
         <form method="post" action="/Account/Logout">
-            <button class="btn-logout">Log out</button>
+            <button class="action-row logout">
+                <i class="bi bi-box-arrow-right"></i>
+                Изход
+            </button>
         </form>
 
-        <form method="post" action="/Profile/Delete"
-              onsubmit="return confirm('Are you sure you want to delete your account?');">
-            <button class="btn-delete">Delete account</button>
+        <a href="mailto:foodloop@gmail.com?subject=FoodLoop Report"
+           class="action-row report">
+
+            <i class="bi bi-flag"></i>
+            Направи сигнал
+
+        </a>
+
+        <form method="post"
+              action="/Profile/Delete"
+              onsubmit="return confirm('Сигурни ли сте?');">
+
+            <button class="action-row delete">
+                <i class="bi bi-trash"></i>
+                Изтрий профила
+            </button>
+
         </form>
+
     </div>
 
 </div>
@@ -137,5 +255,25 @@
 @await Html.PartialAsync("_EditProfileModal", Model.EditProfileModal)
 
 @section Scripts {
+
     <script src="~/js/profile-edit-modal.js"></script>
+
+    <script>
+
+                document.querySelectorAll(".js-order-toggle").forEach(row => {
+
+            row.addEventListener("click", () => {
+
+                const wrapper = row.closest(".order-item-wrapper")
+                const details = wrapper.querySelector(".order-details")
+
+                wrapper.classList.toggle("open")
+                details.classList.toggle("open")
+
+            })
+
+        })
+
+    </script>
+
 }

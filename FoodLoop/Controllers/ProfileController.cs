@@ -47,26 +47,33 @@ namespace FoodLoop.Controllers
             // LAST 3 ORDERS (DTO version)
             // =========================
             var recentOrders = await _context.Reservations
-                .AsNoTracking()
-                .Where(r => r.UserId == user.Id)
-                .Include(r => r.Items)
-                    .ThenInclude(i => i.Offer)
+            .AsNoTracking()
+            .Where(r => r.UserId == user.Id)
+            .Include(r => r.Items)
+                .ThenInclude(i => i.Offer)
+                    .ThenInclude(o => o.Restaurant)
                 .OrderByDescending(r => r.CreatedAt)
-                .Take(3)
-                .Select(r => new ReservationSummaryDto
+            .Take(3)
+            .Select(r => new ReservationSummaryDto
+            {
+                Id = r.Id,
+                CreatedAt = r.CreatedAt,
+                TotalPrice = r.TotalPrice,
+                DeliveryType = r.DeliveryType,
+                Status = r.Status.ToString(),
+
+                // взимаме ресторанта от първия артикул
+                RestaurantName = r.Items
+                .Select(i => i.Offer.Restaurant.Name)
+                .FirstOrDefault() ?? "",
+
+                Items = r.Items.Select(i => new ReservationItemDto
                 {
-                    Id = r.Id,
-                    CreatedAt = r.CreatedAt,
-                    TotalPrice = r.TotalPrice,
-                    DeliveryType = r.DeliveryType,
-                    Status = r.Status.ToString(),
-                    Items = r.Items.Select(i => new ReservationItemDto
-                    {
-                        OfferTitle = i.Offer.Title,
-                        Quantity = i.Quantity
-                    }).ToList()
-                })
-                .ToListAsync();
+                    OfferTitle = i.Offer.Title,
+                    Quantity = i.Quantity
+                }).ToList()
+            })
+            .ToListAsync();
 
             // =========================
             // REVIEWS (3 per page)
