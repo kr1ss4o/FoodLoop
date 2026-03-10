@@ -31,129 +31,134 @@
         .ToList();
 }
 
-<table class="admin-table">
+<div class="admin-table-wrap">
+    <table class="admin-table">
 
-    <thead>
-        <tr>
-
-            @foreach (var prop in props)
-            {
-                var display = prop.GetCustomAttribute<DisplayAttribute>();
-                var name = display?.Name ?? prop.Name;
-
-                <th>@name</th>
-            }
-
-            <th class="admin-actions-header" style="width:160px;">Действия</th>
-
-        </tr>
-    </thead>
-
-    <tbody>
-
-        @foreach (var item in items)
-        {
+        <thead>
             <tr>
 
                 @foreach (var prop in props)
                 {
-                    <td>
+                    var display = prop.GetCustomAttribute<DisplayAttribute>();
+                    var name = display?.Name ?? prop.Name;
 
-                        @{
-                            var value = prop.GetValue(item);
-                        }
+                    <th>@name</th>
+                }
 
-                        @if (value == null)
-                        {
-                            <span>-</span>
-                        }
+                <th class="admin-actions-header" style="width:160px;">Действия</th>
 
-                        else if (value.GetType().Namespace?.Contains("Entities") == true)
-                        {
-                            var nameProp = value.GetType().GetProperty("Name");
+            </tr>
+        </thead>
 
-                            if (nameProp != null)
+        <tbody>
+
+            @foreach (var item in items)
+            {
+                <tr>
+
+                    @foreach (var prop in props)
+                    {
+                        <td>
+
+                            @{
+                                var value = prop.GetValue(item);
+                            }
+
+                            @if (value == null)
                             {
-                                @nameProp.GetValue(value)
+                                <span>-</span>
+                            }
+
+                            else if (value.GetType().Namespace?.Contains("Entities") == true)
+                            {
+                                var nameProp = value.GetType().GetProperty("Name");
+
+                                if (nameProp != null)
+                                {
+                                    @nameProp.GetValue(value)
+                                }
+                                else
+                                {
+                                    @value.ToString()
+                                }
+                            }
+
+                            else if (value is DateTime dt)
+                            {
+                                @dt.ToString("dd.MM.yyyy HH:mm")
+                            }
+
+                            else if (value is decimal d)
+                            {
+                                @($"{d:F2} лв")
+                            }
+
+                            else
+                            {
+                                @value
+                            }
+
+                        </td>
+                    }
+
+                    @{
+                        var idProp = type.GetProperty("Id");
+                        var id = idProp?.GetValue(item);
+                    }
+
+                    <td class="admin-actions-cell">
+
+                        <div class="admin-actions">
+
+                            @if (type.Name == "Review")
+                            {
+                                <span class="admin-null">-</span>
                             }
                             else
                             {
-                                @value.ToString()
+                                <div class="admin-actions">
+
+                                    <a asp-action="Details"
+                                       asp-route-id="@id"
+                                       class="admin-mini-btn"
+                                       title="Details">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+
+                                    @if (type.Name != "Reservation")
+                                    {
+                                        <a asp-action="Edit"
+                                           asp-route-id="@id"
+                                           class="admin-mini-btn"
+                                           title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    }
+
+                                    <form asp-action="Delete"
+                                          asp-route-id="@id"
+                                          method="post"
+                                          style="display:inline">
+
+                                        <button class="admin-mini-btn admin-mini-btn--danger"
+                                                title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+
+                                    </form>
+
+                                </div>
                             }
-                        }
 
-                        else if (value is DateTime dt)
-                        {
-                            @dt.ToString("dd.MM.yyyy HH:mm")
-                        }
-
-                        else if (value is decimal d)
-                        {
-                            @($"{d:F2} лв")
-                        }
-
-                        else
-                        {
-                            @value
-                        }
+                        </div>
 
                     </td>
-                }
 
-                @{
-                    var idProp = type.GetProperty("Id");
-                    var id = idProp?.GetValue(item);
-                }
+                </tr>
+            }
 
-                <td class="admin-actions-cell">
+        </tbody>
 
-                    <div class="admin-actions">
-
-                        <a asp-action="Details"
-                           asp-route-id="@id"
-                           class="admin-mini-btn"
-                           title="Details">
-
-                            <i class="bi bi-eye"></i>
-
-                        </a>
-
-                        @if (type.Name != "Review" && type.Name != "Reservation")
-                        {
-                            <a asp-action="Edit"
-                               asp-route-id="@id"
-                               class="admin-mini-btn"
-                               title="Edit">
-
-                                <i class="bi bi-pencil"></i>
-
-                            </a>
-
-                        }
-                        @if (type.Name != "Review")
-                        {
-                            <form asp-action="Delete"
-                                  asp-route-id="@id"
-                                  method="post"
-                                  style="display:inline">
-
-                                <button class="admin-mini-btn admin-mini-btn--danger"
-                                        title="Delete">
-
-                                    <i class="bi bi-trash"></i>
-
-                                </button>
-
-                            </form>
-                        }
-
-                    </div>
-
-                </td>
-
-            </tr>
-        }
-
-    </tbody>
-
-</table>
+    </table>
+</div>
+<script src="~/js/admin-table.js"> </script>

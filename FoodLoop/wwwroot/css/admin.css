@@ -207,11 +207,12 @@ body {
 
 
 /* =========================================================
-   TABLES
+   ADMIN TABLE — MODERN
 ========================================================= */
 
 .admin-table-wrap {
-    overflow: auto;
+    overflow-x: auto;
+    border-radius: 18px;
 }
 
 .admin-table {
@@ -219,32 +220,69 @@ body {
     border-collapse: separate;
     border-spacing: 0;
     background: white;
+    border: 1px solid var(--admin-border);
+    border-radius: 18px;
+    overflow: hidden;
 }
 
-    .admin-table thead th {
-        text-transform: uppercase;
-        font-size: 12px;
-        padding: 14px 16px;
-        background: rgba(34,197,94,.08);
+    /* HEADER */
+
+    .admin-table thead {
+        background: #f0fdf4;
     }
+
+        .admin-table thead th {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            font-weight: 700;
+            color: var(--admin-muted);
+            padding: 16px 18px;
+            text-align: left;
+            border-bottom: 1px solid var(--admin-border);
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            transition: .15s;
+        }
+
+            .admin-table thead th:hover {
+                background: #ecfdf5;
+            }
+
+            /* sort indicator */
+
+            .admin-table thead th::after {
+                content: "↕";
+                font-size: 10px;
+                margin-left: 6px;
+                opacity: .35;
+            }
+
+    /* ROWS */
+
+    .admin-table tbody tr {
+        transition: .15s;
+    }
+
+        .admin-table tbody tr:hover {
+            background: rgba(34,197,94,.05);
+        }
 
     .admin-table tbody td {
-        padding: 14px 16px;
-        border-bottom: 1px solid rgba(15,23,42,.08);
+        padding: 16px 18px;
+        border-bottom: 1px solid rgba(15,23,42,.06);
+        font-size: 14px;
+        color: var(--admin-text);
     }
 
-    .admin-table tbody tr:hover {
-        background: rgba(34,197,94,.06);
+    /* LAST ROW */
+
+    .admin-table tbody tr:last-child td {
+        border-bottom: none;
     }
 
-    .admin-table th:last-child,
-    .admin-table td:last-child {
-        width: 160px;
-        text-align: right;
-        padding-right: 20px;
-    }
-
-/* actions */
+/* ACTIONS */
 
 .admin-actions {
     display: flex;
@@ -255,12 +293,54 @@ body {
 .admin-mini-btn {
     width: 36px;
     height: 36px;
-    border-radius: 999px;
+    border-radius: 10px;
     border: 1px solid var(--admin-border);
+    background: white;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: white;
+    transition: .15s;
+}
+
+    .admin-mini-btn:hover {
+        background: #f0fdf4;
+        border-color: var(--admin-green);
+    }
+
+.admin-mini-btn--danger {
+    border-color: rgba(185,28,28,.25);
+}
+
+    .admin-mini-btn--danger:hover {
+        background: #fef2f2;
+        border-color: #ef4444;
+    }
+
+/* BADGES */
+
+.admin-badge {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.admin-badge-success {
+    background: #ecfdf5;
+    color: #16a34a;
+}
+
+.admin-badge-warning {
+    background: #fff7ed;
+    color: #f59e0b;
+}
+
+/* EMPTY TABLE */
+
+.admin-table-empty {
+    padding: 30px;
+    text-align: center;
+    color: var(--admin-muted);
 }
 
 /* =========================================================
