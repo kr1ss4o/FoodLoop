@@ -84,14 +84,15 @@ public class AdminOffersController : AdminBaseController
 
     public IActionResult Create()
     {
-        ViewBag.Categories = _context.Categories.AsNoTracking().ToList();
-        ViewBag.Tags = _context.Tags.AsNoTracking().ToList();
-        ViewBag.Restaurants = _context.Restaurants.AsNoTracking().ToList();
-
-        return AdminCreate(new AdminFormViewModel
+        var vm = new AdminFormViewModel
         {
-            Type = "Offer"
-        });
+            Type = "Offer",
+            Restaurants = _context.Restaurants.ToList(),
+            Categories = _context.Categories.ToList(),
+            AllTags = _context.Tags.ToList()
+        };
+
+        return AdminCreate(vm);
     }
 
     [HttpPost]
@@ -100,6 +101,16 @@ public class AdminOffersController : AdminBaseController
         AdminFormViewModel vm,
         IFormFile? ImageUpload)
     {
+
+        if (!ModelState.IsValid)
+        {
+            vm.Restaurants = await _context.Restaurants.ToListAsync();
+            vm.Categories = await _context.Categories.ToListAsync();
+            vm.AllTags = await _context.Tags.ToListAsync();
+
+            return AdminCreate(vm);
+        }
+
         var offer = new Offer
         {
             Title = vm.Title,
@@ -134,10 +145,6 @@ public class AdminOffersController : AdminBaseController
         if (offer == null)
             return NotFound();
 
-        ViewBag.Categories = _context.Categories.AsNoTracking().ToList();
-        ViewBag.Tags = _context.Tags.AsNoTracking().ToList();
-        ViewBag.Restaurants = _context.Restaurants.AsNoTracking().ToList();
-
         var vm = new AdminFormViewModel
         {
             Type = "Offer",
@@ -150,7 +157,11 @@ public class AdminOffersController : AdminBaseController
             EndsAt = offer.EndsAt,
             CategoryId = offer.CategoryId,
             RestaurantId = offer.RestaurantId,
-            ImageUrl = offer.ImageUrl
+            ImageUrl = offer.ImageUrl,
+
+            Restaurants = await _context.Restaurants.ToListAsync(),
+            Categories = await _context.Categories.ToListAsync(),
+            AllTags = await _context.Tags.ToListAsync()
         };
 
         return AdminEdit(vm);
@@ -162,6 +173,16 @@ public class AdminOffersController : AdminBaseController
         AdminFormViewModel vm,
         IFormFile? ImageUpload)
     {
+
+        if (!ModelState.IsValid)
+        {
+            vm.Restaurants = await _context.Restaurants.ToListAsync();
+            vm.Categories = await _context.Categories.ToListAsync();
+            vm.AllTags = await _context.Tags.ToListAsync();
+
+            return AdminEdit(vm);
+        }
+
         if (vm.Id == null)
             return BadRequest();
 

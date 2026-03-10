@@ -15,4 +15,17 @@ public static class AdminControllerHelper
             _ => $"Admin{entity}s"
         };
     }
+    public static string GetListAction(string entity)
+    {
+        return entity switch
+        {
+            "Category" => "Categories",
+            "Tag" => "Tags",
+            "Restaurant" => "Restaurants",
+            "Offer" => "Offers",
+            "Review" => "Reviews",
+            "Reservation" => "Reservations",
+            _ => $"{entity}s"
+        };
+    }
 }

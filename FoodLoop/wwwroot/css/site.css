@@ -82,8 +82,7 @@ img {
 }
 
 /* =========================
-   NAVBAR (BOOTSTRAP)
-   - works for your current navbar with <li class="nav-item"> etc.
+   NAVBAR
 ========================= */
 .navbar,
 .app-navbar {
@@ -137,6 +136,7 @@ img {
         border-radius: 999px;
         padding: 0.35em 0.55em;
     }
+
 /* NAVBAR ADMIN DROPDOWN */
 
     .navbar .dropdown-menu {
@@ -156,8 +156,9 @@ img {
         }
 
 /* =========================
-   LEGACY NAVBAR (IF ANY PAGES STILL USE IT)
+   LEGACY NAVBAR
 ========================= */
+
 .cart-navbar {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
@@ -217,7 +218,7 @@ img {
 }
 
 /* =========================
-   BUTTONS (OPTIONAL HELPERS)
+   BUTTONS
 ========================= */
 .btn-primary-custom {
     background: var(--primary);
@@ -260,6 +261,27 @@ img {
     box-shadow: var(--shadow-md);
     animation: toast-slide-in 0.35s ease forwards;
     pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.toast-progress {
+    height: 3px;
+    background: rgba(255,255,255,0.6);
+    margin-top: 8px;
+    border-radius: 2px;
+    animation: toast-progress 4s linear forwards;
+}
+
+@keyframes toast-progress {
+    from {
+        width: 100%;
+    }
+
+    to {
+        width: 0%;
+    }
 }
 
 .toast-success {
@@ -268,6 +290,14 @@ img {
 
 .toast-error {
     background: #dc2626;
+}
+
+.toast-warning {
+    background: #f59e0b;
+}
+
+.toast-info {
+    background: #2563eb;
 }
 
 @keyframes toast-slide-in {

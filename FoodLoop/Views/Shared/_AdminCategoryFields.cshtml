@@ -1,0 +1,34 @@
+﻿@model FoodLoop.ViewModels.Admin.AdminFormViewModel
+
+<h3 class="admin-section-title">Информация за категория</h3>
+
+<div class="admin-form-grid">
+
+    <div class="admin-field">
+
+        <label>Име на категория</label>
+
+        <input asp-for="Name"
+               class="admin-input"
+               required
+               minlength="2"
+               maxlength="60" />
+
+        <span asp-validation-for="Name" class="text-danger"></span>
+
+    </div>
+
+    <div class="admin-field">
+
+        <label>Икона (URL)</label>
+
+        <input asp-for="Icon"
+               class="admin-input"
+               type="url"
+               required />
+
+        <span asp-validation-for="Icon" class="text-danger"></span>
+
+    </div>
+
+</div>

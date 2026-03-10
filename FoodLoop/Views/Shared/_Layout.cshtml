@@ -70,12 +70,28 @@
 
     @if (TempData["Success"] != null)
     {
-        <script>showToast("@TempData["Success"]", "success");</script>
+        <script>
+            showToast(@Html.Raw(Json.Serialize(TempData["Success"])), "success");
+        </script>
     }
 
     @if (TempData["Error"] != null)
     {
-        <script>showToast("@TempData["Error"]", "error");</script>
+        <script>
+            showToast(@Html.Raw(Json.Serialize(TempData["Error"])), "error");
+        </script>
+    }
+
+    @if (TempData["Warning"] != null)
+    {
+        <script>
+            showToast(@Html.Raw(Json.Serialize(TempData["Warning"])), "warning");
+        </script>
+    }
+
+    @if (TempData["Info"] != null)
+    {
+        <script>showToast("@TempData["Info"]", "info");</script>
     }
 </body>
 </html>

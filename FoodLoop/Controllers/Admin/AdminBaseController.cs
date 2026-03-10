@@ -38,4 +38,25 @@ public abstract class AdminBaseController : Controller
     {
         return RedirectToAction(action);
     }
+
+    // Toats
+
+    protected void Success(string message)
+    {
+        TempData["Success"] = message;
+    }
+
+    protected void Error(string message)
+    {
+        TempData["Error"] = message;
+    }
+
+    protected void Warning(string message)
+    {
+        TempData["Warning"] = message;
+    }
+    protected void Info(string message)
+    {
+        TempData["Info"] = message;
+    }
 }

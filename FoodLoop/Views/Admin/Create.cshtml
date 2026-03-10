@@ -1,4 +1,5 @@
 ﻿@model FoodLoop.ViewModels.Admin.AdminFormViewModel
+@using FoodLoop.Helpers
 
 @{
     Layout = "_Layout";
@@ -13,8 +14,21 @@
     };
 }
 
-<div class="admin-header">
-    <h2>Създай @modelName</h2>
-</div>
+<div class="admin-page">
 
-<partial name="_AdminForm" model="Model" />
+    <div class="admin-header">
+        <h2>Създай @modelName</h2>
+
+        <a asp-controller="@AdminControllerHelper.Get(Model.Type)"
+           asp-action="@AdminControllerHelper.GetListAction(Model.Type)"
+           class="admin-btn admin-btn-secondary">
+
+            <i class="bi bi-arrow-left"></i>
+            Назад
+
+        </a>
+    </div>
+
+    <partial name="_AdminForm" model="Model" />
+
+</div>

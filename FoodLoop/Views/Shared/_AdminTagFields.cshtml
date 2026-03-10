@@ -1,0 +1,21 @@
+﻿@model FoodLoop.ViewModels.Admin.AdminFormViewModel
+
+<h3 class="admin-section-title">Информация за таг</h3>
+
+<div class="admin-form-grid">
+
+    <div class="admin-field">
+
+        <label>Име на таг</label>
+
+        <input asp-for="Name"
+               class="admin-input"
+               required
+               minlength="2"
+               maxlength="50" />
+
+        <span asp-validation-for="Name" class="text-danger"></span>
+
+    </div>
+
+</div>
