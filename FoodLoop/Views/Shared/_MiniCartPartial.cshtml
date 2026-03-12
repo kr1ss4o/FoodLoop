@@ -1,27 +1,59 @@
 ﻿@model List<FoodLoop.Models.Entities.CartItem>
 
+<div class="mini-cart-header">
+    <i class="bi bi-bag"></i>
+    <span>Количка</span>
+</div>
+
 @if (!Model.Any())
 {
     <div class="mini-empty">
         <i class="bi bi-bag-x"></i>
-        <p>Your cart is empty</p>
+        <p>Количката е празна</p>
     </div>
 }
 else
 {
-    @foreach (var item in Model)
+    decimal total = 0;
+
+    foreach (var item in Model)
     {
+        var price = item.Offer.DiscountedPrice * item.Quantity;
+        total += price;
+
         <div class="mini-item">
-            <div class="mini-title">
-                @item.Offer.Title
+
+            <div class="mini-thumb">
+                <img src="@item.Offer.ImageUrl" />
             </div>
 
-            <div class="mini-meta">
-                x @item.Quantity
-                <span class="mini-price">
-                    @(item.Offer.DiscountedPrice* item.Quantity) EUR
-                </span>
+            <div class="mini-info">
+
+                <div class="mini-title">
+                    @item.Offer.Title
+                </div>
+
+                <div class="mini-meta">
+                    x @item.Quantity
+                </div>
+
             </div>
+
+            <div class="mini-price">
+                @price €
+            </div>
+
         </div>
     }
+
+    <div class="mini-total">
+        <span>Общо</span>
+        <strong>@total €</strong>
+    </div>
+
+    <a asp-controller="Cart"
+       asp-action="Index"
+       class="mini-cart-btn">
+        Към количката
+    </a>
 }
