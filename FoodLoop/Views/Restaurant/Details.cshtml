@@ -14,8 +14,8 @@
 
     <a href="#reviews" class="hero-rating">
         <i class="bi bi-star-fill"></i>
-        5
-        <span>(1 ревю)</span>
+        @Model.AvgRating
+        <span>(@Model.ReviewsCount отзива)</span>
     </a>
 </div>
 
@@ -42,7 +42,7 @@
 
                 <div class="restaurant-tags">
                     <span class="tag cuisine">Ресторант</span>
-                    <span class="tag open">Отворено сега</span>
+                    <span class="tag open">Отворено в момента</span>
                 </div>
 
             </div>
@@ -53,7 +53,7 @@
         <div class="restaurant-actions">
 
             <a class="btn dark">
-                ✉ Имейл
+                ✉ Изпрати имейл
             </a>
 
             <a class="btn outline">
@@ -70,7 +70,7 @@
         <div class="info-item">
             <div class="icon">✉</div>
             <div>
-                <label>БИЗНЕС ИМЕЙЛ</label>
+                <label>ИМЕЙЛ НА РЕСТОРАНТА</label>
                 <p>contact@restaurant.com</p>
             </div>
         </div>
@@ -78,7 +78,7 @@
         <div class="info-item">
             <div class="icon">📞</div>
             <div>
-                <label>ТЕЛЕФОНЕН НОМЕР</label>
+                <label>ТЕЛЕФОН</label>
                 <p>+359 888 123 456</p>
             </div>
         </div>
@@ -102,13 +102,13 @@
     <div class="stat stat-yellow">
         <i class="bi bi-chat-left-text stat-icon"></i>
         <div class="stat-number">@Model.ReviewsCount</div>
-        <div class="stat-label">Общо ревюта</div>
+        <div class="stat-label">Общо отзиви</div>
     </div>
 
     <div class="stat stat-green">
         <i class="bi bi-star stat-icon"></i>
         <div class="stat-number">@Model.AvgRating</div>
-        <div class="stat-label">Рейтинг</div>
+        <div class="stat-label">Средна оценка</div>
     </div>
 
     <div class="stat stat-pink">
@@ -120,7 +120,7 @@
     <div class="stat stat-blue">
         <i class="bi bi-box-seam stat-icon"></i>
         <div class="stat-number">0</div>
-        <div class="stat-label">Завършени поръчки</div>
+        <div class="stat-label">Изпълнени поръчки</div>
     </div>
 
 </div>
@@ -135,7 +135,7 @@
         </h2>
 
         <span class="section-subtitle">
-            Спасена прясна храна от изхвърляне
+            Прясна храна, спасена от изхвърляне
         </span>
     </div>
 
@@ -217,7 +217,7 @@
                     <span>@Model.AvgRating</span>
 
                     <span class="reviews-count">
-                        (@Model.ReviewsCount ревюта)
+                        (@Model.ReviewsCount отзива)
                     </span>
 
                 </div>
@@ -277,7 +277,7 @@
                 <div class="reviews-show-more">
 
                     <button id="showMoreReviews" class="show-more-btn">
-                        Покажи още ревюта
+                        Покажи още отзиви
                         <i class="bi bi-chevron-down"></i>
                     </button>
 
@@ -287,62 +287,4 @@
         </div>
 
     </div>
-}
-
-@section Scripts {
-
-    <script>
-
-        function updateTimers(){
-
-            document.querySelectorAll(".offer-countdown").forEach(el=>{
-
-                const endDate=new Date(el.dataset.end);
-                const diff=endDate-new Date();
-
-                if(diff<=0){
-                    el.textContent="Изтекла оферта";
-                    el.className="offer-countdown countdown-danger";
-                    return;
-                }
-
-                const hours=Math.floor(diff/3600000);
-                const minutes=Math.floor((diff/60000)%60);
-
-                el.textContent=`Остават ${hours}ч ${minutes}м`;
-
-                el.classList.remove(
-                    "countdown-safe",
-                    "countdown-warning",
-                    "countdown-danger"
-                );
-
-                if(hours>=24) el.classList.add("countdown-safe");
-                else if(hours>=6) el.classList.add("countdown-warning");
-                else el.classList.add("countdown-danger");
-
-            });
-
-        }
-
-        updateTimers();
-        setInterval(updateTimers,60000);
-
-
-        /* SHOW MORE */
-
-        const btn=document.getElementById("showMoreReviews");
-
-        btn?.addEventListener("click",()=>{
-
-            document
-                .querySelectorAll(".hidden-review")
-                .forEach(el=>el.style.display="block");
-
-            btn.remove();
-
-        });
-
-    </script>
-
 }

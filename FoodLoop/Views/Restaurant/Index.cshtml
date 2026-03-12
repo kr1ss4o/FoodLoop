@@ -1,59 +1,114 @@
 ﻿@model List<FoodLoop.Models.ViewModels.RestaurantCardViewModel>
 
 @{
-    ViewData["Title"] = "Restaurants";
+    ViewData["Title"] = "Ресторанти";
 }
 
 <link rel="stylesheet" href="~/css/restaurant.css" />
 
-<div class="rd-wrapper">
+<div class="restaurants-wrapper">
 
-    <div class="rd-header">
-        <div>
-            <h2 class="rd-title">Restaurants</h2>
-            <div class="rd-subtitle">Explore all available restaurants</div>
+    <div class="restaurants-header">
+
+        <div class="restaurants-title-row">
+
+            <div class="restaurants-icon">
+                <i class="bi bi-shop"></i>
+            </div>
+
+            <div>
+                <h1 class="restaurants-title">
+                    Ресторанти
+                </h1>
+
+                <div class="restaurants-subtitle">
+                    Разгледай всички ресторанти с налични оферти
+                </div>
+            </div>
+
         </div>
+
     </div>
 
-    <div class="rd-grid">
-
-        @if (!Model.Any())
-        {
-            <div class="rd-card">No restaurants found.</div>
-        }
+    <div class="restaurants-grid">
 
         @foreach (var r in Model)
         {
             <a asp-controller="Restaurant"
                asp-action="Details"
                asp-route-id="@r.Id"
-               style="text-decoration:none; color:inherit;">
+               class="restaurant-card-link">
 
-                <div class="rd-card">
+                <div class="restaurant-card">
 
-                    <div class="rd-top-title">@r.Name</div>
+                    <div class="restaurant-banner">
 
-                    <div class="rd-kpi-label">Rating</div>
-                    <div class="rd-kpi-value">
-                        @(r.ReviewsCount == 0 ? "—" : $"{r.AvgRating:0.0}/5")
+                        <img src="@(string.IsNullOrEmpty(r.BannerImageUrl)
+                                     ? "/images/default-banner.jpg"
+                                     : r.BannerImageUrl)" />
+
+                        <div class="banner-overlay"></div>
+
+                        <div class="banner-rating">
+                            <i class="bi bi-star-fill"></i>
+                            @(r.ReviewsCount == 0 ? "—" : $"{r.AvgRating:0.0}")
+                        </div>
+
+                        @if (r.ActiveOffersCount > 0)
+                        {
+                            <div class="banner-open">
+                                <i class="bi bi-circle-fill"></i>
+                                Активен
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="banner-closed">
+                                <i class="bi bi-circle-fill"></i>
+                                Неактивен
+                            </div>
+                        }
+
                     </div>
 
-                    <div class="rd-kpi-meta">
-                        @r.ReviewsCount review(s)
-                    </div>
 
-                    <hr />
+                    <div class="restaurant-body">
 
-                    <div class="rd-kpi-label">Active offers</div>
-                    <div class="rd-kpi-meta">
-                        @r.ActiveOffersCount available
+                        <div class="restaurant-logo">
+                            <img src="@(string.IsNullOrEmpty(r.ImageUrl)
+                                             ? "/images/default-restaurant.png"
+                                             : r.ImageUrl)" />
+                        </div>
+
+                        <div class="restaurant-name">
+                            @r.Name
+                        </div>
+
+                        <div class="restaurant-meta">
+
+                            <div class="meta-item">
+                                <i class="bi bi-chat-left-text"></i>
+                                @r.ReviewsCount отзива
+                            </div>
+
+                            <div class="meta-item">
+                                <i class="bi bi-ticket-perforated"></i>
+                                @r.ActiveOffersCount оферти
+                            </div>
+
+                        </div>
+
+                        <div class="restaurant-location">
+                            <i class="bi bi-geo-alt"></i>
+                            @(string.IsNullOrEmpty(r.Address) ? "Адрес не е посочен" : r.Address)
+                        </div>
+
                     </div>
 
                 </div>
 
             </a>
         }
-
     </div>
 
 </div>
