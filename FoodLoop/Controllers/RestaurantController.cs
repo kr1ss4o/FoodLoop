@@ -22,32 +22,33 @@ namespace FoodLoop.Controllers
         {
             sort = (sort ?? "").ToLower();
 
-            // 1) Restaurants (само нужните колони)
+            // Restaurants
             var restaurants = await _context.Restaurants
+                .AsNoTracking()
                 .Where(r => string.IsNullOrWhiteSpace(search) || r.Name.Contains(search))
                 .Select(r => new
                 {
                     r.Id,
                     r.Name,
                     r.Address,
-                    r.ImageUrl
+                    r.ImageUrl,
+                    r.BannerImageUrl
                 })
                 .ToListAsync();
 
             var restaurantIds = restaurants.Select(r => r.Id).ToList();
 
-            // 2) Active offers count per restaurant
-            var offersCounts = await _context.Offers
+            // Active offers
+            var offersByRestaurant = await _context.Offers
+                .AsNoTracking()
                 .Where(o => restaurantIds.Contains(o.RestaurantId) && o.QuantityAvailable > 0)
                 .GroupBy(o => o.RestaurantId)
-                .Select(g => new { RestaurantId = g.Key, Count = g.Count() })
-                .ToListAsync();
+                .Select(g => new { g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.Key, x => x.Count);
 
-            var offersByRestaurant = offersCounts.ToDictionary(x => x.RestaurantId, x => x.Count);
-
-            // 3) Reviews agg per restaurant (Avg + Count) for finished reservations
-            var reviewsAgg = await (
-                from rev in _context.Reviews
+            // Reviews aggregation
+            var reviewsByRestaurant = await (
+                from rev in _context.Reviews.AsNoTracking()
                 join res in _context.Reservations on rev.ReservationId equals res.Id
                 join item in _context.ReservationItems on res.Id equals item.ReservationId
                 join offer in _context.Offers on item.OfferId equals offer.Id
@@ -55,26 +56,21 @@ namespace FoodLoop.Controllers
                       && restaurantIds.Contains(offer.RestaurantId)
                 select new { offer.RestaurantId, rev.Id, rev.Rating }
             )
-            .Distinct() // гарантира, че ако има multiple items към същия ресторант, ревюто се брои 1 път
+            .Distinct()
             .GroupBy(x => x.RestaurantId)
             .Select(g => new
             {
-                RestaurantId = g.Key,
+                g.Key,
                 Avg = g.Average(x => (double)x.Rating),
                 Count = g.Count()
             })
-            .ToListAsync();
+            .ToDictionaryAsync(x => x.Key, x => new { x.Avg, x.Count });
 
-            var reviewsByRestaurant = reviewsAgg.ToDictionary(
-                x => x.RestaurantId,
-                x => new { x.Avg, x.Count }
-            );
-
-            // Map -> ViewModel
+            // Mapping
             var result = restaurants.Select(r =>
             {
-                var offersCount = offersByRestaurant.TryGetValue(r.Id, out var oc) ? oc : 0;
-                var hasReviews = reviewsByRestaurant.TryGetValue(r.Id, out var ra);
+                offersByRestaurant.TryGetValue(r.Id, out var offersCount);
+                reviewsByRestaurant.TryGetValue(r.Id, out var reviews);
 
                 return new RestaurantCardViewModel
                 {
@@ -82,13 +78,14 @@ namespace FoodLoop.Controllers
                     Name = r.Name,
                     Address = r.Address,
                     ImageUrl = r.ImageUrl,
+                    BannerImageUrl = r.BannerImageUrl,
                     ActiveOffersCount = offersCount,
-                    ReviewsCount = hasReviews ? ra!.Count : 0,
-                    AvgRating = hasReviews ? Math.Round(ra!.Avg, 1) : 0
+                    ReviewsCount = reviews?.Count ?? 0,
+                    AvgRating = reviews != null ? Math.Round(reviews.Avg, 1) : 0
                 };
             }).ToList();
 
-            // Sorting (in-memory, защото вече имаме всичко)
+            // Sorting
             result = sort switch
             {
                 "rating_desc" => result
@@ -120,30 +117,33 @@ namespace FoodLoop.Controllers
         // ==============================
         public async Task<IActionResult> Details(Guid id)
         {
-            // 1) Restaurant (само нужните колони)
+            // Restaurant
             var restaurant = await _context.Restaurants
+                .AsNoTracking()
                 .Where(r => r.Id == id)
                 .Select(r => new
                 {
                     r.Id,
                     r.Name,
                     r.Address,
-                    r.ImageUrl
+                    r.ImageUrl,
+                    r.BannerImageUrl
                 })
                 .FirstOrDefaultAsync();
 
             if (restaurant == null)
                 return NotFound();
 
-            // 2) Active offers
+            // Active offers
             var activeOffers = await _context.Offers
+                .AsNoTracking()
                 .Where(o => o.RestaurantId == id && o.QuantityAvailable > 0)
                 .OrderByDescending(o => o.CreatedAt)
                 .ToListAsync();
 
-            // 3) Reviews base (1 път) -> distinct по ReviewId (за да няма duplicates от multiple items)
+            // Reviews
             var reviewsBase = await (
-                from rev in _context.Reviews
+                from rev in _context.Reviews.AsNoTracking()
                 join res in _context.Reservations on rev.ReservationId equals res.Id
                 join u in _context.Users on res.UserId equals u.Id
                 join item in _context.ReservationItems on res.Id equals item.ReservationId
@@ -162,9 +162,11 @@ namespace FoodLoop.Controllers
             .Distinct()
             .ToListAsync();
 
-            // Aggregate in-memory (чисто + без EF преводи)
             var reviewsCount = reviewsBase.Count;
-            var avgRating = reviewsCount == 0 ? 0 : Math.Round(reviewsBase.Average(x => x.Rating), 1);
+
+            var avgRating = reviewsCount == 0
+                ? 0
+                : Math.Round(reviewsBase.Average(x => x.Rating), 1);
 
             var latestReviews = reviewsBase
                 .OrderByDescending(x => x.CreatedAt)
@@ -173,7 +175,9 @@ namespace FoodLoop.Controllers
                 {
                     Rating = x.Rating,
                     Comment = x.Comment,
-                    AuthorName = string.IsNullOrWhiteSpace(x.AuthorName) ? "Anonymous" : x.AuthorName,
+                    AuthorName = string.IsNullOrWhiteSpace(x.AuthorName)
+                        ? "Anonymous"
+                        : x.AuthorName,
                     CreatedAt = x.CreatedAt
                 })
                 .ToList();
@@ -184,6 +188,7 @@ namespace FoodLoop.Controllers
                 Name = restaurant.Name,
                 Address = restaurant.Address,
                 ImageUrl = restaurant.ImageUrl,
+                BannerImageUrl = restaurant.BannerImageUrl,
                 AvgRating = avgRating,
                 ReviewsCount = reviewsCount,
                 ActiveOffers = activeOffers,

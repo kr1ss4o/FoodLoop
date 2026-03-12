@@ -3,11 +3,11 @@ wwwroot\css\auth.css
 wwwroot\css\business-profile.css
 wwwroot\css\cart.css
 wwwroot\css\dashboard.css
+wwwroot\css\edit-profile-modal.css
 wwwroot\css\offer-details.css
 wwwroot\css\offers-manage.css
 wwwroot\css\order-manager.css
 wwwroot\css\profile.css
-wwwroot\css\restaurant-details.css
 wwwroot\css\restaurant.css
 wwwroot\css\search.css
 wwwroot\css\site.css
@@ -72,6 +72,7 @@ wwwroot\images\users\5a367764-40fc-41e2-acec-9472cc899eca.jpg
 wwwroot\js\admin-table.js
 wwwroot\js\cart.js
 wwwroot\js\order-dashboard.js
+wwwroot\js\profile-edit-modal.js
 wwwroot\js\site.js
 wwwroot\js\toast.js
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
@@ -131,5 +132,4 @@ wwwroot\lib\jquery\dist\jquery.js
 wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
-wwwroot\css\edit-profile-modal.css
-wwwroot\js\profile-edit-modal.js
+wwwroot\css\restaurant-details.css

@@ -1,281 +1,489 @@
-﻿/* ===== Restaurant Details (public) ===== */
-
-.rdt-wrapper {
-    max-width: 1100px;
-    margin: 34px auto;
-    padding: 0 14px;
+﻿body {
+    font-family: Inter,system-ui,-apple-system,sans-serif;
+    background: #f5f6f8;
+    scroll-behavior: smooth;
+    margin: 0;
 }
 
 /* HERO */
-.rdt-hero {
-    display: grid;
-    grid-template-columns: 1.25fr 0.75fr;
-    gap: 18px;
-    background: #fff;
-    border: 1px solid #eef2f3;
-    border-radius: 20px;
-    padding: 18px;
-    box-shadow: 0 12px 28px rgba(0,0,0,0.06);
-    margin-bottom: 22px;
+
+.restaurant-hero {
+    position: relative;
+    height: 320px;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    overflow: hidden;
+}
+.restaurant-hero {
+    margin-top: -20px;
 }
 
-.rdt-title {
-    margin: 0 0 10px;
-    font-weight: 900;
-    letter-spacing: .2px;
-    font-size: 30px;
-}
 
-.rdt-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.rdt-rating {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.rdt-rating-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 6px 10px;
-    border-radius: 999px;
-    background: #f5f7f8;
-    border: 1px solid #eef2f3;
-    font-weight: 900;
-}
-
-.rdt-rating-count {
-    color: #6b7a88;
-    font-weight: 700;
-    font-size: 13px;
-}
-
-.rdt-address {
-    color: #445566;
-    font-weight: 700;
-}
-
-.rdt-actions {
-    margin-top: 14px;
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.rdt-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 14px;
-    border-radius: 14px;
-    text-decoration: none;
-    font-weight: 800;
-    border: 1px solid transparent;
-}
-
-.rdt-btn-primary {
-    background: linear-gradient(135deg,#00a86b,#008b5a);
-    color: #fff;
-}
-
-.rdt-btn-outline {
-    background: #fff;
-    border-color: #dfe6ea;
-    color: #003b55;
-}
-
-.rdt-image {
+.hero-banner {
     width: 100%;
-    height: 220px;
+    height: 100%;
     object-fit: cover;
-    border-radius: 16px;
-    border: 1px solid #eef2f3;
 }
 
-/* SECTIONS */
-.rdt-section {
-    margin-top: 22px;
+.restaurant-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom,rgba(0,0,0,.05),rgba(0,0,0,.35));
+}
+.restaurant-hero::after {
+    pointer-events: none;
 }
 
-.rdt-section-header {
+.hero-rating {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: white;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 15px;
+    box-shadow: 0 6px 18px rgba(0,0,0,.15);
+    text-decoration: none;
+    color: #111827;
+    cursor: pointer;
+    z-index: 5;
+    transition: .2s;
+}
+
+    .hero-rating i {
+        color: #facc15;
+    }
+
+    .hero-rating span {
+        color: #6b7280;
+    }
+
+    .hero-rating:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 22px rgba(0,0,0,.2);
+    }
+
+    .hero-rating i {
+        color: #facc15;
+    }
+
+    .hero-rating span {
+        color: #6b7280;
+    }
+
+    .hero-rating:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+    }
+
+/* MAIN CARD */
+
+.restaurant-card {
+    position: relative;
+    max-width: 1200px;
+    margin: -100px auto 40px;
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 15px 40px rgba(0,0,0,.15);
+}
+
+.restaurant-header {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
-    gap: 12px;
-    margin-bottom: 14px;
+    align-items: center;
 }
 
-    .rdt-section-header h2 {
-        margin: 0;
-        font-weight: 900;
-        font-size: 20px;
-    }
-
-.rdt-muted {
-    color: #7a8a99;
-    font-weight: 700;
-    font-size: 13px;
+.restaurant-left {
+    display: flex;
+    gap: 20px;
 }
 
-.rdt-empty {
-    background: #fff;
-    border: 1px dashed #d7dde2;
-    border-radius: 14px;
-    padding: 16px;
-    color: #6b7a88;
-    font-weight: 700;
-}
-
-/* OFFERS GRID */
-.rdt-offers-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
-}
-
-.rdt-offer-link {
-    text-decoration: none;
-    color: inherit;
-}
-
-.rdt-offer-card {
-    background: #fff;
-    border: 1px solid #eef2f3;
-    border-radius: 18px;
+.restaurant-logo {
+    width: 90px;
+    height: 90px;
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 10px 24px rgba(0,0,0,0.05);
-    transition: 0.18s ease;
 }
 
-    .rdt-offer-card:hover {
-        transform: translateY(-3px);
+    .restaurant-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
-.rdt-offer-img {
-    width: 100%;
-    height: 155px;
-    object-fit: cover;
-    display: block;
-}
-
-.rdt-offer-body {
-    padding: 14px;
-}
-
-.rdt-offer-title {
-    font-weight: 900;
+.restaurant-main h1 {
+    font-size: 30px;
     margin-bottom: 6px;
 }
 
-.rdt-offer-price {
-    font-weight: 900;
-    color: #003b55;
+.restaurant-address {
+    color: #6b7280;
+    margin-bottom: 8px;
 }
 
-.rdt-offer-stock {
-    margin-top: 8px;
+.restaurant-tags {
+    display: flex;
+    gap: 10px;
 }
 
-.rdt-stock-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 6px 10px;
-    border-radius: 999px;
-    font-weight: 900;
-    font-size: 12px;
-    border: 1px solid transparent;
+.tag {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
 }
 
-    .rdt-stock-badge.low {
-        background: #fff1d6;
-        border-color: #ffe6b5;
-        color: #b26a00;
+.cuisine {
+    background: #e8eeff;
+    color: #3b5bfd;
+}
+
+.open {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+
+/* ACTION BUTTONS */
+
+.restaurant-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+    .btn.dark {
+        background: #1f2937;
+        color: white;
     }
 
-    .rdt-stock-badge.urgent {
-        background: #ffe2e2;
-        border-color: #ffc2c2;
-        color: #b40000;
+    .btn.outline {
+        border: 1px solid #d1d5db;
     }
 
-/* REVIEWS */
-.rdt-reviews-grid {
+
+/* INFO GRID */
+
+.restaurant-info {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
+    grid-template-columns: repeat(3,1fr);
+    gap: 30px;
+    margin-top: 30px;
+    border-top: 1px solid #eee;
+    padding-top: 25px;
 }
 
-.rdt-review-card {
-    background: #fff;
-    border: 1px solid #eef2f3;
+.info-item {
+    display: flex;
+    gap: 15px;
+}
+
+    .info-item label {
+        font-size: 12px;
+        color: #9ca3af;
+    }
+
+    .info-item p {
+        font-weight: 600;
+    }
+
+
+/* STATS */
+
+.restaurant-stats {
+    width: 85%;
+    max-width: 1200px;
+    margin: 30px auto;
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 20px;
+}
+
+.stat {
+    background: white;
+    border-radius: 16px;
+    padding: 26px;
+    border: 2px solid transparent;
+}
+
+    .stat:hover {
+        transform: translateY(-2px);
+        transition: .2s;
+    }
+
+.stat-number {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.stat-label {
+    color: #6b7280;
+}
+
+.stat-yellow {
+    border-color: #fbbf24;
+}
+
+.stat-green {
+    border-color: #22c55e;
+}
+
+.stat-pink {
+    border-color: #ec4899;
+}
+
+.stat-blue {
+    border-color: #3b82f6;
+}
+
+
+/* OFFERS */
+
+.offers-section {
+    width: 85%;
+    max-width: 1200px;
+    margin: 40px auto;
+}
+
+.section-header {
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.section-subtitle {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.offers-grid {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 28px;
+}
+
+.offer-card {
+    background: white;
     border-radius: 18px;
-    padding: 14px;
-    box-shadow: 0 10px 24px rgba(0,0,0,0.05);
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(0,0,0,.12);
+    transition: .25s;
 }
 
-.rdt-review-top {
+    .offer-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(0,0,0,.15);
+    }
+
+.offer-image {
+    position: relative;
+}
+
+    .offer-image img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+.discount-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: #ef4444;
+    color: white;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 20px;
+}
+
+.offer-content {
+    padding: 20px;
+}
+
+.offer-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.offer-prices {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.price-old {
+    text-decoration: line-through;
+    color: #9ca3af;
+}
+
+.price-new {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.offer-meta {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
-    gap: 10px;
-    margin-bottom: 8px;
+    font-size: 13px;
+    color: #6b7280;
 }
 
-.rdt-review-author {
-    font-weight: 900;
-    color: #003b55;
+
+/* COUNTDOWN */
+
+.offer-countdown {
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.rdt-review-date {
-    color: #7a8a99;
+    .offer-countdown::before {
+        content: "\f293";
+        font-family: "bootstrap-icons";
+    }
+
+.countdown-safe {
+    color: #22c55e;
+}
+
+.countdown-warning {
+    color: #f59e0b;
+}
+
+.countdown-danger {
+    color: #ef4444;
+}
+
+
+/* REVIEWS */
+
+.reviews-section {
+    width: 85%;
+    max-width: 1200px;
+    margin: 60px auto;
+}
+
+.reviews-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.reviews-title {
+    font-size: 30px;
     font-weight: 700;
-    font-size: 12px;
 }
 
-.rdt-stars {
-    margin-bottom: 8px;
-}
-
-.rdt-star {
-    color: #ddd;
+.reviews-rating {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     font-size: 16px;
+    color: #facc15;
 }
 
-    .rdt-star.filled {
-        color: #ffb400;
-    }
-
-.rdt-review-text {
-    color: #445566;
-    font-weight: 700;
-    line-height: 1.55;
+.review-card {
+    background: white;
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 18px;
+    border-left: 6px solid transparent;
+    box-shadow: 0 10px 30px rgba(0,0,0,.06);
+    transition: .25s;
 }
 
-/* RESPONSIVE */
-@media (max-width: 950px) {
-    .rdt-hero {
-        grid-template-columns: 1fr;
-    }
-
-    .rdt-image {
-        height: 200px;
-    }
-
-    .rdt-offers-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .rdt-reviews-grid {
-        grid-template-columns: 1fr;
-    }
+.review-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 40px rgba(0,0,0,.08);
 }
 
-@media (max-width: 600px) {
-    .rdt-offers-grid {
-        grid-template-columns: 1fr;
-    }
+.rating-5 {
+    border-color: #22c55e;
 }
+
+.rating-4 {
+    border-color: #84cc16;
+}
+
+.rating-3 {
+    border-color: #f59e0b;
+}
+
+.rating-2 {
+    border-color: #fb7185;
+}
+
+.rating-1 {
+    border-color: #ef4444;
+}
+
+.review-stars {
+    color: #facc15;
+    font-size: 18px;
+}
+
+.review-text {
+    margin: 14px 0;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.review-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.review-author {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+
+/* SHOW MORE */
+
+.hidden-review {
+    display: none;
+}
+
+.reviews-show-more {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.show-more-btn {
+    border: none;
+    background: #f3f4f6;
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: .2s;
+}
+
+    .show-more-btn:hover {
+        background: #e5e7eb;
+    }

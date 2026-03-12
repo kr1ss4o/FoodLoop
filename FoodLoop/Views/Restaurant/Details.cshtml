@@ -6,146 +6,343 @@
 
 <link rel="stylesheet" href="~/css/restaurant-details.css" />
 
-<div class="rdt-wrapper">
+<div class="restaurant-hero">
+    <img class="hero-banner"
+         src="@(string.IsNullOrEmpty(Model.BannerImageUrl)
+                                  ? "/images/default-banner.jpg" 
+                                  : Model.BannerImageUrl)" />
 
-    <!-- HERO -->
-    <section class="rdt-hero">
-        <div class="rdt-hero-left">
-            <h1 class="rdt-title">@Model.Name</h1>
+    <a href="#reviews" class="hero-rating">
+        <i class="bi bi-star-fill"></i>
+        5
+        <span>(1 ревю)</span>
+    </a>
+</div>
 
-            <div class="rdt-meta">
-                <div class="rdt-rating">
-                    <span class="rdt-rating-badge">
-                        ⭐ @(Model.ReviewsCount == 0 ? "—" : $"{Model.AvgRating:0.0}/5")
-                    </span>
-                    <span class="rdt-rating-count">
-                        (@Model.ReviewsCount reviews)
-                    </span>
+
+<div class="restaurant-card">
+
+    <div class="restaurant-header">
+
+        <div class="restaurant-left">
+
+            <div class="restaurant-logo">
+                <img src="@(string.IsNullOrEmpty(Model.ImageUrl)
+                                                                      ? "/images/default-restaurant.png"
+                                                                      : Model.ImageUrl)" />
+            </div>
+
+            <div class="restaurant-main">
+
+                <h1>@Model.Name</h1>
+
+                <div class="restaurant-address">
+                    📍 @Model.Address
                 </div>
 
-                @if (!string.IsNullOrWhiteSpace(Model.Address))
-                {
-                    <div class="rdt-address">📍 @Model.Address</div>
-                }
+                <div class="restaurant-tags">
+                    <span class="tag cuisine">Ресторант</span>
+                    <span class="tag open">Отворено сега</span>
+                </div>
+
             </div>
 
-            <div class="rdt-actions">
-                <a asp-controller="Offers" asp-action="Index" class="rdt-btn rdt-btn-outline">
-                    ← Back to offers
-                </a>
-                <a asp-controller="Restaurant" asp-action="Index" class="rdt-btn rdt-btn-primary">
-                    View all restaurants
-                </a>
+        </div>
+
+
+        <div class="restaurant-actions">
+
+            <a class="btn dark">
+                ✉ Имейл
+            </a>
+
+            <a class="btn outline">
+                📞 Обади се
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="restaurant-info">
+
+        <div class="info-item">
+            <div class="icon">✉</div>
+            <div>
+                <label>БИЗНЕС ИМЕЙЛ</label>
+                <p>contact@restaurant.com</p>
             </div>
         </div>
 
-        <div class="rdt-hero-right">
-            <img class="rdt-image"
-                 src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/no-image.png" : Model.ImageUrl)"
-                 alt="@Model.Name" />
-        </div>
-    </section>
-
-    <!-- OFFERS -->
-    <section class="rdt-section">
-        <div class="rdt-section-header">
-            <h2>Active offers</h2>
-            <span class="rdt-muted">@Model.ActiveOffers.Count offer(s)</span>
+        <div class="info-item">
+            <div class="icon">📞</div>
+            <div>
+                <label>ТЕЛЕФОНЕН НОМЕР</label>
+                <p>+359 888 123 456</p>
+            </div>
         </div>
 
-        @if (!Model.ActiveOffers.Any())
-        {
-            <div class="rdt-empty">
-                No active offers available right now.
+        <div class="info-item">
+            <div class="icon">🌐</div>
+            <div>
+                <label>УЕБСАЙТ</label>
+                <p>www.restaurant.com</p>
             </div>
-        }
-        else
-        {
-            <div class="rdt-offers-grid">
-                @foreach (var offer in Model.ActiveOffers)
-                {
-                    <a asp-controller="Offers"
-                       asp-action="Details"
-                       asp-route-id="@offer.Id"
-                       class="rdt-offer-link">
-
-                        <article class="rdt-offer-card">
-                            <img class="rdt-offer-img"
-                                 src="@(string.IsNullOrEmpty(offer.ImageUrl) ? "/images/no-image.png" : offer.ImageUrl)"
-                                 alt="@offer.Title" />
-
-                            <div class="rdt-offer-body">
-                                <div class="rdt-offer-title">@offer.Title</div>
-                                <div class="rdt-offer-price">@offer.DiscountedPrice.ToString("F2") EUR</div>
-
-                                <div class="rdt-offer-stock">
-                                    @if (offer.QuantityAvailable <= 3)
-                                    {
-                                        <span class="rdt-stock-badge urgent">🔥 Almost gone: @offer.QuantityAvailable</span>
-                                    }
-                                    else if (offer.QuantityAvailable <= 5)
-                                    {
-                                        <span class="rdt-stock-badge low">Only @offer.QuantityAvailable left</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="rdt-muted">@offer.QuantityAvailable available</span>
-                                    }
-                                </div>
-                            </div>
-                        </article>
-
-                    </a>
-                }
-            </div>
-        }
-    </section>
-
-    <!-- REVIEWS -->
-    <section class="rdt-section">
-        <div class="rdt-section-header">
-            <h2>Latest reviews</h2>
-            <span class="rdt-muted">Last 5 reviews</span>
         </div>
 
-        @if (Model.LatestReviews == null || !Model.LatestReviews.Any())
-        {
-            <div class="rdt-empty">
-                No reviews yet.
-            </div>
-        }
-        else
-        {
-            <div class="rdt-reviews-grid">
-                @foreach (var r in Model.LatestReviews)
-                {
-                    <article class="rdt-review-card">
-
-                        <div class="rdt-review-top">
-                            <div class="rdt-review-author">@r.AuthorName</div>
-                            <div class="rdt-review-date">@r.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")</div>
-                        </div>
-
-                        <div class="rdt-stars" aria-label="Rating @r.Rating out of 5">
-                            @for (int i = 1; i <= 5; i++)
-                            {
-                                <span class="rdt-star @(i <= r.Rating ? "filled" : "")">★</span>
-                            }
-                        </div>
-
-                        @if (!string.IsNullOrWhiteSpace(r.Comment))
-                        {
-                            <div class="rdt-review-text">“@r.Comment”</div>
-                        }
-                        else
-                        {
-                            <div class="rdt-review-text rdt-muted">No comment.</div>
-                        }
-
-                    </article>
-                }
-            </div>
-        }
-    </section>
+    </div>
 
 </div>
+
+
+
+<div class="restaurant-stats">
+
+    <div class="stat stat-yellow">
+        <i class="bi bi-chat-left-text stat-icon"></i>
+        <div class="stat-number">@Model.ReviewsCount</div>
+        <div class="stat-label">Общо ревюта</div>
+    </div>
+
+    <div class="stat stat-green">
+        <i class="bi bi-star stat-icon"></i>
+        <div class="stat-number">@Model.AvgRating</div>
+        <div class="stat-label">Рейтинг</div>
+    </div>
+
+    <div class="stat stat-pink">
+        <i class="bi bi-ticket-perforated stat-icon"></i>
+        <div class="stat-number">@Model.ActiveOffers.Count</div>
+        <div class="stat-label">Активни оферти</div>
+    </div>
+
+    <div class="stat stat-blue">
+        <i class="bi bi-box-seam stat-icon"></i>
+        <div class="stat-number">0</div>
+        <div class="stat-label">Завършени поръчки</div>
+    </div>
+
+</div>
+
+
+
+<div class="offers-section">
+
+    <div class="section-header">
+        <h2 class="section-title">
+            Налични оферти
+        </h2>
+
+        <span class="section-subtitle">
+            Спасена прясна храна от изхвърляне
+        </span>
+    </div>
+
+    <div class="offers-grid">
+
+        @foreach (var offer in Model.ActiveOffers)
+        {
+            var discount = (int)Math.Round(
+            (1 - (offer.DiscountedPrice / offer.OriginalPrice)) * 100
+            );
+
+            <div class="offer-card">
+
+                <div class="offer-image">
+
+                    <img src="@offer.ImageUrl" />
+
+                    <span class="discount-badge">
+                        -@discount%
+                    </span>
+
+                </div>
+
+                <div class="offer-content">
+
+                    <h3 class="offer-title">
+                        @offer.Title
+                    </h3>
+
+                    <div class="offer-prices">
+
+                        <span class="price-old">
+                            @offer.OriginalPrice €
+                        </span>
+
+                        <span class="price-new">
+                            @offer.DiscountedPrice €
+                        </span>
+
+                    </div>
+
+                    <div class="offer-meta">
+
+                        <span class="offer-stock">
+                            <i class="bi bi-box"></i>
+                            Остават @offer.QuantityAvailable
+                        </span>
+
+                        <span class="offer-countdown"
+                              data-end="@offer.EndsAt.ToString("o")">
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+        }
+
+    </div>
+
+</div>
+
+@if (Model.LatestReviews.Any())
+{
+    <div id="reviews" class="reviews-section">
+
+        <div class="reviews-header">
+
+            <div class="reviews-title-group">
+
+                <h2 class="reviews-title">
+                    Какво казват клиентите
+                </h2>
+
+                <div class="reviews-rating">
+
+                    <i class="bi bi-star-fill"></i>
+                    <span>@Model.AvgRating</span>
+
+                    <span class="reviews-count">
+                        (@Model.ReviewsCount ревюта)
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="reviews-list">
+
+            @for (int i = 0; i < Model.LatestReviews.Count; i++)
+            {
+                var review = Model.LatestReviews[i];
+
+                <div class="review-card rating-@review.Rating review-item @(i >= 5 ? "hidden-review" : "")">
+
+                    <div class="review-top">
+
+                        <div class="review-stars">
+
+                            @for (int s = 0; s < review.Rating; s++)
+                            {
+                                <i class="bi bi-star-fill"></i>
+                            }
+
+                            @for (int s = review.Rating; s < 5; s++)
+                            {
+                                <i class="bi bi-star"></i>
+                            }
+
+                        </div>
+
+                        <span class="review-date">
+                            @review.CreatedAt.ToString("dd MMM yyyy")
+                        </span>
+
+                    </div>
+
+                    <p class="review-text">
+                        "@review.Comment"
+                    </p>
+
+                    <div class="review-footer">
+
+                        <div class="review-author">
+                            <i class="bi bi-person-circle"></i>
+                            @review.AuthorName
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+            @if (Model.LatestReviews.Count > 5)
+            {
+                <div class="reviews-show-more">
+
+                    <button id="showMoreReviews" class="show-more-btn">
+                        Покажи още ревюта
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+}
+
+@section Scripts {
+
+    <script>
+
+        function updateTimers(){
+
+            document.querySelectorAll(".offer-countdown").forEach(el=>{
+
+                const endDate=new Date(el.dataset.end);
+                const diff=endDate-new Date();
+
+                if(diff<=0){
+                    el.textContent="Изтекла оферта";
+                    el.className="offer-countdown countdown-danger";
+                    return;
+                }
+
+                const hours=Math.floor(diff/3600000);
+                const minutes=Math.floor((diff/60000)%60);
+
+                el.textContent=`Остават ${hours}ч ${minutes}м`;
+
+                el.classList.remove(
+                    "countdown-safe",
+                    "countdown-warning",
+                    "countdown-danger"
+                );
+
+                if(hours>=24) el.classList.add("countdown-safe");
+                else if(hours>=6) el.classList.add("countdown-warning");
+                else el.classList.add("countdown-danger");
+
+            });
+
+        }
+
+        updateTimers();
+        setInterval(updateTimers,60000);
+
+
+        /* SHOW MORE */
+
+        const btn=document.getElementById("showMoreReviews");
+
+        btn?.addEventListener("click",()=>{
+
+            document
+                .querySelectorAll(".hidden-review")
+                .forEach(el=>el.style.display="block");
+
+            btn.remove();
+
+        });
+
+    </script>
+
+}

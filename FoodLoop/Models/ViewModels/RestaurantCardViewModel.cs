@@ -8,6 +8,7 @@
 
         public string? Address { get; set; }
         public string? ImageUrl { get; set; }
+        public string? BannerImageUrl { get; set; }
 
         public double AvgRating { get; set; }
         public int ReviewsCount { get; set; }
