@@ -205,7 +205,114 @@ REVIEWS
     .review-row:last-child {
         border-bottom: none;
     }
+/* REVIEWS */
 
+.reviews-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.review-card {
+    background: white;
+    border-radius: 30px;
+    padding: 28px 34px;
+    box-shadow: 0 6px 25px rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.04);
+}
+
+.review-card-header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.review-restaurant {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.review-stars {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 18px;
+}
+
+.star {
+    color: #d1d5db;
+}
+
+    .star.filled {
+        color: #fbbf24;
+    }
+
+.review-rating-number {
+    margin-left: 6px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.review-comment {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #374151;
+    line-height: 1.5;
+}
+
+.review-date {
+    font-size: 13px;
+    color: #9ca3af;
+}
+
+.reviews-empty {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 16px;
+}
+
+.review-hidden {
+    display: none;
+}
+
+/* SHOW MORE REVIEWS BUTTON */
+
+.reviews-more-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 40px auto 0;
+    padding: 14px 28px;
+    background: rgba(255,255,255,0.65);
+    backdrop-filter: blur(6px);
+    border-radius: 999px;
+    border: 1px solid rgba(0,0,0,0.06);
+    font-size: 15px;
+    font-weight: 600;
+    color: #2f2f2f;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+    .reviews-more-btn i {
+        font-size: 18px;
+        transition: transform .25s ease;
+    }
+
+    .reviews-more-btn:hover {
+        background: white;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    }
+
+    .reviews-more-btn.open i {
+        transform: rotate(180deg);
+    }
 
 /* =================================
 ORDERS BOX

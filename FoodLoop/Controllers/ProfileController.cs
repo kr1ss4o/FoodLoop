@@ -24,14 +24,14 @@ namespace FoodLoop.Controllers
             _environment = environment;
         }
 
-        public async Task<IActionResult> Index(int reviewsPage = 1)
+        public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
                 return RedirectToAction("Login", "Account");
 
             // =========================
-            // OLD CALCULATIONS (НЕ ГИ ПИПАМЕ)
+            // OLD CALCULATIONS
             // =========================
             var totalOrders = await _context.Reservations
                 .Where(r => r.UserId == user.Id &&
@@ -76,24 +76,13 @@ namespace FoodLoop.Controllers
             .ToListAsync();
 
             // =========================
-            // REVIEWS (3 per page)
+            // REVIEWS
             // =========================
-            const int pageSize = 3;
-            if (reviewsPage < 1) reviewsPage = 1;
 
-            var reviewsQuery = _context.Reviews
+            var reviews = await _context.Reviews
                 .AsNoTracking()
                 .Where(r => r.Reservation.UserId == user.Id)
-                .OrderByDescending(r => r.CreatedAt);
-
-            var totalReviews = await reviewsQuery.CountAsync();
-            var totalPages = (int)Math.Ceiling(totalReviews / (double)pageSize);
-            if (totalPages == 0) totalPages = 1;
-            if (reviewsPage > totalPages) reviewsPage = totalPages;
-
-            var reviews = await reviewsQuery
-                .Skip((reviewsPage - 1) * pageSize)
-                .Take(pageSize)
+                .OrderByDescending(r => r.CreatedAt)
                 .Select(r => new UserReviewDto
                 {
                     ReviewId = r.Id,
@@ -118,19 +107,14 @@ namespace FoodLoop.Controllers
 
                 RecentOrders = recentOrders,
                 Reviews = reviews,
-                ReviewsPage = reviewsPage,
-                TotalReviewPages = totalPages,
 
                 IsRestaurant = false,
 
-                // Edit profile modal
                 EditProfileModal = new EditProfileViewModel
                 {
                     FullName = user.FullName,
                     PhoneNumber = user.PhoneNumber ?? "",
                     IsRestaurant = false,
-
-                    // ако искаш да показва текущата снимка в preview
                     ProfileImageUrl = user.ProfileImageUrl
                 }
             };

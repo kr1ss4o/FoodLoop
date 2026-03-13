@@ -88,33 +88,61 @@
         <h3>Моите ревюта</h3>
     </div>
 
-    <div class="reviews-box">
+    <div class="reviews-container">
 
         @if (!Model.Reviews.Any())
         {
             <div class="reviews-empty">
-                Нямате ревюта
+                Все още нямате оставени ревюта.
             </div>
         }
         else
         {
+            var index = 0;
+
             foreach (var review in Model.Reviews)
             {
-                <div class="review-row">
+                var hiddenClass = index >= 3 ? "review-hidden" : "";
 
-                    <div class="review-restaurant">
-                        @review.RestaurantName
+                <div class="review-card @hiddenClass">
+
+                    <div class="review-card-header">
+
+                        <div class="review-restaurant">
+                            @review.RestaurantName
+                        </div>
+
+                        <div class="review-stars">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <span class="star @(i <= review.Rating ? "filled" : "")">★</span>
+                            }
+                        </div>
+
                     </div>
 
-                    <div class="review-rating">
-                        ⭐ @review.Rating
-                    </div>
+                    @if (!string.IsNullOrWhiteSpace(review.Comment))
+                    {
+                        <div class="review-comment">
+                            @review.Comment
+                        </div>
+                    }
 
-                    <div class="review-comment">
-                        @review.Comment
+                    <div class="review-date">
+                        @review.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")
                     </div>
 
                 </div>
+
+                index++;
+            }
+
+            if (Model.Reviews.Count() > 3)
+            {
+                <button class="reviews-more-btn" id="reviewsMoreBtn">
+                    <span>Покажи още</span>
+                    <i class="bi bi-chevron-down"></i>
+                </button>
             }
         }
 
@@ -152,7 +180,7 @@
                     <div class="order-content">
 
                         <div class="order-title">
-                            Поръчка #@order.Id
+                            Поръчка #@order.Id.ToString()[..6]
                         </div>
 
                         <div class="order-meta">
@@ -254,7 +282,11 @@
 
     <script>
 
-                document.querySelectorAll(".js-order-toggle").forEach(row => {
+        // =========================
+        // ORDER TOGGLE
+        // =========================
+
+        document.querySelectorAll(".js-order-toggle").forEach(row => {
 
             row.addEventListener("click", () => {
 
@@ -267,6 +299,48 @@
             })
 
         })
+
+
+        // =========================
+        // REVIEWS TOGGLE
+        // =========================
+
+                const reviewsBtn = document.getElementById("reviewsMoreBtn")
+
+        if (reviewsBtn) {
+
+            let opened = false
+
+            reviewsBtn.addEventListener("click", () => {
+
+                const hiddenReviews = document.querySelectorAll(".review-hidden")
+
+                if (!opened) {
+
+                    hiddenReviews.forEach(r => {
+                        r.style.display = "block"
+                    })
+
+                    reviewsBtn.classList.add("open")
+                    reviewsBtn.querySelector("span").textContent = "Скрий ревюта"
+
+                    opened = true
+
+                } else {
+
+                    hiddenReviews.forEach(r => {
+                        r.style.display = "none"
+                    })
+
+                    reviewsBtn.classList.remove("open")
+                    reviewsBtn.querySelector("span").textContent = "Покажи още"
+
+                    opened = false
+                }
+
+            })
+
+        }
 
     </script>
 

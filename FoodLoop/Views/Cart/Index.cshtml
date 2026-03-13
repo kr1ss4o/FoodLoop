@@ -413,6 +413,18 @@
 
                         @if (h.Status == ReservationStatus.Finished)
                         {
+                            var finishedLog = h.StatusLogs
+                            .Where(l => l.NewStatus == ReservationStatus.Finished)
+                            .OrderByDescending(l => l.ChangedAt)
+                            .FirstOrDefault();
+
+                            bool reviewExpired = true;
+
+                            if (finishedLog != null)
+                            {
+                                reviewExpired = finishedLog.ChangedAt.AddDays(3) < DateTime.UtcNow;
+                            }
+
                             <div class="mt-3">
 
                                 @if (h.Review != null)
@@ -456,7 +468,7 @@
 
                                     </div>
                                 }
-                                else
+                                else if (!reviewExpired)
                                 {
                                     <a asp-controller="Reviews"
                                        asp-action="Create"
@@ -464,6 +476,12 @@
                                        class="btn btn-sm btn-review">
                                         Остави отзив
                                     </a>
+                                }
+                                else
+                                {
+                                    <div class="review-status expired">
+                                        ⏳ Времето за ревю изтече
+                                    </div>
                                 }
 
                             </div>

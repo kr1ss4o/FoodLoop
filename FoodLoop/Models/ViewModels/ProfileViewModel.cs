@@ -17,8 +17,6 @@ namespace FoodLoop.Models.ViewModels
 
         // Reviews
         public List<UserReviewDto> Reviews { get; set; } = new();
-        public int ReviewsPage { get; set; }
-        public int TotalReviewPages { get; set; }
 
         // Orders
         public List<ReservationSummaryDto> RecentOrders { get; set; } = new();
