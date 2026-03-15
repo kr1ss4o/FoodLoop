@@ -335,50 +335,93 @@ META
     transition: all .25s ease;
 }
 
+.category-icon {
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
 .category-card:hover .category-icon {
     transform: translateY(-4px);
 }
 
 /* COLORS */
 
-.pizza {
-    background: #f3e3c9;
-    color: #c55b2c;
+.asian {
+    background: #f1e8ff;
+    color: #6a4bc2;
 }
 
-.healthy {
-    background: #dff1e3;
-    color: #3c8b5a;
+.burger {
+    background: #ffe7d6;
+    color: #d35400;
 }
 
-.breakfast {
-    background: #f2ecc2;
-    color: #b4942f;
+.fastfood {
+    background: #ffe6e6;
+    color: #d64545;
 }
 
-.meat {
-    background: #ead9d6;
-    color: #b63e2f;
+.dinner {
+    background: #e8ecff;
+    color: #4c63d2;
 }
 
-.seafood {
-    background: #dfe8f6;
-    color: #3c61c9;
+.grill {
+    background: #ffe3e3;
+    color: #c0392b;
+}
+
+.lunch {
+    background: #fff3d6;
+    color: #c98b1a;
+}
+
+.pasta {
+    background: #f9efd9;
+    color: #c57a2c;
+}
+
+.salads {
+    background: #e6f6ea;
+    color: #2f8f4e;
+}
+
+.sushi {
+    background: #f4f4f4;
+    color: #555;
+}
+
+.drinks {
+    background: #e6f3ff;
+    color: #2f78c4;
 }
 
 .dessert {
-    background: #ebe6f6;
-    color: #7c4bc7;
+    background: #efe7ff;
+    color: #7a5cc9;
 }
 
-.grocery {
-    background: #dff0e5;
-    color: #2d8b5b;
+.breakfast {
+    background: #fff2d9;
+    color: #c58a1f;
 }
 
-.icecream {
-    background: #f3e0ea;
-    color: #c44779;
+.healthy {
+    background: #e5f7ea;
+    color: #3b9b63;
+}
+
+.seafood {
+    background: #e6f1ff;
+    color: #3a6edb;
+}
+
+.pizza {
+    background: #ffe8dc;
+    color: #d35400;
+}
+
+.category-icon {
+    font-size: 30px;
 }
 
 /* RESPONSIVE */
