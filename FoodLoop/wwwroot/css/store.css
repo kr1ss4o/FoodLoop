@@ -4,6 +4,15 @@
     background-image: url("https://www.transparenttextures.com/patterns/food.png");
 }
 
+.card-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+    .card-link:hover {
+        text-decoration: none;
+        color: inherit;
+    }
 
 /* HERO */
 

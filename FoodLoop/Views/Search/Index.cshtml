@@ -1,68 +1,152 @@
 ﻿@model FoodLoop.Models.ViewModels.SearchViewModel
 <link rel="stylesheet" href="~/css/search.css" />
 
+@{
+    ViewData["FullWidth"] = true;
+}
+
 <div class="search-page">
+
     <div class="search-container">
 
-        <!-- HEADER -->
+        <!-- ===================== -->
+        <!-- SEARCH HEADER -->
+        <!-- ===================== -->
+
         <div class="search-header">
+
             <form asp-action="Index" method="get" class="search-form">
-                <input type="text"
-                       name="query"
-                       value="@Model.Query"
-                       class="search-input"
-                       placeholder="Търси оферти или ресторанти..." />
-                <button class="search-btn">Търси</button>
-                <select name="sort" class="search-sort">
-                    <option value="">Сортирай</option>
-                    <option value="expiring_soon">Изтичат скоро</option>
-                    <option value="rating_desc">Най-висок рейтинг</option>
-                    <option value="price_asc">Цена ↑</option>
-                    <option value="price_desc">Цена ↓</option>
-                    <option value="newest">Най-нови</option>
-                </select>
+
+                <div class="search-input-wrap">
+
+                    <i class="bi bi-search search-icon"></i>
+
+                    <input type="text"
+                           name="query"
+                           value="@Model.Query"
+                           class="search-input"
+                           placeholder="Търси оферти или ресторанти..." />
+
+                </div>
+
+                <button class="search-btn">
+                    Търси
+                </button>
+
+                <div class="search-sort-wrap">
+
+                    <i class="bi bi-sliders search-sort-icon"></i>
+
+                    <select name="sort" class="search-sort">
+
+                        <option value="">Сортирай</option>
+                        <option value="expiring_soon">Изтичат скоро</option>
+                        <option value="rating_desc">Най-висок рейтинг</option>
+                        <option value="price_asc">Цена ↑</option>
+                        <option value="price_desc">Цена ↓</option>
+                        <option value="newest">Най-нови</option>
+
+                    </select>
+
+                </div>
+
             </form>
+
+            <!-- RESULTS COUNT -->
+            @if (Model.OffersCount == 0 && Model.RestaurantsCount == 0)
+            {
+                <div class="search-results-count">
+                    Няма намерени резултати
+                </div>
+            }
+            else
+            {
+                <div class="search-results-count">
+                    Намерени @Model.OffersCount оферти и @Model.RestaurantsCount ресторанта
+                </div>
+            }
+
         </div>
 
+
+        <!-- ===================== -->
         <!-- OFFERS -->
+        <!-- ===================== -->
         @if (Model.Offers.Any())
         {
             <div class="search-section">
-                <h2>Оферти</h2>
+
+                <div class="search-section-header">
+
+                    <h2 class="search-title">
+                        Оферти
+                    </h2>
+
+                    <p class="search-subtitle">
+                        Намери намалени предложения от ресторанти близо до теб.
+                    </p>
+
+                </div>
 
                 <div class="search-grid">
+
                     @foreach (var offer in Model.Offers)
                     {
                         @await Html.PartialAsync("_OfferCard", offer)
                     }
+
                 </div>
+
             </div>
         }
 
+
+        <!-- ===================== -->
         <!-- RESTAURANTS -->
+        <!-- ===================== -->
         @if (Model.Restaurants.Any())
         {
             <div class="search-section">
-                <h2>Ресторанти</h2>
+
+                <div class="search-section-header">
+
+                    <h2 class="search-title">
+                        Ресторанти
+                    </h2>
+
+                    <p class="search-subtitle">
+                        Открий ресторанти, които предлагат оферти в FoodLoop.
+                    </p>
+
+                </div>
 
                 <div class="search-grid">
+
                     @foreach (var restaurant in Model.Restaurants)
                     {
                         @await Html.PartialAsync("_RestaurantCard", restaurant)
                     }
+
                 </div>
+
             </div>
         }
 
     </div>
+
 </div>
 
+
 @section Scripts {
+
     <script>
+
         document.querySelectorAll(".countdown").forEach(el => {
+
             const end = new Date(el.dataset.end);
 
             function update() {
+
                 const now = new Date();
                 const diff = end - now;
 
@@ -79,6 +163,9 @@
 
             update();
             setInterval(update, 60000);
+
         });
+
     </script>
+
 }

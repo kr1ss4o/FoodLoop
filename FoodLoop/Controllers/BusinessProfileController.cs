@@ -29,7 +29,7 @@ namespace FoodLoop.Controllers
 
             if (user == null)
             {
-                TempData["Error"] = "User not found.";
+                TempData["Error"] = "Не беше намерен човек.";
                 return RedirectToAction("Login", "Account");
             }
 
@@ -38,7 +38,7 @@ namespace FoodLoop.Controllers
 
             if (restaurant == null)
             {
-                TempData["Error"] = "Restaurant not found.";
+                TempData["Error"] = "Не  беше намерен ресторант.";
                 return RedirectToAction("Index", "Home");
             }
 
@@ -159,7 +159,7 @@ namespace FoodLoop.Controllers
 
             if (!passwordValid)
             {
-                TempData["Error"] = "Wrong password. Could not save the changes.";
+                TempData["Error"] = "Грешна парола. Промените не бяха запазени.";
                 return RedirectToAction("Index");
             }
 
@@ -217,7 +217,7 @@ namespace FoodLoop.Controllers
             await _userManager.UpdateAsync(user);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Profile updated successfully.";
+            TempData["Success"] = "Профилът Ви бе редактиран успешно.";
 
             return RedirectToAction("Index");
         }

@@ -5,7 +5,11 @@
 @{
     ViewData["Title"] = "Маркетплейс";
     ViewData["FullWidth"] = true;
+
     var trending = ViewBag.TrendingRestaurants as List<Restaurant>;
+    var trendingOffers = ViewBag.TrendingOffers as List<Offer>;
+
+    var restaurantRatings = ViewBag.RestaurantRatings as Dictionary<Guid, double>;
 }
 
 <link rel="stylesheet" href="~/css/store.css" />
@@ -186,10 +190,14 @@
 
                     @foreach (var r in trending)
                     {
-                        <a asp-controller="Restaurants"
-                           asp-action="Details"
-                           asp-route-id="@r.Id"
-                           class="restaurant-card">
+                        var rating = restaurantRatings != null && restaurantRatings.ContainsKey(r.Id)
+                            ? restaurantRatings[r.Id]
+                            : r.Rating;
+
+                        <a asp-controller="Restaurant"
+                               asp-action="Details"
+                               asp-route-id="@r.Id"
+                               class="restaurant-card card-link">
 
                             <div class="restaurant-image">
 
@@ -197,7 +205,7 @@
 
                                 <div class="restaurant-rating">
                                     <i class="bi bi-star-fill"></i>
-                                    4.8
+                                    @rating.ToString("0.0")
                                 </div>
 
                             </div>
@@ -242,11 +250,6 @@
 
 
 <!-- TRENDING OFFERS -->
-@{
-    var trendingOffers = ViewBag.TrendingOffers as List<Offer>;
-    var ratings = ViewBag.OfferRatings as Dictionary<Guid, double>;
-}
-
 @if (trendingOffers != null && trendingOffers.Any())
 {
     <section class="offers-section">
@@ -262,11 +265,14 @@
 
                 @foreach (var offer in trendingOffers)
                 {
-                    var rating = ratings != null && ratings.ContainsKey(offer.Id)
-                    ? ratings[offer.Id]
-                    : 4.5;
+                    var rating = restaurantRatings != null && restaurantRatings.ContainsKey(offer.RestaurantId)
+                        ? restaurantRatings[offer.RestaurantId]
+                        : offer.Restaurant?.Rating ?? 4.5;
 
-                    <div class="offer-card">
+                    <a asp-controller="Offers"
+                           asp-action="Details"
+                           asp-route-id="@offer.Id"
+                           class="offer-card card-link">
 
                         <div class="offer-image">
                             <img src="@offer.ImageUrl">
@@ -306,7 +312,7 @@
 
                         </div>
 
-                    </div>
+                    </a>
                 }
 
             </div>

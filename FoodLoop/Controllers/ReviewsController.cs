@@ -40,11 +40,11 @@ namespace FoodLoop.Controllers
 
             // 2️⃣ Проверка: Finished
             if (reservation.Status != ReservationStatus.Finished)
-                return BadRequest("Reservation is not finished.");
+                return BadRequest("Поръчката не е завършена.");
 
             // 3️⃣ Проверка: вече има review
             if (reservation.Review != null)
-                return BadRequest("Review already submitted.");
+                return BadRequest("Вече има изпратено ревю.");
 
             // 4️⃣ Проверка: 3 дни срок
             var finishedLog = reservation.StatusLogs
@@ -53,10 +53,10 @@ namespace FoodLoop.Controllers
                 .FirstOrDefault();
 
             if (finishedLog == null)
-                return BadRequest("Invalid reservation state.");
+                return BadRequest("Невалидна фаза на поръчката.");
 
             if (finishedLog.ChangedAt.AddDays(3) < DateTime.UtcNow)
-                return BadRequest("Review period expired.");
+                return BadRequest("Периода за ревю изтече.");
 
             ViewBag.ReservationId = reservation.Id;
             return View();
@@ -93,10 +93,10 @@ namespace FoodLoop.Controllers
 
             if (finishedLog == null ||
                 finishedLog.ChangedAt.AddDays(3) < DateTime.UtcNow)
-                return BadRequest("Review period expired.");
+                return BadRequest("Периода за ревю изтече.");
 
             if (rating < 1 || rating > 5)
-                return BadRequest("Invalid rating.");
+                return BadRequest("Невалидна оценка/рейтинг.");
 
             var review = new Review
             {

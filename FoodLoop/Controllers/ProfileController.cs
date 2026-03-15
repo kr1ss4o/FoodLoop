@@ -148,7 +148,7 @@ namespace FoodLoop.Controllers
 
             if (!passwordValid)
             {
-                TempData["Error"] = "Wrong password. Could not save the changes.";
+                TempData["Error"] = "Грешна парола. Промените не бяха запазени.";
                 return RedirectToAction("Index");
             }
 

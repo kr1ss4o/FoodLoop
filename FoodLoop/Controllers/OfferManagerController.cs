@@ -118,7 +118,7 @@ namespace FoodLoop.Controllers
 
             await UpdateTags(model.Offer.Id, model.SelectedTags);
 
-            TempData["Success"] = "Offer created successfully!";
+            TempData["Success"] = "Офертата бе създадена успешно.";
             return RedirectToAction("Index");
         }
 
@@ -202,7 +202,7 @@ namespace FoodLoop.Controllers
 
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Offer updated successfully!";
+            TempData["Success"] = "Офертата беше обновена успешно.";
             return RedirectToAction("Index");
         }
 
@@ -232,7 +232,7 @@ namespace FoodLoop.Controllers
 
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Offer deleted successfully!";
+            TempData["Success"] = "Офертата беше изтрита успешно.";
             return RedirectToAction("Index");
         }
 

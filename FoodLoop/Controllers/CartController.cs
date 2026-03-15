@@ -252,7 +252,7 @@ namespace FoodLoop.Controllers
             {
                 if (string.IsNullOrWhiteSpace(RecipientFullName))
                 {
-                    TempData["Error"] = "Recipient name is required.";
+                    TempData["Error"] = "Изисква се име на получател.";
                     return RedirectToAction("Index");
                 }
 
@@ -260,7 +260,7 @@ namespace FoodLoop.Controllers
                     RecipientPhone.Length != 10 ||
                     !RecipientPhone.All(char.IsDigit))
                 {
-                    TempData["Error"] = "Phone must be exactly 10 digits.";
+                    TempData["Error"] = "Телефонът трябва да е дълъг 10 символа.";
                     return RedirectToAction("Index");
                 }
             }
@@ -291,13 +291,13 @@ namespace FoodLoop.Controllers
 
                     if (offer == null)
                     {
-                        TempData["Error"] = "Offer not found.";
+                        TempData["Error"] = "Офертата не бе намерена.";
                         return RedirectToAction("Index");
                     }
 
                     if (offer.QuantityAvailable < item.Quantity)
                     {
-                        TempData["Error"] = $"Not enough stock for {offer.Title}";
+                        TempData["Error"] = $"Недостатъчна наличност на {offer.Title}.";
                         return RedirectToAction("Index");
                     }
 
@@ -324,13 +324,13 @@ namespace FoodLoop.Controllers
                 await _context.SaveChangesAsync();
                 await tx.CommitAsync();
 
-                TempData["Success"] = "Order placed successfully!";
+                TempData["Success"] = "Поръчката бе направена успешно.";
                 return RedirectToAction("Index");
             }
             catch
             {
                 await tx.RollbackAsync();
-                TempData["Error"] = "Something went wrong.";
+                TempData["Error"] = "Нещо се обърка.";
                 return RedirectToAction("Index");
             }
         }

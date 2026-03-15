@@ -35,7 +35,7 @@ namespace FoodLoop.Controllers
 
             if (restaurant == null)
             {
-                TempData["Error"] = "Restaurant not found.";
+                TempData["Error"] = "Не беше намерен ресторант..";
                 return RedirectToAction("Login", "Account");
             }
 
@@ -114,7 +114,7 @@ namespace FoodLoop.Controllers
 
             if (restaurant == null)
             {
-                TempData["Error"] = "Restaurant not found.";
+                TempData["Error"] = "Не беше намерен ресторант.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -125,7 +125,7 @@ namespace FoodLoop.Controllers
 
             if (reservation == null)
             {
-                TempData["Error"] = "Order not found.";
+                TempData["Error"] = "Не беше намерена поръчка.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -135,7 +135,7 @@ namespace FoodLoop.Controllers
 
             if (!CanTransition(reservation, newStatus))
             {
-                TempData["Error"] = "Invalid status transition.";
+                TempData["Error"] = "Невалидна промяна на статус.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -177,16 +177,16 @@ namespace FoodLoop.Controllers
             catch
             {
                 await transaction.RollbackAsync();
-                TempData["Error"] = "Unexpected error occurred.";
+                TempData["Error"] = "Неочаквана грешка.";
                 return RedirectToAction(nameof(Index));
             }
 
             TempData["Success"] = newStatus switch
             {
-                ReservationStatus.Confirmed => "Order confirmed!",
-                ReservationStatus.OutForDelivery => "Order is now out for delivery!",
-                ReservationStatus.Finished => "Order finished!",
-                ReservationStatus.Canceled => "Order canceled!",
+                ReservationStatus.Confirmed => "Поръчката бе потвърдена.",
+                ReservationStatus.OutForDelivery => "Поръчката е вече на път.",
+                ReservationStatus.Finished => "Поръчката бе завършена.",
+                ReservationStatus.Canceled => "Поръчката бе отказана.",
                 _ => "Updated."
             };
 

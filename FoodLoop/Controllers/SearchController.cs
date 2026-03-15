@@ -25,13 +25,17 @@ namespace FoodLoop.Controllers
             const int pageSize = 6;
 
             IQueryable<Offer> offersQuery = _context.Offers
-            .AsNoTracking()
-            .Include(o => o.Restaurant)
-            .Include(o => o.Category);
+                .AsNoTracking()
+                .Include(o => o.Restaurant)
+                .Include(o => o.Category);
 
             IQueryable<Restaurant> restaurantsQuery = _context.Restaurants
-            .AsNoTracking()
-            .Include(r => r.Offers);
+                .AsNoTracking()
+                .Include(r => r.Offers);
+
+            // =============================
+            // SEARCH
+            // =============================
 
             if (!string.IsNullOrWhiteSpace(query))
             {
@@ -40,30 +44,28 @@ namespace FoodLoop.Controllers
                 if (!string.IsNullOrEmpty(normalized))
                 {
                     offersQuery = offersQuery.Where(o =>
-                        EF.Functions.Like(o.Title.ToLower(), $"%{normalized}%") ||
-                        EF.Functions.Like(o.Restaurant.Name.ToLower(), $"%{normalized}%") ||
-                        EF.Functions.Like(o.Category.Name.ToLower(), $"%{normalized}%"));
+                        o.Title.ToLower().Contains(normalized) ||
+                        o.Restaurant.Name.ToLower().Contains(normalized) ||
+                        o.Category.Name.ToLower().Contains(normalized));
 
                     restaurantsQuery = restaurantsQuery
-                        .Where(r => EF.Functions.Like(r.Name.ToLower(), $"%{normalized}%"));
+                        .Where(r => r.Name.ToLower().Contains(normalized));
                 }
-
-
-                offersQuery = offersQuery.Where(o =>
-                    o.Title.ToLower().Contains(normalized) ||
-                    o.Restaurant.Name.ToLower().Contains(normalized) ||
-                    o.Category.Name.ToLower().Contains(normalized));
-
-                restaurantsQuery = restaurantsQuery
-                    .Where(r => r.Name.ToLower().Contains(normalized));
-
             }
+
+            // =============================
+            // CATEGORY FILTER
+            // =============================
 
             if (categoryId.HasValue)
             {
                 offersQuery = offersQuery
                     .Where(o => o.CategoryId == categoryId);
             }
+
+            // =============================
+            // SORTING
+            // =============================
 
             offersQuery = (sort ?? "").ToLower() switch
             {
@@ -85,12 +87,67 @@ namespace FoodLoop.Controllers
                     .OrderByDescending(o => o.CreatedAt)
             };
 
-            var (offers, totalPages) =
+            // =============================
+            // COUNTS (за текста "намерени")
+            // =============================
+
+            var offersCount = await offersQuery.CountAsync();
+            var restaurantsCount = await restaurantsQuery.CountAsync();
+
+            // =============================
+            // PAGINATION
+            // =============================
+
+            var (offers, totalOfferPages) =
                 await offersQuery.ToPagedListAsync(page, pageSize);
 
-            var restaurants = await restaurantsQuery
-                .Take(6)
-                .ToListAsync();
+            var (restaurants, totalRestaurantPages) =
+                await restaurantsQuery.ToPagedListAsync(page, pageSize);
+
+            // =============================
+            // CALCULATE RESTAURANT RATINGS
+            // =============================
+
+            var restaurantRatings = await _context.Reviews
+                .Include(r => r.Reservation)
+                    .ThenInclude(res => res.Items)
+                        .ThenInclude(i => i.Offer)
+                .SelectMany(r => r.Reservation.Items.Select(i => new
+                {
+                    RestaurantId = i.Offer.RestaurantId,
+                    Rating = r.Rating
+                }))
+                .GroupBy(x => x.RestaurantId)
+                .Select(g => new
+                {
+                    RestaurantId = g.Key,
+                    Rating = g.Average(x => x.Rating)
+                })
+                .ToDictionaryAsync(x => x.RestaurantId, x => x.Rating);
+
+            // =============================
+            // APPLY RATINGS
+            // =============================
+
+            foreach (var offer in offers)
+            {
+                if (restaurantRatings.TryGetValue(offer.RestaurantId, out var rating))
+                {
+                    offer.Restaurant.Rating = rating;
+                }
+            }
+
+            foreach (var restaurant in restaurants)
+            {
+                if (restaurantRatings.TryGetValue(restaurant.Id, out var rating))
+                {
+                    restaurant.Rating = rating;
+                }
+            }
+
+            // =============================
+            // VIEWMODEL
+            // =============================
 
             var vm = new SearchViewModel
             {
@@ -98,9 +155,13 @@ namespace FoodLoop.Controllers
                 Offers = offers,
                 Restaurants = restaurants,
                 CurrentPage = page,
-                TotalPages = totalPages,
+                TotalPages = totalOfferPages,
                 Sort = sort,
-                CategoryId = categoryId
+                CategoryId = categoryId,
+
+                OffersCount = offersCount,
+                RestaurantsCount = restaurantsCount,
+                RestaurantPages = totalRestaurantPages
             };
 
             return View(vm);

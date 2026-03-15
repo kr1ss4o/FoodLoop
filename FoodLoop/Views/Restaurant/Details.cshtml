@@ -84,10 +84,10 @@
         </div>
 
         <div class="info-item">
-            <div class="icon">🌐</div>
+            <div class="icon">🚚</div>
             <div>
-                <label>УЕБСАЙТ</label>
-                <p>www.restaurant.com</p>
+                <label>ЦЕНА НА ДОСТАВКА:</label>
+                <p>2.00 €</p>
             </div>
         </div>
 
@@ -147,7 +147,10 @@
             (1 - (offer.DiscountedPrice / offer.OriginalPrice)) * 100
             );
 
-            <div class="offer-card">
+            <a asp-controller="Offers"
+                   asp-action="Details"
+                   asp-route-id="@offer.Id"
+                   class="offer-card card-link">
 
                 <div class="offer-image">
 
@@ -186,14 +189,16 @@
 
                         <span class="offer-countdown"
                               data-end="@offer.EndsAt.ToString("o")">
+                            <i class="bi bi-hourglass-split"></i>
                         </span>
 
                     </div>
 
                 </div>
 
-            </div>
+            </a>
         }
+
 
     </div>
 
@@ -288,3 +293,51 @@
 
     </div>
 }
+
+<script>
+    function updateOfferTimers(){
+
+        const timers = document.querySelectorAll(".offer-countdown");
+
+        timers.forEach(timer => {
+
+            const end = new Date(timer.dataset.end);
+            const now = new Date();
+
+            const diff = end - now;
+
+            if(diff <= 0){
+
+                timer.className = "offer-countdown expired";
+                timer.innerHTML = '<i class="bi bi-hourglass"></i> Изтекла';
+
+                return;
+            }
+
+            const hours = Math.floor(diff / 1000 / 60 / 60);
+            const minutes = Math.floor((diff / 1000 / 60) % 60);
+
+            let text = `${hours}ч ${minutes}м`;
+
+            timer.classList.remove("urgent","warning","safe");
+
+            if(hours < 1){
+                timer.classList.add("urgent");
+            }
+            else if(hours < 3){
+                timer.classList.add("warning");
+            }
+            else{
+                timer.classList.add("safe");
+            }
+
+            timer.innerHTML =
+            `<i class="bi bi-hourglass-split"></i> ${text}`;
+
+        });
+
+    }
+
+    updateOfferTimers();
+    setInterval(updateOfferTimers,60000);
+</script>

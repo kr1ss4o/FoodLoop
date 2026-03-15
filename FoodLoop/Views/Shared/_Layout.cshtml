@@ -27,7 +27,8 @@
     controller == "AdminRestaurants" ||
     controller == "AdminOffers" ||
     controller == "AdminReservations" ||
-    controller == "AdminReviews";
+    controller == "AdminReviews" ||
+    controller == "Account";
 
 }
 
@@ -49,12 +50,17 @@
     <!-- GLOBAL STYLES -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/FoodLoop.styles.css" asp-append-version="true" />
+
+    <!-- Design for login / register -->
     <link rel="stylesheet" href="~/css/auth.css" />
+
+    <!-- Design for the edit profile modal -->
     <link rel="stylesheet" href="~/css/edit-profile-modal.css" />
 
     <!-- Special admin design -->
     @if (User.IsInRole("Admin"))
     {
+        // Design for the whole admin panel
         <link rel="stylesheet" href="~/css/admin.css" />
     }
 

@@ -44,7 +44,7 @@ namespace FoodLoop.Controllers
             var existingEmail = await _userManager.FindByEmailAsync(model.Email);
             if (existingEmail != null)
             {
-                ModelState.AddModelError("Email", "Email is already in use.");
+                ModelState.AddModelError("Email", "имейлът вече е зает");
                 return View(model);
             }
 
@@ -54,7 +54,7 @@ namespace FoodLoop.Controllers
 
             if (existingPhone != null)
             {
-                ModelState.AddModelError("Phone", "Phone number is already in use.");
+                ModelState.AddModelError("Phone", "Телефонът вече е зает.");
                 return View(model);
             }
 
@@ -110,12 +110,12 @@ namespace FoodLoop.Controllers
 
             if (!result.Succeeded)
             {
-                TempData["Error"] = "Invalid email or password.";
+                TempData["Error"] = "Невалиден имейл или парола.";
                 return View(model);
             }
 
             // Successful login
-            TempData["Success"] = "Logged in successfully!";
+            TempData["Success"] = "Влязохте успешно.";
 
             var user = await _userManager.FindByEmailAsync(model.Email);
 
@@ -134,7 +134,7 @@ namespace FoodLoop.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            TempData["Success"] = "You have logged out.";
+            TempData["Success"] = "Излязохте от профила си.";
             return RedirectToAction("Login", "Account");
         }
 
@@ -160,7 +160,7 @@ namespace FoodLoop.Controllers
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                TempData["Error"] = "No account found with this email.";
+                TempData["Error"] = "Няма намерен акаунт с този имейл.";
                 return View();
             }
 
@@ -175,7 +175,7 @@ namespace FoodLoop.Controllers
             );
 
             ViewBag.ResetLink = resetUrl;
-            TempData["Success"] = "Password reset link has been generated.";
+            TempData["Success"] = "Беше генериран линк за смяна на парола.";
 
             return View("ForgotPasswordConfirmation");
         }
@@ -206,7 +206,7 @@ namespace FoodLoop.Controllers
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                TempData["Error"] = "Invalid request.";
+                TempData["Error"] = "Невалидна заявка.";
                 return RedirectToAction("Login");
             }
 
@@ -220,7 +220,7 @@ namespace FoodLoop.Controllers
                 return View(model);
             }
 
-            TempData["Success"] = "Password has been reset successfully!";
+            TempData["Success"] = "Паролата Ви бе променена успешно.";
             return RedirectToAction("Login");
         }
 
