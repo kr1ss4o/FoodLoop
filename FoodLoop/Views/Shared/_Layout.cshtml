@@ -12,6 +12,23 @@
     bool hideUI =
         controller == "Account" &&
         (action == "Login" || action == "Register");
+
+    // Footer only appears in public pages
+    bool hideFooter =
+    controller == "Cart" ||
+    controller == "Profile" ||
+    controller == "BusinessProfile" ||
+    controller == "OrderManager" ||
+    controller == "OfferManager" ||
+    controller == "RestaurantDashboard" ||
+    controller == "AdminDashboard" ||
+    controller == "AdminCategories" ||
+    controller == "AdminTags" ||
+    controller == "AdminRestaurants" ||
+    controller == "AdminOffers" ||
+    controller == "AdminReservations" ||
+    controller == "AdminReviews";
+
 }
 
 <!DOCTYPE html>
@@ -105,88 +122,93 @@
             showToast(@Html.Raw(Json.Serialize(TempData["Info"])), "info");
         </script>
     }
+    
+    <!-- Footer only appears in public pages -->
+    @if (!hideFooter)
+    {
+        <footer class="site-footer">
 
+            <div class="footer-wrapper">
 
-    <footer class="site-footer">
+                <!-- BRAND -->
 
-        <div class="footer-wrapper">
+                <div class="footer-col footer-brand">
 
-            <!-- BRAND -->
+                    <div class="footer-logo">
+                        <span>FoodLoop</span>
+                    </div>
 
-            <div class="footer-col footer-brand">
+                    <p>
+                        Спасваме храна, подкрепяме ресторантите
+                        и предлагаме вкусни ястия на по-достъпни цени.
+                    </p>
 
-                <div class="footer-logo">
-                    <span>FoodLoop</span>
                 </div>
 
-                <p>
-                    Saving food, supporting restaurants,
-                    and delivering great meals at a lower price.
-                </p>
+                <!-- QUICK LINKS -->
 
-            </div>
+                <div class="footer-col">
 
-            <!-- QUICK LINKS -->
+                    <h4>Бързи връзки</h4>
 
-            <div class="footer-col">
+                    <a asp-controller="Home" asp-action="Index">Начало</a>
+                    <a asp-controller="Restaurant" asp-action="Index">Ресторанти</a>
+                    <a asp-controller="Offers" asp-action="Index">Оферти</a>
+                    <a asp-controller="Search" asp-action="Index">Търсене</a>
 
-                <h4>Quick Links</h4>
-
-                <a asp-controller="Home" asp-action="Index">Home</a>
-                <a asp-controller="Restaurant" asp-action="Index">Restaurants</a>
-                <a asp-controller="Offers" asp-action="Index">Offers</a>
-                <a asp-controller="Search" asp-action="Index">Search</a>
-
-            </div>
-
-            <!-- ACCOUNT -->
-
-            <div class="footer-col">
-
-                <h4>Account</h4>
-
-                <a asp-controller="Cart" asp-action="Index">Cart</a>
-                <a asp-controller="Profile" asp-action="Index">My Profile</a>
-
-            </div>
-
-            <!-- CONTACT -->
-
-            <div class="footer-col">
-
-                <h4>Contact</h4>
-
-                <div class="footer-contact">
-                    <i class="bi bi-envelope"></i>
-                    support@foodloop.com
                 </div>
 
-                <div class="footer-contact">
-                    <i class="bi bi-telephone"></i>
-                    +359 88 000 0000
+                <!-- ACCOUNT -->
+
+                <div class="footer-col">
+
+                    <h4>Акаунт</h4>
+
+                    <a asp-controller="Cart" asp-action="Index">Количка</a>
+                    <a asp-controller="Profile" asp-action="Index">Моят профил</a>
+
                 </div>
 
-                <div class="footer-contact">
-                    <i class="bi bi-geo-alt"></i>
-                    Plovdiv, Bulgaria
+                <!-- CONTACT -->
+
+                <div class="footer-col">
+
+                    <h4>Контакти</h4>
+
+                    <div class="footer-contact">
+                        <i class="bi bi-envelope"></i>
+                        support@foodloop.com
+                    </div>
+
+                    <div class="footer-contact">
+                        <i class="bi bi-telephone"></i>
+                        +359 88 000 0000
+                    </div>
+
+                    <div class="footer-contact">
+                        <i class="bi bi-geo-alt"></i>
+                        Пловдив, България
+                    </div>
+
                 </div>
 
             </div>
 
-        </div>
+            <div class="footer-bottom">
 
-        <div class="footer-bottom">
+                <span>© 2026 FoodLoop. Всички права запазени.</span>
 
-            <span>© 2026 FoodLoop. All rights reserved.</span>
+                <div class="footer-legal">
+                    <a href="#">Политика за поверителност</a>
+                    <a href="#">Условия за ползване</a>
+                    <a href="#">Как да кандидатствате</a>
+                </div>
 
-            <div class="footer-legal">
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Use</a>
-                <a href="#">How to apply</a>
             </div>
 
-        </div>
+        </footer>
+    }
 
-    </footer>
+
 </body>
 </html>
