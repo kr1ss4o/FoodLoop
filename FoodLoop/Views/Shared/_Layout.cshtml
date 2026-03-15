@@ -50,11 +50,21 @@
         @await Html.PartialAsync("_Navbar")
     }
 
-    <div class="container py-4">
+    <!-- Validation for full width instead of side margin -->
+    @if (ViewData["FullWidth"] as bool? == true)
+    {
         <main role="main">
             @RenderBody()
         </main>
-    </div>
+    }
+    else
+    {
+        <div class="container py-4">
+            <main role="main">
+                @RenderBody()
+            </main>
+        </div>
+    }
 
     <!-- GLOBAL TOAST -->
     <div id="toast-container"></div>
@@ -96,5 +106,87 @@
         </script>
     }
 
+
+    <footer class="site-footer">
+
+        <div class="footer-wrapper">
+
+            <!-- BRAND -->
+
+            <div class="footer-col footer-brand">
+
+                <div class="footer-logo">
+                    <span>FoodLoop</span>
+                </div>
+
+                <p>
+                    Saving food, supporting restaurants,
+                    and delivering great meals at a lower price.
+                </p>
+
+            </div>
+
+            <!-- QUICK LINKS -->
+
+            <div class="footer-col">
+
+                <h4>Quick Links</h4>
+
+                <a asp-controller="Home" asp-action="Index">Home</a>
+                <a asp-controller="Restaurant" asp-action="Index">Restaurants</a>
+                <a asp-controller="Offers" asp-action="Index">Offers</a>
+                <a asp-controller="Search" asp-action="Index">Search</a>
+
+            </div>
+
+            <!-- ACCOUNT -->
+
+            <div class="footer-col">
+
+                <h4>Account</h4>
+
+                <a asp-controller="Cart" asp-action="Index">Cart</a>
+                <a asp-controller="Profile" asp-action="Index">My Profile</a>
+
+            </div>
+
+            <!-- CONTACT -->
+
+            <div class="footer-col">
+
+                <h4>Contact</h4>
+
+                <div class="footer-contact">
+                    <i class="bi bi-envelope"></i>
+                    support@foodloop.com
+                </div>
+
+                <div class="footer-contact">
+                    <i class="bi bi-telephone"></i>
+                    +359 88 000 0000
+                </div>
+
+                <div class="footer-contact">
+                    <i class="bi bi-geo-alt"></i>
+                    Plovdiv, Bulgaria
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+
+            <span>© 2026 FoodLoop. All rights reserved.</span>
+
+            <div class="footer-legal">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Use</a>
+                <a href="#">How to apply</a>
+            </div>
+
+        </div>
+
+    </footer>
 </body>
 </html>

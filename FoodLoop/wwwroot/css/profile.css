@@ -177,35 +177,9 @@ STATS
     font-weight: 700;
 }
 
-
 /* =================================
 REVIEWS
 ================================= */
-
-.reviews-box {
-    background: white;
-    border-radius: 24px;
-    padding: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,.08);
-    margin-bottom: 20px;
-}
-
-.reviews-empty {
-    text-align: center;
-    color: #6b7280;
-    padding: 30px;
-    font-size: 15px;
-}
-
-.review-row {
-    padding: 16px;
-    border-bottom: 1px solid #f1f3f5;
-}
-
-    .review-row:last-child {
-        border-bottom: none;
-    }
-/* REVIEWS */
 
 .reviews-container {
     display: flex;
@@ -213,31 +187,45 @@ REVIEWS
     gap: 20px;
 }
 
+/* CARD */
+
 .review-card {
     background: white;
-    border-radius: 30px;
-    padding: 28px 34px;
-    box-shadow: 0 6px 25px rgba(0,0,0,0.05);
-    border: 1px solid rgba(0,0,0,0.04);
+    border-radius: 20px;
+    padding: 22px 26px;
+    border: 1px solid rgba(0,0,0,.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,.04);
+    transition: transform .18s ease, box-shadow .18s ease;
 }
+
+    .review-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 22px rgba(0,0,0,.08);
+    }
+
+/* HEADER */
 
 .review-card-header {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
 }
 
+/* RESTAURANT */
+
 .review-restaurant {
-    font-size: 20px;
+    font-size: 17px;
     font-weight: 600;
     color: #1f2937;
 }
 
+/* STARS */
+
 .review-stars {
     display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 18px;
+    gap: 5px;
+    font-size: 16px;
 }
 
 .star {
@@ -248,32 +236,35 @@ REVIEWS
         color: #fbbf24;
     }
 
-.review-rating-number {
-    margin-left: 6px;
-    font-weight: 600;
-    color: #374151;
-}
+/* COMMENT */
 
 .review-comment {
-    margin-top: 10px;
-    font-size: 16px;
+    margin-top: 8px;
+    font-size: 15px;
     color: #374151;
     line-height: 1.5;
 }
 
+/* DATE */
+
 .review-date {
-    font-size: 13px;
+    margin-top: 10px;
+    font-size: 12px;
     color: #9ca3af;
 }
 
+/* EMPTY */
+
 .reviews-empty {
     background: white;
-    border-radius: 20px;
-    padding: 30px;
+    border-radius: 18px;
+    padding: 28px;
     text-align: center;
     color: #6b7280;
-    font-size: 16px;
+    font-size: 15px;
 }
+
+/* HIDDEN */
 
 .review-hidden {
     display: none;

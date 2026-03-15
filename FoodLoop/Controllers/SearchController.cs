@@ -35,14 +35,28 @@ namespace FoodLoop.Controllers
 
             if (!string.IsNullOrWhiteSpace(query))
             {
-                var lowered = query.ToLower();
+                var normalized = SearchHelper.Normalize(query);
+
+                if (!string.IsNullOrEmpty(normalized))
+                {
+                    offersQuery = offersQuery.Where(o =>
+                        EF.Functions.Like(o.Title.ToLower(), $"%{normalized}%") ||
+                        EF.Functions.Like(o.Restaurant.Name.ToLower(), $"%{normalized}%") ||
+                        EF.Functions.Like(o.Category.Name.ToLower(), $"%{normalized}%"));
+
+                    restaurantsQuery = restaurantsQuery
+                        .Where(r => EF.Functions.Like(r.Name.ToLower(), $"%{normalized}%"));
+                }
+
 
                 offersQuery = offersQuery.Where(o =>
-                    o.Title.ToLower().Contains(lowered) ||
-                    o.Restaurant.Name.ToLower().Contains(lowered));
+                    o.Title.ToLower().Contains(normalized) ||
+                    o.Restaurant.Name.ToLower().Contains(normalized) ||
+                    o.Category.Name.ToLower().Contains(normalized));
 
                 restaurantsQuery = restaurantsQuery
-                    .Where(r => r.Name.ToLower().Contains(lowered));
+                    .Where(r => r.Name.ToLower().Contains(normalized));
+
             }
 
             if (categoryId.HasValue)

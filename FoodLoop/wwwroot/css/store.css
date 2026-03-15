@@ -1,230 +1,593 @@
-﻿/* ======================================================
-   MARKETPLACE PAGE
-====================================================== */
-
-.marketplace {
-    padding: 40px 0;
-    background: #f7f9fb;
+﻿body {
+    margin: 0 !important;
+    background: #f8fafc;
+    background-image: url("https://www.transparenttextures.com/patterns/food.png");
 }
 
 
-/* ======================================================
-   HERO SECTION
-====================================================== */
+/* HERO */
 
-.hero {
-    background: #1f8f4c;
-    padding: 60px 40px;
-    border-radius: 20px;
+.market-hero {
+    width: 100%;
+    padding: 120px 0;
+    background: linear-gradient(120deg,#dcfce7,#f0fdf4);
+}
+
+.hero-badge {
+    background: #22c55e;
     color: white;
-    margin-bottom: 50px;
-}
-
-.hero-content {
-    max-width: 800px;
-    margin: 0 auto;
-    text-align: center;
-}
-
-.hero h1 {
-    font-size: 32px;
+    padding: 6px 14px;
+    border-radius: 40px;
+    font-size: 13px;
     font-weight: 600;
-    margin-bottom: 20px;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.hero-title {
+    font-size: 48px;
+    font-weight: 800;
+    margin-bottom: 15px;
+}
+
+    .hero-title span {
+        color: #22c55e;
+    }
+
+.hero-text {
+    color: #64748b;
+    font-size: 18px;
+    margin-bottom: 25px;
 }
 
 .hero-search {
     display: flex;
-    gap: 12px;
-    justify-content: center;
+    gap: 10px;
 }
 
 .hero-input {
     flex: 1;
-    max-width: 500px;
-    padding: 14px 18px;
-    border-radius: 12px;
-    border: none;
-    font-size: 15px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    padding: 14px;
 }
 
 .hero-btn {
-    background: #0f5f2f;
+    background: #22c55e;
     color: white;
     border: none;
-    padding: 14px 24px;
-    border-radius: 12px;
+    border-radius: 10px;
+    padding: 12px 24px;
     font-weight: 600;
-    transition: 0.2s ease;
 }
 
-    .hero-btn:hover {
-        background: #094421;
-    }
-
-
-/* ======================================================
-   CATEGORY CARDS
-====================================================== */
-
-.category-section {
-    margin-bottom: 60px;
+.hero-image {
+    width: 100%;
+    height: 420px;
+    object-fit: cover;
+    border-radius: 22px;
+    box-shadow: 0 30px 60px rgba(0,0,0,.2);
 }
 
-.category-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 20px;
-}
+/* ================================
+MAIN WRAPPER
+================================ */
 
-.category-card {
+.restaurants-wrapper {
+    width: 100%;
     background: white;
-    border-radius: 18px;
-    padding: 30px 20px;
-    text-align: center;
+    padding: 60px 40px;
+}
+
+
+/* ================================
+CONTAINER
+================================ */
+
+.restaurants-container {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* ================================
+HEADER
+================================ */
+
+.restaurants-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 50px;
+}
+
+.restaurants-title {
+    font-size: 34px;
+    font-weight: 700;
+}
+
+.restaurants-subtitle {
+    color: #64748b;
+    margin-top: 6px;
+}
+
+
+/* ================================
+NAV ARROWS
+================================ */
+
+.restaurants-nav {
+    display: flex;
+    gap: 10px;
+}
+
+.restaurants-arrow {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid #e5e7eb;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 18px;
-    text-decoration: none;
-    color: #333;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.05);
-    transition: 0.25s ease;
-}
-
-    .category-card span {
-        display: block;
-        margin-top: 10px;
-        font-size: 14px;
-    }
-
-    .category-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 28px rgba(0,0,0,0.08);
-    }
-
-
-/* ======================================================
-   OFFER SECTIONS
-====================================================== */
-
-.offer-section {
-    margin-bottom: 60px;
-}
-
-    .offer-section h2 {
-        font-size: 22px;
-        margin-bottom: 25px;
-    }
-
-
-/* ======================================================
-   GRID
-====================================================== */
-
-.store-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 24px;
 }
 
 
-/* ======================================================
-   OFFER CARD
-====================================================== */
+/* ================================
+CAROUSEL
+================================ */
 
-.offer-card-link {
+.restaurants-carousel {
+    display: flex;
+    gap: 36px;
+    scrollbar-width: none;
+}
+
+    .restaurants-carousel::-webkit-scrollbar {
+        display: none;
+    }
+
+
+/* ================================
+CARD
+================================ */
+
+.restaurant-card {
+    width: 360px;
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
     text-decoration: none;
     color: inherit;
+    box-shadow: 0 20px 50px rgba(0,0,0,.08);
+    transition: .35s;
 }
 
-.offer-card {
-    background: white;
-    border-radius: 18px;
-    overflow: hidden;
-    transition: 0.25s ease;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.05);
-}
-
-    .offer-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+    .restaurant-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 35px 80px rgba(0,0,0,.15);
     }
 
 
-/* IMAGE */
+/* ================================
+IMAGE
+================================ */
 
-.offer-image-wrapper {
+.restaurant-image {
+    height: 210px;
     position: relative;
-    height: 180px;
     overflow: hidden;
 }
 
-.offer-image {
+.restaurant-banner {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.stock-badge.low {
+
+/* ================================
+RATING
+================================ */
+
+.restaurant-rating {
     position: absolute;
-    top: 12px;
-    left: 12px;
-    background: #e53935;
+    top: 16px;
+    right: 16px;
+    background: #16a34a;
     color: white;
-    padding: 4px 10px;
-    border-radius: 30px;
-    font-size: 12px;
+    padding: 7px 14px;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
 }
 
+
+/* ================================
+BODY
+================================ */
+
+.restaurant-body {
+    padding: 70px 24px 26px;
+    position: relative;
+}
+
+
+/* ================================
+LOGO
+================================ */
+
+.restaurant-logo {
+    position: absolute;
+    top: -40px;
+    left: 24px;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: white;
+    padding: 6px;
+    object-fit: cover;
+    box-shadow: 0 12px 30px rgba(0,0,0,.25);
+}
+
+
+/* ================================
+NAME
+================================ */
+
+.restaurant-name {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+
+/* ================================
+TAGS
+================================ */
+
+.restaurant-tags {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 10px;
+}
+
+
+/* ================================
+META
+================================ */
+
+.restaurant-meta {
+    display: flex;
+    gap: 18px;
+    font-size: 14px;
+    color: #475569;
+}
+
+    .restaurant-meta i {
+        color: #16a34a;
+        margin-right: 4px;
+    }
+
+/* =========================
+   CATEGORIES SECTION
+========================= */
+
+.categories-section {
+    width: 100%;
+    background: #ffffff;
+    padding: 60px 0;
+}
+
+.categories-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 32px;
+}
+
+.categories-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 35px;
+    color: #1f2937;
+}
+
+/* GRID */
+
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(8,1fr);
+    gap: 28px;
+}
+
+/* CARD */
+
+.category-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #374151;
+    font-weight: 500;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all .15s ease;
+}
+
+    .category-card:hover {
+        transform: translateY(-4px);
+    }
+
+.category-icon {
+    width: 78px;
+    height: 78px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    margin-bottom: 10px;
+    transition: all .25s ease;
+}
+
+.category-card:hover .category-icon {
+    transform: translateY(-4px);
+}
+
+/* COLORS */
+
+.pizza {
+    background: #f3e3c9;
+    color: #c55b2c;
+}
+
+.healthy {
+    background: #dff1e3;
+    color: #3c8b5a;
+}
+
+.breakfast {
+    background: #f2ecc2;
+    color: #b4942f;
+}
+
+.meat {
+    background: #ead9d6;
+    color: #b63e2f;
+}
+
+.seafood {
+    background: #dfe8f6;
+    color: #3c61c9;
+}
+
+.dessert {
+    background: #ebe6f6;
+    color: #7c4bc7;
+}
+
+.grocery {
+    background: #dff0e5;
+    color: #2d8b5b;
+}
+
+.icecream {
+    background: #f3e0ea;
+    color: #c44779;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1100px) {
+
+    .categories-grid {
+        grid-template-columns: repeat(4,1fr);
+        row-gap: 30px;
+    }
+}
+
+@media(max-width:640px) {
+
+    .categories-grid {
+        grid-template-columns: repeat(3,1fr);
+    }
+}
+
+/* TRENDING OFFERS */
+
+/* SECTION */
+
+.offers-section {
+    width: 100%;
+    background: #f5f7f6;
+    padding: 60px 0;
+}
+
+/* WRAPPER */
+
+.offers-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 32px;
+}
+
+/* HEADER */
+
+.offers-header h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.offers-header p {
+    color: #6b7280;
+    margin-bottom: 32px;
+}
+
+/* GRID */
+
+.offers-grid {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+/* CARD */
+
+.offer-card {
+    width: 300px;
+    background: white;
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.07);
+    transition: transform .2s ease;
+}
+
+    .offer-card:hover {
+        transform: translateY(-4px);
+    }
+
+/* IMAGE */
+
+.offer-image {
+    position: relative;
+    height: 160px;
+    overflow: hidden;
+}
+
+    .offer-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+/* RATING */
+
+.offer-rating {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #3e8e55;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 13px;
+}
 
 /* BODY */
 
 .offer-body {
-    padding: 16px;
+    padding: 16px 18px 18px;
 }
+
+/* TITLE */
 
 .offer-title {
-    font-weight: 600;
-    font-size: 16px;
-    margin-bottom: 6px;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 4px;
 }
 
+/* RESTAURANT */
+
 .offer-restaurant {
-    font-size: 13px;
-    color: #666;
-    margin-bottom: 10px;
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 14px;
 }
+
+/* PRICE ROW */
 
 .offer-price-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 14px;
 }
 
 .offer-price {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
-    color: #2e7d32;
+    color: #3e8e55;
 }
-
-.offer-rating {
-    font-size: 13px;
-    color: #444;
-}
-
-
-/* STOCK */
 
 .offer-stock {
-    font-size: 12px;
+    font-size: 13px;
+    color: #6b7280;
 }
 
-.stock-low {
-    color: #d32f2f;
+/* TIMER */
+
+.offer-timer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #374151;
+    font-weight: 500;
 }
 
-.stock-medium {
-    color: #f57c00;
+/*
+    BENEFITS
+*/
+
+/* BENEFITS SECTION */
+
+.benefits-section {
+    width: 100%;
+    background: #3e8e55; /* класическото зелено */
+    padding: 90px 0;
 }
 
-.stock-normal {
-    color: #777;
+/* WRAPPER */
+
+.benefits-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 32px;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 80px;
+    text-align: center;
+}
+
+/* ICON */
+
+.benefit-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 22px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: white;
+}
+
+/* TITLE */
+
+.benefit-item h3 {
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 10px;
+}
+
+/* TEXT */
+
+.benefit-item p {
+    color: rgba(255,255,255,0.85);
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 320px;
+    margin: 0 auto;
 }
