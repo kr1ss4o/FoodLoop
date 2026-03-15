@@ -81,146 +81,280 @@ img {
     box-shadow: var(--shadow-sm);
 }
 
-/* ===============================
-   GLASS NAVBAR
-================================ */
+/* =========================
+   NAVBAR
+========================= */
 
-.app-navbar.scrolled {
-    box-shadow: 0 10px 30px rgba(0,0,0,.08);
-}
-
+.navbar,
 .app-navbar {
-    background: rgba(255,255,255,0.7);
-    backdrop-filter: blur(18px);
-    border-bottom: 1px solid rgba(255,255,255,0.4);
-    padding: 14px 28px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
     z-index: 1000;
+    backdrop-filter: blur(12px);
+    background: rgba(255,255,255,0.75) !important;
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    padding: 10px 18px;
 }
 
-/* NAVBAR LAYOUT */
+/* layout */
 
-.navbar-wrap {
+.navbar-layout {
     display: flex;
     align-items: center;
-    gap: 28px;
+    gap: 18px;
 }
 
+/* brand */
 
-/* BRAND */
-
-.navbar-brand {
-    font-size: 22px;
+.navbar .navbar-brand,
+.app-navbar .navbar-brand {
     font-weight: 800;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: #16a34a !important;
+    letter-spacing: 0.2px;
 }
 
+    .navbar .navbar-brand,
+    .navbar .navbar-brand:visited,
+    .app-navbar .navbar-brand,
+    .app-navbar .navbar-brand:visited {
+        color: var(--primary) !important;
+        text-decoration: none;
+    }
 
-/* ===============================
+/* =========================
    SEARCH BAR
-================================ */
+========================= */
 
 .navbar-search {
     position: relative;
     flex: 1;
-    max-width: 520px;
+    max-width: 420px;
 }
-
-    .navbar-search i {
-        position: absolute;
-        left: 16px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #9ca3af;
-    }
 
     .navbar-search input {
         width: 100%;
-        height: 42px;
         border: none;
         outline: none;
+        padding: 10px 14px 10px 36px;
         border-radius: 999px;
-        padding: 0 18px 0 40px;
-        background: rgba(255,255,255,0.8);
+        background: #f3f4f6;
         font-size: 14px;
-        transition: .2s;
+        transition: background .15s ease;
     }
 
         .navbar-search input:focus {
-            background: white;
-            box-shadow: 0 0 0 2px rgba(22,163,74,.25);
+            background: #fff;
+            box-shadow: 0 0 0 2px rgba(22,163,74,0.15);
         }
 
-
-/* ===============================
-   PRIMARY NAV BUTTONS
-================================ */
-
-.nav-main-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-weight: 600;
-    padding: 8px 14px;
-    border-radius: 10px;
-    text-decoration: none;
-    color: #374151;
-    transition: .15s;
-}
-
-    .nav-main-btn:hover {
-        background: #f3f4f6;
-        color: #16a34a;
+    .navbar-search i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: .6;
+        font-size: 14px;
     }
 
+/* =========================
+   NAV LINKS
+========================= */
 
-/* ===============================
+.navbar .nav-link,
+.app-navbar .nav-link {
+    color: var(--text) !important;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    transition: background-color .15s ease, color .15s ease, transform .05s ease;
+    text-decoration: none;
+}
+
+    .navbar .nav-link:hover,
+    .app-navbar .nav-link:hover {
+        background: rgba(22,163,74,0.08);
+        color: var(--primary) !important;
+    }
+
+    .navbar .nav-link.active,
+    .app-navbar .nav-link.active {
+        background: rgba(22,163,74,0.12);
+        color: var(--primary) !important;
+    }
+
+/* =========================
    ICON BUTTONS
-================================ */
+========================= */
 
 .nav-icon-btn {
-    width: 40px;
-    height: 40px;
-    display: flex;
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 12px;
-    color: #374151;
-    font-size: 18px;
-    transition: .15s;
+    border-radius: 10px;
+    color: var(--text);
     text-decoration: none;
+    transition: background .15s ease, transform .05s ease;
 }
 
-    .nav-icon-btn:hover {
-        background: #f3f4f6;
-        color: #16a34a;
+.logout-btn {
+    border: none;
+    background: transparent;
+}
+
+    .logout-btn:hover {
+        color: #ef4444;
     }
 
 
-/* ===============================
+    .nav-icon-btn:hover {
+        background: rgba(22,163,74,0.08);
+        transform: translateY(-1px);
+    }
+
+    .nav-icon-btn.active {
+        background: rgba(22,163,74,0.12);
+    }
+
+/* =========================
    CART BADGE
-================================ */
+========================= */
 
 .cart-badge {
     position: absolute;
     top: -4px;
     right: -4px;
-    background: #16a34a;
-    color: white;
-    font-size: 11px;
-    padding: 3px 6px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 5px;
     border-radius: 999px;
-    font-weight: 700;
+    background: var(--primary);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* =========================
+   DROPDOWN
+========================= */
+
+.navbar .dropdown-menu,
+.app-navbar .dropdown-menu {
+    border-radius: 12px;
+    border: none;
+    padding: 8px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+}
+
+.navbar .dropdown-item,
+.app-navbar .dropdown-item {
+    border-radius: 8px;
+    padding: 8px 10px;
+    transition: background .15s ease;
+}
+
+    .navbar .dropdown-item:hover,
+    .app-navbar .dropdown-item:hover {
+        background: #f1f5f9;
+    }
+
+.dropdown-item i {
+    width: 18px;
+}
+
+/* =========================
+   MINI CART
+========================= */
+
+.mini-cart {
+    position: absolute;
+    right: 0;
+    top: 46px;
+    width: 260px;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    padding: 12px;
+    z-index: 100;
+}
+
+/* =========================
+   LEGACY NAVBAR
+========================= */
+
+.cart-navbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+    .cart-navbar .icon-btn {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        text-decoration: none;
+        transition: background-color .15s ease, transform .05s ease;
+    }
+
+        .cart-navbar .icon-btn:hover {
+            background: rgba(22,163,74,0.08);
+            transform: translateY(-1px);
+        }
+
+        .cart-navbar .icon-btn.active {
+            background: rgba(22,163,74,0.12);
+        }
+
+    .cart-navbar .nav-icon {
+        width: 22px;
+        height: 22px;
+    }
+
+    .cart-navbar .right-icons {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+.cart-bubble {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: var(--primary);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 
-
 /*
-    ==================
+    ========================
     FOOTER
-    ==================
+    ========================
 */
 
 /* FOOTER */

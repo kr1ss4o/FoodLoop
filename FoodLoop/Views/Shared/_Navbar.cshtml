@@ -4,13 +4,7 @@
 @inject UserManager<User> UserManager
 
 @{
-    /* =====================================================
-    GET CURRENT USER (ASYNC SAFE)
-    ===================================================== */
-
     User? user = await UserManager.GetUserAsync(User);
-
-    string currentPath = Context.Request.Path.Value?.ToLower() ?? "";
 
     string role = "Client";
 
@@ -23,19 +17,11 @@
     bool isAdmin = role == "Admin";
     bool isBusiness = role == "Restaurant" && !isAdmin;
 
-    /* =====================================================
-       ACTIVE PAGE DETECTION
-    ===================================================== */
-
     var controller = ViewContext.RouteData.Values["controller"]?.ToString();
-    var action = ViewContext.RouteData.Values["action"]?.ToString();
 
     bool isProfileActive =
         controller == "Profile" ||
         controller == "BusinessProfile";
-
-    bool isCartActive =
-        controller == "Orders";
 
     bool isOrderManagerActive =
         controller == "OrderManager";
@@ -46,13 +32,12 @@
 
 <nav class="navbar navbar-expand-lg app-navbar fixed-top">
 
-    <div class="container-fluid navbar-wrap">
+    <div class="container-fluid navbar-layout">
 
-        <!-- LOGO -->
+        <!-- BRAND -->
 
-        <a class="navbar-brand" href="/">
-            <i class="bi bi-leaf-fill"></i>
-            FoodLoop
+        <a class="navbar-brand fw-bold text-success" href="/">
+            <i class="bi bi-leaf-fill"></i> FoodLoop
         </a>
 
 
@@ -67,8 +52,7 @@
 
             <input type="text"
                    name="query"
-                   placeholder="Търси ресторант или оферта..."
-                   autocomplete="off" />
+                   placeholder="Търси ресторант или оферта..." />
 
         </form>
 
@@ -85,11 +69,10 @@
         </button>
 
 
-        <!-- RIGHT SIDE -->
+        <div class="collapse navbar-collapse justify-content-end"
+             id="mainNavbar">
 
-        <div class="collapse navbar-collapse" id="mainNavbar">
-
-            <ul class="navbar-nav ms-auto align-items-center navbar-actions">
+            <ul class="navbar-nav align-items-center gap-lg-3">
 
 
                 <!-- OFFERS -->
@@ -98,73 +81,214 @@
 
                     <a asp-controller="Offers"
                            asp-action="Index"
-                           class="nav-main-btn">
+                           class="nav-link">
 
                         <i class="bi bi-tag"></i>
-
-                        <span>Оферти</span>
-
-                    </a>
-
-                </li>
-
-
-                <!-- RESTAURANTS -->
-
-                <li class="nav-item">
-
-                    <a asp-controller="Restaurant"
-                           asp-action="Index"
-                           class="nav-main-btn">
-
-                        <i class="bi bi-shop"></i>
-
-                        <span>Търговци</span>
+                        Оферти
 
                     </a>
 
                 </li>
 
 
-                <!-- CART -->
+                @{
+                    if (isAdmin)
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="bi bi-shield-lock"></i> Админ
+                            </a>
 
-                <li class="nav-item position-relative">
+                            <ul class="dropdown-menu dropdown-menu-end">
 
-                    <a asp-controller="Cart"
-                           asp-action="Index"
-                           class="nav-icon-btn"
-                           id="cartLink">
+                                <li>
+                                    <a class="dropdown-item"
+                                       asp-controller="AdminDashboard"
+                                       asp-action="Index">Табло</a>
+                                </li>
 
-                        <i class="bi bi-bag"></i>
+                                <li>
+                                    <a class="dropdown-item"
+                                       asp-controller="AdminCategories"
+                                       asp-action="Categories">Категории</a>
+                                </li>
 
-                        <span id="cartBadge"
-                              class="cart-badge d-none">0</span>
+                                <li>
+                                    <a class="dropdown-item"
+                                       asp-controller="AdminTags"
+                                       asp-action="Tags">Тагове</a>
+                                </li>
 
-                    </a>
+                                <li>
+                                    <a class="dropdown-item"
+                                       asp-controller="AdminRestaurants"
+                                       asp-action="Restaurants">Ресторанти</a>
+                                </li>
 
-                    <div id="miniCartDropdown"
-                         class="mini-cart d-none">
+                                <li>
+                                    <a class="dropdown-item"
+                                       asp-controller="AdminOffers"
+                                       asp-action="Offers">Оферти</a>
+                                </li>
 
-                        <div id="miniCartContent">
-                            Loading...
-                        </div>
+                                <li>
+                                    <a class="dropdown-item"
+                                       asp-controller="AdminReservations"
+                                       asp-action="Reservations">Поръчки</a>
+                                </li>
 
-                    </div>
+                                <li>
+                                    <a class="dropdown-item"
+                                       asp-controller="AdminReviews"
+                                       asp-action="Reviews">Ревюта</a>
+                                </li>
 
-                </li>
+                            </ul>
+                        </li>
+                    }
+                    else if (isBusiness)
+                    {
+                        <li class="nav-item dropdown">
+
+                            <a class="nav-link dropdown-toggle"
+                                   data-bs-toggle="dropdown">
+
+                                <i class="bi bi-shop-window"></i> Бизнес
+
+                            </a>
+
+                            <ul class="dropdown-menu dropdown-menu-end">
+
+                                <li>
+                                    <a class="dropdown-item"
+                                           asp-controller="RestaurantDashboard"
+                                           asp-action="Index">
+
+                                        <i class="bi bi-graph-up-arrow me-2"></i>
+                                        Статистика
+
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item d-flex justify-content-between align-items-center"
+                                           asp-controller="OrderManager"
+                                           asp-action="Index">
+
+                                        <span>
+                                            <i class="bi bi-receipt-cutoff me-2"></i>
+                                            Поръчки
+                                        </span>
+
+                                        <span id="cartBadge"
+                                              class="badge bg-success @(ViewBag.CartCount > 0 ? "" : "d-none")">
+
+                                            @(ViewBag.CartCount ?? 0)
+
+                                        </span>
+
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item"
+                                           asp-controller="OfferManager"
+                                           asp-action="Index">
+
+                                        <i class="bi bi-megaphone me-2"></i>
+                                        Моите оферти
+
+                                    </a>
+                                </li>
+
+                            </ul>
+
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+
+                            <a asp-controller="Restaurant"
+                                   asp-action="Index"
+                                   class="nav-link">
+
+                                <i class="bi bi-shop"></i>
+                                Търговци
+
+                            </a>
+
+                        </li>
+
+                        <li class="nav-item position-relative">
+
+                            <a asp-controller="Cart"
+                                   asp-action="Index"
+                                   class="nav-icon-btn"
+                                   id="cartLink">
+
+                                <i class="bi bi-bag"></i>
+
+                                <span id="cartBadge"
+                                      class="cart-badge d-none">0</span>
+
+                            </a>
+
+                            <div id="miniCartDropdown" class="mini-cart d-none">
+                                <div id="miniCartContent">Loading...</div>
+                            </div>
+
+                        </li>
+                    }
+                }
+
 
 
                 <!-- PROFILE -->
 
                 <li class="nav-item">
 
-                    <a asp-controller="Profile"
-                           asp-action="Index"
-                           class="nav-icon-btn">
+                    @if (isBusiness)
+                    {
+                        <a asp-controller="BusinessProfile"
+                               asp-action="Index"
+                               class="nav-icon-btn">
 
-                        <i class="bi bi-person-circle"></i>
+                            <i class="bi bi-person-circle"></i>
 
-                    </a>
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Profile"
+                               asp-action="Index"
+                               class="nav-icon-btn">
+
+                            <i class="bi bi-person-circle"></i>
+
+                        </a>
+                    }
+
+                </li>
+
+
+                <!-- LOGOUT -->
+
+                <li class="nav-item">
+
+                    <form asp-controller="Account"
+                          asp-action="Logout"
+                          method="post"
+                          class="d-inline">
+
+                        <button type="submit"
+                                class="nav-icon-btn logout-btn">
+
+                            <i class="bi bi-box-arrow-right"></i>
+
+                        </button>
+
+                    </form>
 
                 </li>
 
@@ -176,18 +300,3 @@
     </div>
 
 </nav>
-<script>
-
-    // Nav bar shadow on scroll
-
-        window.addEventListener("scroll", () => {
-
-        const nav = document.querySelector(".app-navbar");
-
-        if(window.scrollY > 10)
-            nav.classList.add("scrolled");
-        else
-            nav.classList.remove("scrolled");
-
-    });
-</script>
