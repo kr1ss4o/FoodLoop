@@ -90,7 +90,7 @@
 
         </div>
 
-        <div class="categories-carousel">
+        <div class="categories-carousel" data-step="6">
 
             <a asp-controller="Search" asp-action="Index" asp-route-query="Азиатска храна" class="category-card">
                 <div class="category-icon asian">🍜</div>
@@ -223,6 +223,7 @@
 
     </section>
 }
+
 
 <!-- ALL OFFERS -->
 @if (Model.Offers != null && Model.Offers.Any())
