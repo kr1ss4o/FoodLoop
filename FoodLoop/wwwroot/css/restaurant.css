@@ -114,6 +114,25 @@
     align-items: center;
 }
 
+.banner-closed {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #ef4444;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 5;
+}
+
+.banner-closed i {
+    font-size: 8px;
+}
+
 /* BODY */
 
 .restaurant-body {

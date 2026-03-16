@@ -119,3 +119,32 @@
     <span asp-validation-for="Description" class="text-danger"></span>
 
 </div>
+
+
+<h3 class="admin-section-title">Изображение</h3>
+
+<div class="admin-upload admin-upload-full">
+
+    <div class="drop-zone @(string.IsNullOrWhiteSpace(Model.ImageUrl) ? "" : "preview")"
+         style="background-image:url('@Model.ImageUrl')">
+
+        <span>Плъзни изображение</span>
+
+        <input type="file"
+               name="ImageUpload"
+               accept="image/*">
+
+    </div>
+
+    <div class="admin-field">
+
+        <label>Или URL</label>
+
+        <input asp-for="ImageUrl"
+               type="url"
+               class="admin-input admin-url-input"
+               placeholder="https://example.com/offer.png" />
+
+    </div>
+
+</div>

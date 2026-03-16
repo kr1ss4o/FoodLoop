@@ -71,9 +71,28 @@
 
     <div class="categories-wrapper">
 
-        <h2 class="categories-title">Разгледай категории</h2>
+        <div class="restaurants-head">
 
-        <div class="categories-grid">
+            <div>
+                <h2 class="restaurants-title">Разгледай категории</h2>
+                <p class="restaurants-subtitle">Популярни категории храна</p>
+            </div>
+
+            <div class="restaurants-nav">
+
+                <button class="restaurants-arrow categories-left">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+
+                <button class="restaurants-arrow categories-right">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="categories-carousel">
 
             <a asp-controller="Search" asp-action="Index" asp-route-query="Азиатска храна" class="category-card">
                 <div class="category-icon asian">🍜</div>
@@ -133,21 +152,6 @@
             <a asp-controller="Search" asp-action="Index" asp-route-query="Пица" class="category-card">
                 <div class="category-icon pizza">🍕</div>
                 <span>Пица</span>
-            </a>
-
-            <a asp-controller="Search" asp-action="Index" asp-route-query="Салати" class="category-card">
-                <div class="category-icon salads">🥗</div>
-                <span>Салати</span>
-            </a>
-
-            <a asp-controller="Search" asp-action="Index" asp-route-query="Суши" class="category-card">
-                <div class="category-icon sushi">🍣</div>
-                <span>Суши</span>
-            </a>
-
-            <a asp-controller="Search" asp-action="Index" asp-route-query="Напитки" class="category-card">
-                <div class="category-icon drinks">🥤</div>
-                <span>Напитки</span>
             </a>
 
         </div>
@@ -377,3 +381,39 @@
     </div>
 
 </section>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function(){
+
+    const carousel = document.querySelector(".categories-carousel")
+
+    const left = document.querySelector(".categories-left")
+
+    const right = document.querySelector(".categories-right")
+
+    if(!carousel) return
+
+    const scrollAmount = carousel.clientWidth
+
+    right.addEventListener("click", () => {
+
+    carousel.scrollBy({
+    left:scrollAmount,
+    behavior:"smooth"
+    })
+
+    })
+
+    left.addEventListener("click", () => {
+
+    carousel.scrollBy({
+    left:-scrollAmount,
+    behavior:"smooth"
+    })
+
+    })
+
+    })
+
+</script>

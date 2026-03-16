@@ -373,10 +373,12 @@ body {
     font-weight: 600;
 }
 
-.admin-details-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill,minmax(230px,1fr));
-    gap: 18px;
+.admin-offer-description textarea {
+    min-height: 180px;
+}
+
+.admin-offer-image .drop-zone {
+    min-height: 180px;
 }
 
 .admin-detail-card {

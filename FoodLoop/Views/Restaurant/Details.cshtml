@@ -19,7 +19,6 @@
     </a>
 </div>
 
-
 <div class="restaurant-card">
 
     <div class="restaurant-header">
@@ -64,7 +63,6 @@
 
     </div>
 
-
     <div class="restaurant-info">
 
         <div class="info-item">
@@ -95,8 +93,6 @@
 
 </div>
 
-
-
 <div class="restaurant-stats">
 
     <div class="stat stat-yellow">
@@ -125,84 +121,85 @@
 
 </div>
 
+@if (Model.ActiveOffers != null && Model.ActiveOffers.Any())
+{
+    <div class="offers-section">
 
+        <div class="section-header">
+            <h2 class="section-title">
+                Налични оферти
+            </h2>
 
-<div class="offers-section">
+            <span class="section-subtitle">
+                Прясна храна, спасена от изхвърляне
+            </span>
+        </div>
 
-    <div class="section-header">
-        <h2 class="section-title">
-            Налични оферти
-        </h2>
+        <div class="offers-grid">
 
-        <span class="section-subtitle">
-            Прясна храна, спасена от изхвърляне
-        </span>
-    </div>
+            @foreach (var offer in Model.ActiveOffers)
+            {
+                var discount = (int)Math.Round(
+                (1 - (offer.DiscountedPrice / offer.OriginalPrice)) * 100
+                );
 
-    <div class="offers-grid">
+                <a asp-controller="Offers"
+                       asp-action="Details"
+                       asp-route-id="@offer.Id"
+                       class="offer-card card-link">
 
-        @foreach (var offer in Model.ActiveOffers)
-        {
-            var discount = (int)Math.Round(
-            (1 - (offer.DiscountedPrice / offer.OriginalPrice)) * 100
-            );
+                    <div class="offer-image">
 
-            <a asp-controller="Offers"
-                   asp-action="Details"
-                   asp-route-id="@offer.Id"
-                   class="offer-card card-link">
+                        <img src="@offer.ImageUrl" />
 
-                <div class="offer-image">
-
-                    <img src="@offer.ImageUrl" />
-
-                    <span class="discount-badge">
-                        -@discount%
-                    </span>
-
-                </div>
-
-                <div class="offer-content">
-
-                    <h3 class="offer-title">
-                        @offer.Title
-                    </h3>
-
-                    <div class="offer-prices">
-
-                        <span class="price-old">
-                            @offer.OriginalPrice €
-                        </span>
-
-                        <span class="price-new">
-                            @offer.DiscountedPrice €
+                        <span class="discount-badge">
+                            -@discount%
                         </span>
 
                     </div>
 
-                    <div class="offer-meta">
+                    <div class="offer-content">
 
-                        <span class="offer-stock">
-                            <i class="bi bi-box"></i>
-                            Остават @offer.QuantityAvailable
-                        </span>
+                        <h3 class="offer-title">
+                            @offer.Title
+                        </h3>
 
-                        <span class="offer-countdown"
-                              data-end="@offer.EndsAt.ToString("o")">
-                            <i class="bi bi-hourglass-split"></i>
-                        </span>
+                        <div class="offer-prices">
+
+                            <span class="price-old">
+                                @offer.OriginalPrice €
+                            </span>
+
+                            <span class="price-new">
+                                @offer.DiscountedPrice €
+                            </span>
+
+                        </div>
+
+                        <div class="offer-meta">
+
+                            <span class="offer-stock">
+                                <i class="bi bi-box"></i>
+                                Остават @offer.QuantityAvailable
+                            </span>
+
+                            <span class="offer-countdown"
+                                  data-end="@offer.EndsAt.ToString("o")">
+                                <i class="bi bi-hourglass-split"></i>
+                            </span>
+
+                        </div>
 
                     </div>
 
-                </div>
+                </a>
+            }
 
-            </a>
-        }
-
+        </div>
 
     </div>
+}
 
-</div>
 
 @if (Model.LatestReviews.Any())
 {
@@ -293,6 +290,7 @@
 
     </div>
 }
+
 
 <script>
     function updateOfferTimers(){

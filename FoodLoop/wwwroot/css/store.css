@@ -159,6 +159,34 @@ CAROUSEL
         display: none;
     }
 
+/* ====================
+CATEGORIES CAROUSEL
+==================== */
+
+.categories-carousel {
+    display: flex;
+    gap: 28px;
+    overflow-x: auto;
+    overflow-y: visible;
+    scroll-behavior: smooth;
+    padding: 10px 0 20px;
+}
+
+    .categories-carousel::-webkit-scrollbar {
+        display: none;
+    }
+
+.categories-carousel {
+    scrollbar-width: none;
+}
+
+/* 6 cards per view */
+
+.category-card {
+    flex: 0 0 calc((100% - 140px) / 6);
+    min-width: 200px;
+}
+
 
 /* ================================
 CARD
