@@ -24,36 +24,20 @@ namespace FoodLoop.Controllers
                 .Include(o => o.Restaurant)
                 .Include(o => o.Category);
 
+            // =============================
+            // Sorting (без rating тук)
+            // =============================
+
             query = sort switch
             {
                 "price_asc" => query.OrderBy(o => o.DiscountedPrice),
                 "price_desc" => query.OrderByDescending(o => o.DiscountedPrice),
-
-                "rating_desc" => query.OrderByDescending(o => o.Restaurant.Rating),
 
                 "newest" => query.OrderByDescending(o => o.CreatedAt),
                 "oldest" => query.OrderBy(o => o.CreatedAt),
 
                 _ => query.OrderByDescending(o => o.CreatedAt)
             };
-
-            var offers = await query.ToListAsync();
-
-            // =============================
-            // Trending Restaurants
-            // =============================
-
-            var lastWeek = DateTime.UtcNow.AddDays(-7);
-
-            var trendingRestaurants = await _context.Reservations
-                .Where(r => r.Status == ReservationStatus.Finished &&
-                            r.CreatedAt >= lastWeek)
-                .SelectMany(r => r.Items)
-                .GroupBy(i => i.Offer.Restaurant)
-                .OrderByDescending(g => g.Count())
-                .Take(6)
-                .Select(g => g.Key)
-                .ToListAsync();
 
             // =============================
             // Restaurant Ratings
@@ -75,6 +59,40 @@ namespace FoodLoop.Controllers
                     Rating = g.Average(x => x.Rating)
                 })
                 .ToDictionaryAsync(x => x.RestaurantId, x => x.Rating);
+
+            // =============================
+            // Get Offers
+            // =============================
+
+            var offers = await query.ToListAsync();
+
+            // =============================
+            // Rating Sort (FIX)
+            // =============================
+
+            if (sort == "rating_desc")
+            {
+                offers = offers
+                    .OrderByDescending(o =>
+                        restaurantRatings.ContainsKey(o.RestaurantId)
+                            ? restaurantRatings[o.RestaurantId]
+                            : o.Restaurant?.Rating ?? 0)
+                    .ThenByDescending(o => o.CreatedAt) // стабилен sort
+                    .ToList();
+            }
+
+            // =============================
+            // Trending Restaurants (Top 3)
+            // =============================
+
+            var trendingRestaurants = await _context.Reservations
+                .Where(r => r.Status == ReservationStatus.Finished)
+                .SelectMany(r => r.Items)
+                .GroupBy(i => i.Offer.Restaurant)
+                .OrderByDescending(g => g.Count())
+                .Take(3)
+                .Select(g => g.Key)
+                .ToListAsync();
 
             // =============================
             // ViewModel
