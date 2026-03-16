@@ -1,87 +1,241 @@
 ﻿@model List<FoodLoop.Models.DTOs.RestaurantReviewDto>
 
-<h2>Restaurant Reviews</h2>
+@{
+    /* ============================
+       REVIEW STATISTICS
+    ============================ */
 
-<form method="get" class="row g-2 mb-4">
+    int totalReviews = Model?.Count ?? 0;
 
-    <div class="col-md-2">
-        <select name="rating" class="form-select">
-            <option value="">All Ratings</option>
-            @for (int i = 5; i >= 1; i--)
-            {
-                <option value="@i">@i ⭐</option>
-            }
-        </select>
-    </div>
+    double avgRating = totalReviews > 0
+        ? Model.Average(r => r.Rating)
+        : 0;
 
-    <div class="col-md-3">
-        <input type="text"
-               name="search"
-               class="form-control"
-               placeholder="Search..."
-               value="@ViewBag.Search" />
-    </div>
+    int roundedRating = (int)Math.Floor(avgRating);
 
-    <div class="col-md-3">
-        <select name="sort" class="form-select">
-            <option value="">Newest</option>
-            <option value="oldest">Oldest</option>
-            <option value="rating_desc">Rating ↓</option>
-            <option value="rating_asc">Rating ↑</option>
-        </select>
-    </div>
+    var distribution = new Dictionary<int, int>();
 
-    <div class="col-md-2">
-        <button class="btn btn-dark w-100">Apply</button>
-    </div>
-</form>
-
-@if (!Model.Any())
-{
-    <p>No reviews found.</p>
-}
-else
-{
-    @foreach (var review in Model)
+    for (int i = 1; i <= 5; i++)
     {
-        <div class="card mb-3 p-3">
-            <div class="d-flex justify-content-between">
-                <strong>@review.AuthorName</strong>
-                <span>@review.CreatedAt.ToString("dd MMM yyyy")</span>
-            </div>
+        distribution[i] = Model?.Count(r => r.Rating == i) ?? 0;
+    }
 
-            <div>
-                @for (int i = 0; i < review.Rating; i++)
-                {
-                    <span>⭐</span>
-                }
-            </div>
-
-            @if (!string.IsNullOrWhiteSpace(review.Comment))
-            {
-                <p class="mt-2">@review.Comment</p>
-            }
-        </div>
+    int GetPercent(int rating)
+    {
+        if (totalReviews == 0) return 0;
+        return distribution[rating] * 100 / totalReviews;
     }
 }
 
-<!-- Pagination -->
-@if (ViewBag.TotalPages > 1)
-{
-    <nav>
-        <ul class="pagination">
-            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+<link rel="stylesheet" href="~/css/reviews.css" />
+
+<div class="reviews-page">
+
+    <h2 class="reviews-title">Вашите ревюта</h2>
+
+    <form method="get" class="reviews-filter row g-2">
+
+        <div class="col-md-2">
+            <select name="rating" class="form-select">
+                <option value="">Всички оценки</option>
+                @for (int i = 5; i >= 1; i--)
+                {
+                    <option value="@i">@i ⭐</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <select name="sort" class="form-select">
+                <option value="">Най-нови</option>
+                <option value="oldest">Най-стари</option>
+                <option value="rating_desc">Оценка ↓</option>
+                <option value="rating_asc">Оценка ↑</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <input type="text"
+                   name="search"
+                   class="form-control"
+                   placeholder="Търси ревюта..."
+                   value="@ViewBag.Search" />
+        </div>
+
+        <div class="col-md-2">
+            <button class="btn btn-success w-100">
+                Търси
+            </button>
+        </div>
+
+    </form>
+
+    <div class="reviews-summary mt-4">
+
+        <!-- RATING -->
+
+        <div class="reviews-rating">
+
+            <div class="reviews-rating-title">
+                Рейтинг
+            </div>
+
+            <div class="reviews-rating-score">
+                @avgRating.ToString("0.0")
+            </div>
+
+            <div class="reviews-rating-stars">
+
+                @for (int i = 1; i <= 5; i++)
+                {
+                    if (i <= roundedRating)
+                    {
+                        <i class="bi bi-star-fill"></i>
+                    }
+                    else
+                    {
+                        <i class="bi bi-star"></i>
+                    }
+                }
+
+            </div>
+
+            <div class="reviews-count">
+                @totalReviews отзива
+            </div>
+
+        </div>
+
+        <!-- DISTRIBUTION -->
+
+        <div class="reviews-distribution">
+
+            <div class="dist-title">
+                Дистрибуция
+            </div>
+
+            @for (int i = 5; i >= 1; i--)
             {
-                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
-                    <a class="page-link"
-                       asp-route-page="@i"
-                       asp-route-rating="@ViewBag.Rating"
-                       asp-route-search="@ViewBag.Search"
-                       asp-route-sort="@ViewBag.Sort">
-                        @i
-                    </a>
-                </li>
+                var percent = GetPercent(i);
+                var count = distribution[i];
+
+                <div class="dist-row">
+
+                    <span>@i ★</span>
+
+                    <div class="dist-bar">
+                        <div class="dist-fill"
+                             style="width:@percent%"></div>
+                    </div>
+
+                    <span>@count</span>
+
+                </div>
             }
-        </ul>
-    </nav>
-}
+
+        </div>
+
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="reviews-empty">
+            Не бяха намерени ревюта.
+        </div>
+    }
+    else
+    {
+        <div class="review-list">
+
+            @foreach (var review in Model)
+            {
+                <div class="review-card">
+
+                    <div class="review-header">
+                        <span class="review-author">@review.AuthorName</span>
+                        <span class="review-date">@review.CreatedAt.ToString("dd MMM yyyy")</span>
+                    </div>
+
+                    <div class="review-rating">
+
+                        @for (int i = 0; i < review.Rating; i++)
+                        {
+                            <i class="bi bi-star-fill"></i>
+                        }
+
+                        @for (int i = review.Rating; i < 5; i++)
+                        {
+                            <i class="bi bi-star"></i>
+                        }
+
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(review.Comment))
+                    {
+                        <p class="review-comment">@review.Comment</p>
+                    }
+
+                </div>
+            }
+
+        </div>
+    }
+
+    @if (ViewBag.TotalPages > 1)
+    {
+        <nav>
+            <ul class="pagination justify-content-center">
+
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+
+                        <a class="page-link"
+                               asp-route-page="@i"
+                               asp-route-rating="@ViewBag.Rating"
+                               asp-route-search="@ViewBag.Search"
+                               asp-route-sort="@ViewBag.Sort">
+
+                            @i
+
+                        </a>
+
+                    </li>
+                }
+
+            </ul>
+        </nav>
+    }
+
+</div>
+
+<script>
+
+    const form = document.querySelector(".reviews-filter");
+
+    form.addEventListener("change", () => {
+
+        const params = new URLSearchParams(new FormData(form));
+        const url = window.location.pathname + "?" + params.toString();
+
+        fetch(url)
+        .then(r => r.text())
+        .then(html => {
+
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html,"text/html");
+
+            const newReviews = doc.querySelector(".review-list");
+            const newPagination = doc.querySelector(".pagination");
+
+            if(newReviews)
+                document.querySelector(".review-list").replaceWith(newReviews);
+
+            if(newPagination && document.querySelector(".pagination"))
+                document.querySelector(".pagination").replaceWith(newPagination);
+
+        });
+
+    });
+
+</script>

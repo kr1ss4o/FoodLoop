@@ -1,0 +1,261 @@
+﻿/* =========================================================
+   RESTAURANT REVIEWS
+========================================================= */
+
+.reviews-page {
+    max-width: 1100px;
+    margin: auto;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.reviews-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+/* =========================================================
+   FILTER BAR
+========================================================= */
+
+.reviews-filter {
+    background: white;
+    padding: 16px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.06);
+    border: 1px solid rgba(0,0,0,.05);
+}
+
+    .reviews-filter .form-control,
+    .reviews-filter .form-select {
+        border-radius: 12px;
+        outline: none;
+        box-shadow: none;
+    }
+
+    .reviews-filter button {
+        border-radius: 12px;
+        font-weight: 600;
+    }
+
+/* =========================================================
+   FILTER BAR IMPROVED
+========================================================= */
+
+.reviews-filter {
+    background: white;
+    padding: 18px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.06);
+    border: 1px solid rgba(0,0,0,.05);
+}
+
+    /* dropdown */
+
+    .reviews-filter .form-select {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        font-weight: 500;
+    }
+
+    /* search */
+
+    .reviews-filter .form-control {
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+    }
+
+    /* button */
+
+    .reviews-filter button {
+        border-radius: 12px;
+        font-weight: 600;
+    }
+
+/* rating stars inside dropdown */
+
+.rating-option {
+    color: #f59e0b;
+    font-weight: 600;
+}
+
+/* =========================================================
+   REVIEW SUMMARY
+========================================================= */
+
+.reviews-summary {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.reviews-rating,
+.reviews-distribution {
+    background: white;
+    padding: 26px;
+    border-radius: 18px;
+    box-shadow: 0 8px 20px rgba(0,0,0,.05);
+}
+
+.reviews-rating-title {
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.reviews-rating-score {
+    font-size: 60px;
+    font-weight: 700;
+}
+
+.reviews-rating-stars {
+    color: #f59e0b;
+    font-size: 18px;
+}
+
+.reviews-count {
+    margin-top: 8px;
+    color: #64748b;
+}
+
+.dist-title {
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.dist-row {
+    display: grid;
+    grid-template-columns: 40px 1fr 30px;
+    align-items: center;
+    gap: 10px;
+    margin: 6px 0;
+}
+
+.dist-bar {
+    height: 10px;
+    background: #e5e7eb;
+    border-radius: 10px;
+}
+
+.dist-fill {
+    height: 10px;
+    background: #22c55e;
+    border-radius: 10px;
+}
+
+/* =========================================================
+   REVIEW LIST
+========================================================= */
+
+.review-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+/* =========================================================
+   REVIEW CARD
+========================================================= */
+
+.review-card {
+    background: white;
+    border-radius: 18px;
+    padding: 20px;
+    border: 1px solid rgba(0,0,0,.05);
+    box-shadow: 0 8px 20px rgba(0,0,0,.05);
+    transition: .18s;
+}
+
+    .review-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 35px rgba(0,0,0,.08);
+    }
+
+/* =========================================================
+   REVIEW HEADER
+========================================================= */
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.review-author {
+    font-weight: 600;
+}
+
+.review-date {
+    font-size: 13px;
+    color: #64748b;
+}
+
+/* =========================================================
+   RATING
+========================================================= */
+
+.review-rating {
+    margin-top: 6px;
+}
+
+    .review-rating i {
+        color: #f59e0b;
+    }
+
+/* =========================================================
+   COMMENT
+========================================================= */
+
+.review-comment {
+    margin-top: 10px;
+    color: #334155;
+    line-height: 1.6;
+}
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.reviews-empty {
+    padding: 40px;
+    text-align: center;
+    background: white;
+    border-radius: 16px;
+    border: 1px dashed rgba(0,0,0,.15);
+    color: #64748b;
+}
+
+/* =========================================================
+   PAGINATION
+========================================================= */
+
+.pagination {
+    margin-top: 30px;
+}
+
+    .pagination .page-link {
+        border-radius: 999px !important;
+        border: 1px solid rgba(0,0,0,.08);
+        margin: 0 4px;
+    }
+
+    .pagination .page-item.active .page-link {
+        background: #22c55e;
+        border-color: #22c55e;
+    }
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:768px) {
+
+    .reviews-title {
+        font-size: 26px;
+    }
+}
