@@ -3,6 +3,7 @@
 
 @{
     ViewData["FullWidth"] = true;
+    var restaurantRatings = ViewBag.RestaurantRatings as Dictionary<Guid, double>;
 }
 
 <div class="search-page">
@@ -53,6 +54,7 @@
             </form>
 
             <!-- RESULTS COUNT -->
+
             @if (Model.OffersCount == 0 && Model.RestaurantsCount == 0)
             {
                 <div class="search-results-count">
@@ -68,31 +70,80 @@
 
         </div>
 
-
         <!-- ===================== -->
         <!-- OFFERS -->
         <!-- ===================== -->
+
         @if (Model.Offers.Any())
         {
             <div class="search-section">
 
                 <div class="search-section-header">
 
-                    <h2 class="search-title">
+                    <h2 class="section-title">
                         Оферти
                     </h2>
 
-                    <p class="search-subtitle">
+                    <p class="section-subtitle">
                         Намери намалени предложения от ресторанти близо до теб.
                     </p>
 
                 </div>
 
-                <div class="search-grid">
+                <div class="search-grid offers-grid">
 
                     @foreach (var offer in Model.Offers)
                     {
-                        @await Html.PartialAsync("_OfferCard", offer)
+                        var rating = restaurantRatings != null && restaurantRatings.ContainsKey(offer.RestaurantId)
+                            ? restaurantRatings[offer.RestaurantId]
+                            : offer.Restaurant?.Rating ?? 4.5;
+
+                        <a asp-controller="Offers"
+                               asp-action="Details"
+                               asp-route-id="@offer.Id"
+                               class="offer-card card-link">
+
+                            <div class="offer-image">
+
+                                <img src="@offer.ImageUrl">
+
+                                <div class="offer-rating">
+                                    <i class="bi bi-star-fill"></i>
+                                    @rating.ToString("0.0")
+                                </div>
+
+                            </div>
+
+                            <div class="offer-body">
+
+                                <h3 class="offer-title">
+                                    @offer.Title
+                                </h3>
+
+                                <div class="offer-restaurant">
+                                    @offer.Restaurant?.Name
+                                </div>
+
+                                <div class="offer-price-row">
+
+                                    <div class="offer-price">
+                                        @offer.DiscountedPrice EUR
+                                    </div>
+
+                                    <div class="offer-stock">
+                                        @offer.QuantityAvailable налични
+                                    </div>
+
+                                </div>
+
+                                <div class="offer-timer">
+                                    <i class="bi bi-hourglass-split"></i>
+                                    @(offer.EndsAt.Subtract(DateTime.UtcNow).TotalHours.ToString("0"))ч
+                                </div>
+
+                            </div>
+
+                        </a>
                     }
 
                 </div>
@@ -104,27 +155,74 @@
         <!-- ===================== -->
         <!-- RESTAURANTS -->
         <!-- ===================== -->
+
         @if (Model.Restaurants.Any())
         {
             <div class="search-section">
 
                 <div class="search-section-header">
 
-                    <h2 class="search-title">
+                    <h2 class="section-title">
                         Ресторанти
                     </h2>
 
-                    <p class="search-subtitle">
+                    <p class="section-subtitle">
                         Открий ресторанти, които предлагат оферти в FoodLoop.
                     </p>
 
                 </div>
 
-                <div class="search-grid">
+                <div class="search-grid restaurants-grid">
 
-                    @foreach (var restaurant in Model.Restaurants)
+                    @foreach (var r in Model.Restaurants)
                     {
-                        @await Html.PartialAsync("_RestaurantCard", restaurant)
+                        var rating = restaurantRatings != null && restaurantRatings.ContainsKey(r.Id)
+                            ? restaurantRatings[r.Id]
+                            : r.Rating;
+
+                        <a asp-controller="Restaurant"
+                               asp-action="Details"
+                               asp-route-id="@r.Id"
+                               class="restaurant-card card-link">
+
+                            <div class="restaurant-image">
+
+                                <img src="@r.BannerImageUrl" class="restaurant-banner" />
+
+                                <div class="restaurant-rating">
+                                    <i class="bi bi-star-fill"></i>
+                                    @rating.ToString("0.0")
+                                </div>
+
+                            </div>
+
+                            <div class="restaurant-body">
+
+                                <img src="@r.ImageUrl" class="restaurant-logo" />
+
+                                <h3 class="restaurant-name">@r.Name</h3>
+
+                                <div class="restaurant-tags">
+                                    Италианска • Пица • Паста
+                                </div>
+
+                                <div class="restaurant-meta">
+
+                                    <span>
+                                        <i class="bi bi-clock"></i>
+                                        25-35 мин
+                                    </span>
+
+                                    <span>
+                                        <i class="bi bi-bicycle"></i>
+                                        2€ доставка
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </a>
                     }
 
                 </div>
@@ -135,7 +233,6 @@
     </div>
 
 </div>
-
 
 @section Scripts {
 
