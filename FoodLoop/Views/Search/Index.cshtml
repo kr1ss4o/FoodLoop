@@ -38,14 +38,31 @@
 
                     <i class="bi bi-sliders search-sort-icon"></i>
 
-                    <select name="sort" class="search-sort">
+                    <select name="sort" class="search-sort" id="sortSelect">
 
-                        <option value="">Сортирай</option>
-                        <option value="expiring_soon">Изтичат скоро</option>
-                        <option value="rating_desc">Най-висок рейтинг</option>
-                        <option value="price_asc">Цена ↑</option>
-                        <option value="price_desc">Цена ↓</option>
-                        <option value="newest">Най-нови</option>
+                        <option value="" selected="@(string.IsNullOrEmpty(Model.Sort))">
+                            Сортирай
+                        </option>
+
+                        <option value="expiring_soon" selected="@(Model.Sort == "expiring_soon")">
+                            Изтичат скоро
+                        </option>
+
+                        <option value="rating_desc" selected="@(Model.Sort == "rating_desc")">
+                            Най-висок рейтинг
+                        </option>
+
+                        <option value="price_asc" selected="@(Model.Sort == "price_asc")">
+                            Цена ↑
+                        </option>
+
+                        <option value="price_desc" selected="@(Model.Sort == "price_desc")">
+                            Цена ↓
+                        </option>
+
+                        <option value="newest" selected="@(Model.Sort == "newest")">
+                            Най-нови
+                        </option>
 
                     </select>
 
@@ -237,6 +254,18 @@
 @section Scripts {
 
     <script>
+
+        // Apply filter wihtout reloading the page
+
+        const sortSelect = document.getElementById("sortSelect");
+
+        if (sortSelect) {
+            sortSelect.addEventListener("change", function () {
+                this.closest("form").submit();
+            });
+        }
+
+        // Offer countdown timer
 
         document.querySelectorAll(".countdown").forEach(el => {
 

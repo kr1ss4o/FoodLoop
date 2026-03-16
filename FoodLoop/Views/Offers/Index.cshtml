@@ -7,8 +7,6 @@
     ViewData["FullWidth"] = true;
 
     var trending = ViewBag.TrendingRestaurants as List<Restaurant>;
-    var trendingOffers = ViewBag.TrendingOffers as List<Offer>;
-
     var restaurantRatings = ViewBag.RestaurantRatings as Dictionary<Guid, double>;
 }
 
@@ -176,18 +174,6 @@
                         <p class="restaurants-subtitle">Най-предпочитаните места във вашия район</p>
                     </div>
 
-                    <div class="restaurants-nav">
-
-                        <button class="restaurants-arrow left">
-                            <i class="bi bi-chevron-left"></i>
-                        </button>
-
-                        <button class="restaurants-arrow right">
-                            <i class="bi bi-chevron-right"></i>
-                        </button>
-
-                    </div>
-
                 </div>
 
                 <div class="restaurants-carousel">
@@ -224,20 +210,6 @@
                                     Италианска • Пица • Паста
                                 </div>
 
-                                <div class="restaurant-meta">
-
-                                    <span>
-                                        <i class="bi bi-clock"></i>
-                                        25-35 мин
-                                    </span>
-
-                                    <span>
-                                        <i class="bi bi-bicycle"></i>
-                                        2€ доставка
-                                    </span>
-
-                                </div>
-
                             </div>
 
                         </a>
@@ -252,22 +224,43 @@
     </section>
 }
 
-
-<!-- TRENDING OFFERS -->
-@if (trendingOffers != null && trendingOffers.Any())
+<!-- ALL OFFERS -->
+@if (Model.Offers != null && Model.Offers.Any())
 {
     <section class="offers-section">
 
         <div class="offers-wrapper">
 
             <div class="offers-header">
-                <h2>Най-популярни оферти</h2>
-                <p>Най-търсените предложения в момента</p>
+
+                <div class="offers-header-left">
+                    <h2>Всички оферти</h2>
+                    <p>Разгледайте наличните предложения</p>
+                </div>
+
+                <div class="offers-sort">
+
+                    <label for="sortSelect" class="sort-label">
+                        <i class="bi bi-sort-down"></i>
+                        Сортиране
+                    </label>
+
+                    <select id="sortSelect" name="sort" class="sort-select">
+
+                        <option value="">Най-нови</option>
+                        <option value="oldest">Най-стари</option>
+                        <option value="rating_desc">Рейтинг</option>
+                        <option value="price_asc">Цена ↑</option>
+                        <option value="price_desc">Цена ↓</option>
+                    </select>
+
+                </div>
+
             </div>
 
-            <div class="offers-grid">
+            <div class="offers-grid" id="offersGrid">
 
-                @foreach (var offer in trendingOffers)
+                @foreach (var offer in Model.Offers)
                 {
                     var rating = restaurantRatings != null && restaurantRatings.ContainsKey(offer.RestaurantId)
                         ? restaurantRatings[offer.RestaurantId]
@@ -326,94 +319,32 @@
     </section>
 }
 
-
-<!-- BENEFITS -->
-<section class="benefits-section">
-
-    <div class="benefits-wrapper">
-
-        <div class="benefit-item">
-
-            <div class="benefit-icon">
-                <i class="bi bi-clock"></i>
-            </div>
-
-            <h3>Бърза доставка</h3>
-
-            <p>
-                Получи храната си до 30 минути.
-                Следи поръчката си в реално време.
-            </p>
-
-        </div>
-
-        <div class="benefit-item">
-
-            <div class="benefit-icon">
-                <i class="bi bi-shield-check"></i>
-            </div>
-
-            <h3>Свежо и безопасно</h3>
-
-            <p>
-                Всички наши партньори спазват
-                строги хигиенни стандарти.
-                Гарантирана свежест.
-            </p>
-
-        </div>
-
-        <div class="benefit-item">
-
-            <div class="benefit-icon">
-                <i class="bi bi-percent"></i>
-            </div>
-
-            <h3>Най-добрите оферти</h3>
-
-            <p>
-                Ексклузивни намаления и предложения
-                от любимите ти ресторанти.
-            </p>
-
-        </div>
-
-    </div>
-
-</section>
-
 <script>
 
-    document.addEventListener("DOMContentLoaded", function(){
+    document.getElementById("sortSelect").addEventListener("change", async function () {
 
-    const carousel = document.querySelector(".categories-carousel")
+        const sort = this.value;
 
-    const left = document.querySelector(".categories-left")
+        const url = new URL(window.location.href);
 
-    const right = document.querySelector(".categories-right")
+        if (sort)
+            url.searchParams.set("sort", sort);
+        else
+            url.searchParams.delete("sort");
 
-    if(!carousel) return
+        const response = await fetch(url.toString(), {
+            headers: { "X-Requested-With": "XMLHttpRequest" }
+        });
 
-    const scrollAmount = carousel.clientWidth
+        const html = await response.text();
 
-    right.addEventListener("click", () => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
 
-    carousel.scrollBy({
-    left:scrollAmount,
-    behavior:"smooth"
-    })
+        const newGrid = doc.querySelector("#offersGrid");
 
-    })
+        document.querySelector("#offersGrid").innerHTML = newGrid.innerHTML;
 
-    left.addEventListener("click", () => {
-
-    carousel.scrollBy({
-    left:-scrollAmount,
-    behavior:"smooth"
-    })
-
-    })
-
-    })
+    });
 
 </script>

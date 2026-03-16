@@ -478,7 +478,7 @@ META
     }
 }
 
-/* TRENDING OFFERS */
+/* OFFERS */
 
 /* SECTION */
 
@@ -498,6 +498,15 @@ META
 
 /* HEADER */
 
+.offers-header {
+    position: sticky;
+    top: 70px;
+    background: #f5f7f6;
+    padding: 20px;
+    border-radius: 15px;
+    z-index: 5;
+}
+
 .offers-header h2 {
     font-size: 28px;
     font-weight: 700;
@@ -508,6 +517,73 @@ META
     color: #6b7280;
     margin-bottom: 32px;
 }
+
+/* HEADER LAYOUT */
+
+.offers-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+}
+
+/* LEFT TEXT */
+
+.offers-header-left h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.offers-header-left p {
+    margin: 4px 0 0;
+    color: #6c757d;
+    font-size: 15px;
+}
+
+/* SORT BLOCK */
+
+.offers-sort {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* LABEL */
+
+.sort-label {
+    font-size: 14px;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* SELECT */
+
+.sort-select {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all .2s;
+}
+
+    /* HOVER */
+
+    .sort-select:hover {
+        border-color: #9dcf9b;
+    }
+
+    /* FOCUS */
+
+    .sort-select:focus {
+        outline: none;
+        border-color: #6fbf73;
+        box-shadow: 0 0 0 2px rgba(111,191,115,0.2);
+    }
 
 /* GRID */
 

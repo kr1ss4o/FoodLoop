@@ -84,11 +84,15 @@
 
     <!-- ================= ИЗЧАКВАЩИ ================= -->
 
-    <h4 class="section-heading">Изчакващи поръчки</h4>
+    <h4 class="dashboard-title mb-3">Изчакващи поръчки</h4>
 
     @if (!pending.Any())
     {
-        <p class="empty-text">В момента нямате изчакващи поръчки</p>
+        <div class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <h5>Няма изчакващи поръчки</h5>
+            <p>Когато клиент направи нова поръчка, тя ще се появи тук.</p>
+        </div>
     }
     else
     {
@@ -100,11 +104,15 @@
 
     <!-- ================= АКТИВНИ ================= -->
 
-    <h4 class="section-heading mt-5">Активни поръчки</h4>
+    <h4 class="dashboard-title mt-5 mb-3">Активни поръчки</h4>
 
     @if (!confirmed.Any())
     {
-        <p class="empty-text">В момента нямате активни поръчки</p>
+        <div class="empty-state">
+            <i class="bi bi-truck"></i>
+            <h5>Няма активни поръчки</h5>
+            <p>Потвърдените поръчки ще се показват в тази секция.</p>
+        </div>
     }
     else
     {
@@ -116,11 +124,15 @@
 
     <!-- ================= ИСТОРИЯ ================= -->
 
-    <h4 class="section-heading mt-5">История на поръчките</h4>
+    <h4 class="dashboard-title mt-5 mb-3">История на поръчките</h4>
 
     @if (!history.Any())
     {
-        <p class="empty-text">В момента нямате завършени поръчки</p>
+        <div class="empty-state">
+            <i class="bi bi-clock-history"></i>
+            <h5>Няма история на поръчките</h5>
+            <p>Завършените или отменени поръчки ще се показват тук.</p>
+        </div>
     }
     else
     {

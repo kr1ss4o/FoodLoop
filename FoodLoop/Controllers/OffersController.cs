@@ -1,5 +1,4 @@
 ﻿using FoodLoop.Data;
-using FoodLoop.Helpers;
 using FoodLoop.Models.Entities;
 using FoodLoop.Models.Enums;
 using FoodLoop.Models.ViewModels;
@@ -17,51 +16,28 @@ namespace FoodLoop.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(
-            int breakfastPage = 1,
-            int lunchPage = 1,
-            int dinnerPage = 1)
+        public async Task<IActionResult> Index(string? sort)
         {
-            const int pageSize = 4;
-
-            IQueryable<Offer> baseQuery = _context.Offers
+            IQueryable<Offer> query = _context.Offers
                 .AsNoTracking()
                 .Where(o => o.QuantityAvailable > 0 && o.EndsAt > DateTime.UtcNow)
                 .Include(o => o.Restaurant)
                 .Include(o => o.Category);
 
-            // =============================
-            // Закуска
-            // =============================
+            query = sort switch
+            {
+                "price_asc" => query.OrderBy(o => o.DiscountedPrice),
+                "price_desc" => query.OrderByDescending(o => o.DiscountedPrice),
 
-            var breakfastQuery = baseQuery
-                .Where(o => o.Category.Name == "Закуска")
-                .OrderByDescending(o => o.EndsAt);
+                "rating_desc" => query.OrderByDescending(o => o.Restaurant.Rating),
 
-            var (breakfastOffers, breakfastTotalPages) =
-                await breakfastQuery.ToPagedListAsync(breakfastPage, pageSize);
+                "newest" => query.OrderByDescending(o => o.CreatedAt),
+                "oldest" => query.OrderBy(o => o.CreatedAt),
 
-            // =============================
-            // Обяд
-            // =============================
+                _ => query.OrderByDescending(o => o.CreatedAt)
+            };
 
-            var lunchQuery = baseQuery
-                .Where(o => o.Category.Name == "Обяд")
-                .OrderByDescending(o => o.EndsAt);
-
-            var (lunchOffers, lunchTotalPages) =
-                await lunchQuery.ToPagedListAsync(lunchPage, pageSize);
-
-            // =============================
-            // Вечеря
-            // =============================
-
-            var dinnerQuery = baseQuery
-                .Where(o => o.Category.Name == "Вечеря")
-                .OrderByDescending(o => o.EndsAt);
-
-            var (dinnerOffers, dinnerTotalPages) =
-                await dinnerQuery.ToPagedListAsync(dinnerPage, pageSize);
+            var offers = await query.ToListAsync();
 
             // =============================
             // Trending Restaurants
@@ -77,25 +53,6 @@ namespace FoodLoop.Controllers
                 .OrderByDescending(g => g.Count())
                 .Take(6)
                 .Select(g => g.Key)
-                .ToListAsync();
-
-            // =============================
-            // Trending Offers
-            // =============================
-
-            var trendingOfferIds = await _context.Reservations
-                .Where(r => r.Status == ReservationStatus.Finished &&
-                            r.CreatedAt >= lastWeek)
-                .SelectMany(r => r.Items)
-                .GroupBy(i => i.OfferId)
-                .OrderByDescending(g => g.Count())
-                .Take(6)
-                .Select(g => g.Key)
-                .ToListAsync();
-
-            var trendingOffers = await _context.Offers
-                .Where(o => trendingOfferIds.Contains(o.Id))
-                .Include(o => o.Restaurant)
                 .ToListAsync();
 
             // =============================
@@ -120,48 +77,17 @@ namespace FoodLoop.Controllers
                 .ToDictionaryAsync(x => x.RestaurantId, x => x.Rating);
 
             // =============================
-            // Offer Ratings
-            // =============================
-
-            var offerRatings = await _context.Reviews
-                .Include(r => r.Reservation)
-                    .ThenInclude(res => res.Items)
-                .SelectMany(r => r.Reservation.Items.Select(i => new
-                {
-                    OfferId = i.OfferId,
-                    Rating = r.Rating
-                }))
-                .GroupBy(x => x.OfferId)
-                .Select(g => new
-                {
-                    OfferId = g.Key,
-                    Rating = g.Average(x => x.Rating)
-                })
-                .ToDictionaryAsync(x => x.OfferId, x => x.Rating);
-
-            // =============================
             // ViewModel
             // =============================
 
             var vm = new MarketplaceViewModel
             {
-                BreakfastOffers = breakfastOffers,
-                LunchOffers = lunchOffers,
-                DinnerOffers = dinnerOffers,
-
-                BreakfastPage = breakfastPage,
-                LunchPage = lunchPage,
-                DinnerPage = dinnerPage,
-
-                BreakfastTotalPages = breakfastTotalPages,
-                LunchTotalPages = lunchTotalPages,
-                DinnerTotalPages = dinnerTotalPages
+                Offers = offers,
+                Sort = sort
             };
 
             ViewBag.TrendingRestaurants = trendingRestaurants;
-            ViewBag.TrendingOffers = trendingOffers;
             ViewBag.RestaurantRatings = restaurantRatings;
-            ViewBag.OfferRatings = offerRatings;
 
             return View(vm);
         }

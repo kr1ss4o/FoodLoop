@@ -160,7 +160,7 @@
 ========================= */
 
 .offer-card {
-    width: 300px;
+    width: 100%;
     background: white;
     border-radius: 22px;
     overflow: hidden;
@@ -244,7 +244,7 @@
 ========================= */
 
 .restaurant-card {
-    width: 360px;
+    width: 100%;
     background: white;
     border-radius: 24px;
     overflow: hidden;

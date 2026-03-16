@@ -164,78 +164,87 @@
 
     <div class="orders-box">
 
-        @foreach (var order in Model.RecentOrders)
+        @if (!Model.RecentOrders.Any())
         {
-
-            <div class="order-item-wrapper">
-
-                <!-- ORDER ROW -->
-
-                <div class="order-row js-order-toggle">
-
-                    <div class="order-image">
-                        <i class="bi bi-bag"></i>
-                    </div>
-
-                    <div class="order-content">
-
-                        <div class="order-title">
-                            Поръчка #@order.Id.ToString()[..6]
-                        </div>
-
-                        <div class="order-meta">
-                            @order.TotalPrice EUR
-                        </div>
-
-                        <div class="order-status status-@order.Status.ToLower()">
-                            @order.Status
-                        </div>
-
-                    </div>
-
-                    <div class="order-arrow">
-                        <i class="bi bi-chevron-down"></i>
-                    </div>
-
-                </div>
-
-                <!-- ORDER DETAILS -->
-
-                <div class="order-details">
-
-                    <div class="order-details-inner">
-
-                        <div>
-                            <strong>Дата:</strong>
-                            @order.CreatedAt.ToString("dd.MM.yyyy HH:mm")
-                        </div>
-
-                        <div>
-                            <strong>Ресторант:</strong>
-                            @order.RestaurantName
-                        </div>
-
-                        <div class="order-items">
-
-                            @foreach (var item in order.Items)
-                            {
-                                <div>
-                                    @item.OfferTitle × @item.Quantity
-                                </div>
-                            }
-
-                        </div>
-
-                        <div class="order-total">
-                            Общо: @order.TotalPrice EUR
-                        </div>
-
-                    </div>
-
-                </div>
-
+            <div class="reviews-empty">
+                Все още нямате направени поръчки.
             </div>
+        }
+        else
+        {
+            @foreach (var order in Model.RecentOrders)
+            {
 
+                <div class="order-item-wrapper">
+
+                    <!-- ORDER ROW -->
+
+                    <div class="order-row js-order-toggle">
+
+                        <div class="order-image">
+                            <i class="bi bi-bag"></i>
+                        </div>
+
+                        <div class="order-content">
+
+                            <div class="order-title">
+                                Поръчка #@order.Id.ToString()[..6]
+                            </div>
+
+                            <div class="order-meta">
+                                @order.TotalPrice EUR
+                            </div>
+
+                            <div class="order-status status-@order.Status.ToLower()">
+                                @order.Status
+                            </div>
+
+                        </div>
+
+                        <div class="order-arrow">
+                            <i class="bi bi-chevron-down"></i>
+                        </div>
+
+                    </div>
+
+                    <!-- ORDER DETAILS -->
+
+                    <div class="order-details">
+
+                        <div class="order-details-inner">
+
+                            <div>
+                                <strong>Дата:</strong>
+                                @order.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+                            </div>
+
+                            <div>
+                                <strong>Ресторант:</strong>
+                                @order.RestaurantName
+                            </div>
+
+                            <div class="order-items">
+
+                                @foreach (var item in order.Items)
+                                {
+                                    <div>
+                                        @item.OfferTitle × @item.Quantity
+                                    </div>
+                                }
+
+                            </div>
+
+                            <div class="order-total">
+                                Общо: @order.TotalPrice EUR
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            }
         }
 
     </div>

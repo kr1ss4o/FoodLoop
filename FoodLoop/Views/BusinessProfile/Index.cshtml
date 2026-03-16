@@ -44,7 +44,7 @@
                         <a href="/RestaurantReviews/Index">
                             ★ @Model.AverageRating.ToString("0.0")
                             <span class="bp-muted">
-                                (@Model.ReviewCount reviews)
+                                (@Model.ReviewCount ревюта)
                             </span>
                         </a>
                     </div>
@@ -70,31 +70,49 @@
 
     <!-- ============ STATS SECTION ============ -->
     <section class="bp-stats">
-        <div class="bp-stat-card">
+
+        <div class="bp-stat-card stat-reviews">
+            <div class="bp-stat-icon">
+                <i class="bi bi-chat-dots"></i>
+            </div>
+
             <div class="bp-stat-value">@Model.ReviewCount</div>
-            <div class="bp-stat-label">Всички ревюта:</div>
+            <div class="bp-stat-label">Общо отзиви</div>
         </div>
 
-        <div class="bp-stat-card">
+        <div class="bp-stat-card stat-rating">
+            <div class="bp-stat-icon">
+                <i class="bi bi-star"></i>
+            </div>
+
             <div class="bp-stat-value">@Model.AverageRating.ToString("0.0")</div>
-            <div class="bp-stat-label">Рейтинг:</div>
+            <div class="bp-stat-label">Средна оценка</div>
         </div>
 
-        <div class="bp-stat-card">
+        <div class="bp-stat-card stat-offers">
+            <div class="bp-stat-icon">
+                <i class="bi bi-ticket-perforated"></i>
+            </div>
+
             <div class="bp-stat-value">@Model.ActiveOffers</div>
-            <div class="bp-stat-label">Активни оферти:</div>
+            <div class="bp-stat-label">Активни оферти</div>
         </div>
 
-        <div class="bp-stat-card">
+        <div class="bp-stat-card stat-orders">
+            <div class="bp-stat-icon">
+                <i class="bi bi-box"></i>
+            </div>
+
             <div class="bp-stat-value">@Model.TotalReservations</div>
-            <div class="bp-stat-label">Завършени оферти:</div>
+            <div class="bp-stat-label">Изпълнени поръчки</div>
         </div>
+
     </section>
 
     <!-- ============ OWNER SECTION ============ -->
     <section class="bp-section">
         <div class="bp-section-head">
-            <h2>Детайли на собственик:</h2>
+            <h2 class="bp-welcome-name">Детайли на собственик:</h2>
         </div>
 
         <div class="bp-owner-grid">

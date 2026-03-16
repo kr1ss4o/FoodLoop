@@ -11,6 +11,15 @@
     padding: 40px 20px;
 }
 
+.bp-stat-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 22px;
+    background: linear-gradient(120deg,transparent,rgba(0,0,0,0.02));
+    pointer-events: none;
+}
+
 /* ================= PAGE ================= */
 
 .profile-body {
@@ -126,6 +135,73 @@
     font-size: 13px;
     color: #6b7280;
     margin-top: 6px;
+}
+
+/* ===== STATS GRID ===== */
+
+.bp-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+/* ===== STAT CARD ===== */
+
+.bp-stat-card {
+    background: white;
+    border-radius: 18px;
+    padding: 18px 20px;
+    border: 2px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: relative;
+    transition: .25s;
+}
+
+    .bp-stat-card:hover {
+        transform: translateY(-3px);
+    }
+
+/* ===== ICON ===== */
+
+.bp-stat-icon {
+    font-size: 18px;
+    margin-bottom: 2px;
+    opacity: .8;
+}
+
+/* ===== VALUE ===== */
+
+.bp-stat-value {
+    font-size: 26px;
+    font-weight: 700;
+}
+
+/* ===== LABEL ===== */
+
+.bp-stat-label {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+/* ===== COLORS ===== */
+
+.stat-reviews {
+    border-color: #f4b400;
+}
+
+.stat-rating {
+    border-color: #34a853;
+}
+
+.stat-offers {
+    border-color: #e91e63;
+}
+
+.stat-orders {
+    border-color: #3b82f6;
 }
 
 /* ================= OWNER ================= */
