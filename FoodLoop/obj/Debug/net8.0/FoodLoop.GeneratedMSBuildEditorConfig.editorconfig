@@ -146,12 +146,8 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVzdGF1cmFudFxPcmRlckRhc2hib2FyZFxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Kris/Desktop/FoodLoop/FoodLoop/Views/Reviews/Create.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmV2aWV3c1xDcmVhdGUuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Kris/Desktop/FoodLoop/FoodLoop/Views/Reviews/Edit.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmV2aWV3c1xFZGl0LmNzaHRtbA==
+[C:/Users/Kris/Desktop/FoodLoop/FoodLoop/Views/Reviews/ReviewForm.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmV2aWV3c1xSZXZpZXdGb3JtLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Kris/Desktop/FoodLoop/FoodLoop/Views/Search/Index.cshtml]

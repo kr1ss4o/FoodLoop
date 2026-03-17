@@ -14,6 +14,7 @@ wwwroot\css\restaurant.css
 wwwroot\css\reviews.css
 wwwroot\css\search.css
 wwwroot\css\site.css
+wwwroot\css\store.css
 wwwroot\css\timeline.css
 wwwroot\favicon.ico
 wwwroot\images\banners\94d298cf-87ae-4fee-941a-5a1b6bfabe45.jpg
@@ -134,4 +135,3 @@ wwwroot\lib\jquery\dist\jquery.js
 wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
-wwwroot\css\store.css

@@ -1,6 +1,7 @@
 ﻿using FoodLoop.Data;
 using FoodLoop.Models.Entities;
 using FoodLoop.Models.Enums;
+using FoodLoop.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +21,10 @@ namespace FoodLoop.Controllers
             _userManager = userManager;
         }
 
-        // GET: /Reviews/Create/{reservationId}
+        // =====================================================
+        // CREATE (GET)
+        // =====================================================
+
         public async Task<IActionResult> Create(Guid reservationId)
         {
             var user = await _userManager.GetUserAsync(User);
@@ -31,54 +35,58 @@ namespace FoodLoop.Controllers
                 .Include(r => r.Review)
                 .FirstOrDefaultAsync(r => r.Id == reservationId);
 
-            if (reservation == null)
-                return NotFound();
+            if (reservation == null) return NotFound();
 
-            // 1️⃣ Проверка: собственик
-            if (reservation.UserId != user.Id)
-                return Forbid();
+            if (reservation.UserId != user.Id) return Forbid();
 
-            // 2️⃣ Проверка: Finished
             if (reservation.Status != ReservationStatus.Finished)
                 return BadRequest("Поръчката не е завършена.");
 
-            // 3️⃣ Проверка: вече има review
             if (reservation.Review != null)
                 return BadRequest("Вече има изпратено ревю.");
 
-            // 4️⃣ Проверка: 3 дни срок
             var finishedLog = reservation.StatusLogs
                 .Where(l => l.NewStatus == ReservationStatus.Finished)
                 .OrderByDescending(l => l.ChangedAt)
                 .FirstOrDefault();
 
-            if (finishedLog == null)
-                return BadRequest("Невалидна фаза на поръчката.");
-
-            if (finishedLog.ChangedAt.AddDays(3) < DateTime.UtcNow)
+            if (finishedLog == null ||
+                finishedLog.ChangedAt.AddDays(3) < DateTime.UtcNow)
                 return BadRequest("Периода за ревю изтече.");
 
-            ViewBag.ReservationId = reservation.Id;
-            return View();
+            var model = new ReviewFormViewModel
+            {
+                ReservationId = reservation.Id,
+                Rating = 5
+            };
+
+            ViewData["Title"] = "Остави ревю";
+
+            return View("ReviewForm", model);
         }
+
+        // =====================================================
+        // CREATE (POST)
+        // =====================================================
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Guid reservationId, int rating, string? comment)
+        public async Task<IActionResult> Create(ReviewFormViewModel model)
         {
+            if (!ModelState.IsValid)
+                return View("ReviewForm", model);
+
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Forbid();
 
             var reservation = await _db.Reservations
                 .Include(r => r.StatusLogs)
                 .Include(r => r.Review)
-                .FirstOrDefaultAsync(r => r.Id == reservationId);
+                .FirstOrDefaultAsync(r => r.Id == model.ReservationId);
 
-            if (reservation == null)
-                return NotFound();
+            if (reservation == null) return NotFound();
 
-            if (reservation.UserId != user.Id)
-                return Forbid();
+            if (reservation.UserId != user.Id) return Forbid();
 
             if (reservation.Status != ReservationStatus.Finished)
                 return BadRequest();
@@ -95,14 +103,19 @@ namespace FoodLoop.Controllers
                 finishedLog.ChangedAt.AddDays(3) < DateTime.UtcNow)
                 return BadRequest("Периода за ревю изтече.");
 
-            if (rating < 1 || rating > 5)
-                return BadRequest("Невалидна оценка/рейтинг.");
+            if (model.Rating < 1 || model.Rating > 5)
+            {
+                ModelState.AddModelError("", "Невалиден рейтинг.");
+                return View("ReviewForm", model);
+            }
 
             var review = new Review
             {
                 ReservationId = reservation.Id,
-                Rating = rating,
-                Comment = string.IsNullOrWhiteSpace(comment) ? null : comment.Trim()
+                Rating = model.Rating,
+                Comment = string.IsNullOrWhiteSpace(model.Comment)
+                    ? null
+                    : model.Comment.Trim()
             };
 
             _db.Reviews.Add(review);
@@ -110,11 +123,15 @@ namespace FoodLoop.Controllers
 
             return RedirectToAction("Index", "Cart", new { tab = "history" });
         }
-        //
-        // Edit GET
-        //
+
+        // =====================================================
+        // EDIT (GET)
+        // =====================================================
+
         public async Task<IActionResult> Edit(Guid reservationId)
         {
+            ModelState.Clear();
+
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Forbid();
 
@@ -138,25 +155,36 @@ namespace FoodLoop.Controllers
                 finishedLog.ChangedAt.AddDays(3) < DateTime.UtcNow)
                 return BadRequest();
 
-            ViewBag.ReservationId = reservation.Id;
-            ViewBag.Rating = reservation.Review.Rating;
-            ViewBag.Comment = reservation.Review.Comment;
+            var model = new ReviewFormViewModel
+            {
+                ReservationId = reservation.Id,
+                Rating = reservation.Review.Rating,
+                Comment = reservation.Review.Comment
+            };
 
-            return View();
+            ViewData["Title"] = "Редактирай ревю";
+
+            return View("ReviewForm", model);
         }
-        //
-        // Edit POST
-        //
+
+        // =====================================================
+        // EDIT (POST)
+        // =====================================================
+
         [HttpPost]
-        public async Task<IActionResult> Edit(Guid reservationId, int rating, string? comment)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(ReviewFormViewModel model)
         {
+            if (!ModelState.IsValid)
+                return View("ReviewForm", model);
+
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return Forbid();
 
             var reservation = await _db.Reservations
                 .Include(r => r.StatusLogs)
                 .Include(r => r.Review)
-                .FirstOrDefaultAsync(r => r.Id == reservationId);
+                .FirstOrDefaultAsync(r => r.Id == model.ReservationId);
 
             if (reservation == null || reservation.Review == null)
                 return NotFound();
@@ -173,17 +201,28 @@ namespace FoodLoop.Controllers
                 finishedLog.ChangedAt.AddDays(3) < DateTime.UtcNow)
                 return BadRequest();
 
-            reservation.Review.Rating = rating;
-            reservation.Review.Comment = string.IsNullOrWhiteSpace(comment) ? null : comment.Trim();
+            if (model.Rating < 1 || model.Rating > 5)
+            {
+                ModelState.AddModelError("", "Невалиден рейтинг.");
+                return View("ReviewForm", model);
+            }
+
+            reservation.Review.Rating = model.Rating;
+            reservation.Review.Comment = string.IsNullOrWhiteSpace(model.Comment)
+                ? null
+                : model.Comment.Trim();
 
             await _db.SaveChangesAsync();
 
             return RedirectToAction("Index", "Cart", new { tab = "history" });
         }
-        //
-        // Delete
-        //
+
+        // =====================================================
+        // DELETE
+        // =====================================================
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid reservationId)
         {
             var user = await _userManager.GetUserAsync(User);

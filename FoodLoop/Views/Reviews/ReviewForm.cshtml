@@ -1,0 +1,95 @@
+﻿@model FoodLoop.Models.ViewModels.ReviewFormViewModel
+
+<link rel="stylesheet" href="~/css/reviews.css" />
+
+<div class="review-form-wrapper">
+
+    <h2 class="review-form-title">
+        @ViewData["Title"]
+    </h2>
+
+    <form asp-action="@ViewContext.RouteData.Values["action"]" method="post">
+
+        <input type="hidden" asp-for="ReservationId" />
+
+        <!-- RATING -->
+
+        <div class="review-field">
+
+            <label>Оценка</label>
+
+            <div class="star-rating" id="rating">
+
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <input type="radio"
+                           name="Rating"
+                           value="@i"
+                           id="star-@i"
+                    @(Model.Rating == i ? "checked" : "") />
+
+                    <label for="star-@i" data-value="@i">★</label>
+                }
+
+            </div>
+
+        </div>
+
+        <!-- COMMENT -->
+
+        <div class="review-field">
+
+            <label>Коментар</label>
+
+            <textarea asp-for="Comment"
+                      maxlength="1000"
+                      rows="4"
+                      placeholder="Сподели мнението си..."></textarea>
+
+        </div>
+
+        <button type="submit" class="review-submit-btn">
+            Запази
+        </button>
+
+    </form>
+
+</div>
+
+<script>
+    const rating = document.getElementById('rating');
+    const stars = rating.querySelectorAll('label');
+    const inputs = rating.querySelectorAll('input');
+
+    function setRating(value) {
+
+        // set radio
+        inputs.forEach(input => {
+            input.checked = parseInt(input.value) === value;
+        });
+
+        // color stars
+        stars.forEach(star => {
+            const starValue = parseInt(star.dataset.value);
+            if (starValue <= value) {
+                star.classList.add('active');
+            } else {
+                star.classList.remove('active');
+            }
+        });
+    }
+
+    // 👉 initial state (EDIT)
+    const checked = rating.querySelector('input:checked');
+    if (checked) {
+        setRating(parseInt(checked.value));
+    }
+
+    // 👉 click
+    stars.forEach(star => {
+        star.addEventListener('click', () => {
+            const value = parseInt(star.dataset.value);
+            setRating(value);
+        });
+    });
+</script>
