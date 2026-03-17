@@ -158,7 +158,7 @@
 
 </section>
 
-<!-- TRENDING RESTAURANTS -->
+<!-- HIGHEST RATED RESTAURANTS -->
 @if (trending != null && trending.Any())
 {
     <section class="restaurants-section">
@@ -170,13 +170,16 @@
                 <div class="restaurants-head">
 
                     <div>
-                        <h2 class="restaurants-title">Популярни ресторанти</h2>
-                        <p class="restaurants-subtitle">Най-предпочитаните места във вашия район</p>
+                        <h2 class="restaurants-title">Най-високо оценени ресторанти</h2>
+                        <p class="restaurants-subtitle">
+                            Водещите ресторанти според потребителите
+                        </p>
                     </div>
 
                 </div>
 
-                <div class="restaurants-carousel">
+                <!-- ✅ ВАЖНО: grid вместо carousel -->
+                <div class="restaurants-grid">
 
                     @foreach (var r in trending)
                     {
@@ -235,8 +238,8 @@
             <div class="offers-header">
 
                 <div class="offers-header-left">
-                    <h2>Всички оферти</h2>
-                    <p>Разгледайте наличните предложения</p>
+                    <h2>Нашите предложения</h2>
+                    <p>Разгледайте наличните оферти</p>
                 </div>
 
                 <div class="offers-sort">

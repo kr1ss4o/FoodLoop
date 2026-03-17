@@ -20,6 +20,17 @@
     --r-md: 14px;
 }
 
+/* =========================================
+   HEADER (TITLE + BUTTON)
+========================================= */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
 /* =========================================================
    PAGE TITLE + TOP BUTTON
 ========================================================= */
@@ -394,6 +405,37 @@
 
 .delete-btn:hover {
     background: rgba(220,53,69,0.18);
+}
+
+/* =========================================
+   EMPTY STATE (DASHED BOX)
+========================================= */
+
+.empty-box {
+    border: 2px dashed rgba(16,24,40,0.12);
+    border-radius: 24px;
+    padding: 60px 20px;
+    text-align: center;
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(6px);
+}
+
+.empty-icon {
+    font-size: 32px;
+    color: rgba(16,24,40,0.25);
+    margin-bottom: 14px;
+}
+
+.empty-box h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+}
+
+.empty-box p {
+    color: var(--muted);
+    font-size: 14px;
 }
 
 /* =========================================================

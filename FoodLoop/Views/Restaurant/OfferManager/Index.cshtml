@@ -6,15 +6,31 @@
 
 <link rel="stylesheet" href="~/css/offers-manage.css" />
 
-<h2 class="page-title">Мениджър на оферти</h2>
+<div class="page-header">
 
-<div class="top-buttons">
-    <a class="create-btn" href="/OfferManager/Create">Създай нова оферта</a>
+    <h2 class="page-title">Мениджър на оферти</h2>
+
+    <a class="create-btn" href="/OfferManager/Create">
+        Създай нова оферта
+    </a>
+
 </div>
 
 @if (!Model.Any())
 {
-    <p class="empty-text">Все още нямате оферти.</p>
+    <div class="empty-box">
+
+        <div class="empty-icon">
+            <i class="bi bi-box-seam"></i>
+        </div>
+
+        <h3>Нямате оферти</h3>
+
+        <p>
+            Създайте първата си оферта и започнете да продавате.
+        </p>
+
+    </div>
 }
 else
 {

@@ -18,6 +18,10 @@ namespace FoodLoop.Controllers
 
         public async Task<IActionResult> Index(string? sort)
         {
+            // =============================
+            // Base Query
+            // =============================
+
             IQueryable<Offer> query = _context.Offers
                 .AsNoTracking()
                 .Where(o => o.QuantityAvailable > 0 && o.EndsAt > DateTime.UtcNow)
@@ -25,25 +29,10 @@ namespace FoodLoop.Controllers
                 .Include(o => o.Category);
 
             // =============================
-            // Sorting (без rating тук)
+            // Restaurant Ratings (avg + count)
             // =============================
 
-            query = sort switch
-            {
-                "price_asc" => query.OrderBy(o => o.DiscountedPrice),
-                "price_desc" => query.OrderByDescending(o => o.DiscountedPrice),
-
-                "newest" => query.OrderByDescending(o => o.CreatedAt),
-                "oldest" => query.OrderBy(o => o.CreatedAt),
-
-                _ => query.OrderByDescending(o => o.CreatedAt)
-            };
-
-            // =============================
-            // Restaurant Ratings
-            // =============================
-
-            var restaurantRatings = await _context.Reviews
+            var restaurantRatingsRaw = await _context.Reviews
                 .Include(r => r.Reservation)
                     .ThenInclude(res => res.Items)
                         .ThenInclude(i => i.Offer)
@@ -56,9 +45,26 @@ namespace FoodLoop.Controllers
                 .Select(g => new
                 {
                     RestaurantId = g.Key,
-                    Rating = g.Average(x => x.Rating)
+                    AvgRating = g.Average(x => x.Rating),
+                    Count = g.Count()
                 })
-                .ToDictionaryAsync(x => x.RestaurantId, x => x.Rating);
+                .ToListAsync();
+
+            // =============================
+            // Smart Score (rating + volume)
+            // =============================
+
+            var restaurantScores = restaurantRatingsRaw
+                .ToDictionary(
+                    x => x.RestaurantId,
+                    x => x.AvgRating * Math.Log(1 + x.Count) // 💡 smart ranking
+                );
+
+            var restaurantRatings = restaurantRatingsRaw
+                .ToDictionary(
+                    x => x.RestaurantId,
+                    x => x.AvgRating
+                );
 
             // =============================
             // Get Offers
@@ -67,32 +73,53 @@ namespace FoodLoop.Controllers
             var offers = await query.ToListAsync();
 
             // =============================
-            // Rating Sort (FIX)
+            // Sorting
             // =============================
 
-            if (sort == "rating_desc")
+            offers = sort switch
             {
-                offers = offers
+                "price_asc" => offers.OrderBy(o => o.DiscountedPrice).ToList(),
+
+                "price_desc" => offers.OrderByDescending(o => o.DiscountedPrice).ToList(),
+
+                "oldest" => offers.OrderBy(o => o.CreatedAt).ToList(),
+
+                "rating_desc" => offers
                     .OrderByDescending(o =>
-                        restaurantRatings.ContainsKey(o.RestaurantId)
-                            ? restaurantRatings[o.RestaurantId]
-                            : o.Restaurant?.Rating ?? 0)
-                    .ThenByDescending(o => o.CreatedAt) // стабилен sort
-                    .ToList();
-            }
+                        restaurantScores.ContainsKey(o.RestaurantId)
+                            ? restaurantScores[o.RestaurantId]
+                            : 0)
+                    .ThenByDescending(o => o.CreatedAt)
+                    .ToList(),
+
+                _ => offers.OrderByDescending(o => o.CreatedAt).ToList()
+            };
 
             // =============================
-            // Trending Restaurants (Top 3)
+            // Trending Restaurants (SMART)
             // =============================
 
-            var trendingRestaurants = await _context.Reservations
-                .Where(r => r.Status == ReservationStatus.Finished)
-                .SelectMany(r => r.Items)
-                .GroupBy(i => i.Offer.Restaurant)
-                .OrderByDescending(g => g.Count())
-                .Take(3)
-                .Select(g => g.Key)
-                .ToListAsync();
+            var trendingRestaurants = await _context.Reviews
+            .Include(r => r.Reservation)
+                .ThenInclude(res => res.Items)
+                    .ThenInclude(i => i.Offer)
+                        .ThenInclude(o => o.Restaurant)
+            .SelectMany(r => r.Reservation.Items.Select(i => new
+            {
+                Restaurant = i.Offer.Restaurant,
+                Rating = r.Rating
+            }))
+            .GroupBy(x => x.Restaurant)
+            .Select(g => new
+            {
+                Restaurant = g.Key,
+                AvgRating = g.Average(x => x.Rating),
+                Count = g.Count()
+            })
+            .OrderByDescending(x => x.AvgRating * Math.Log(1 + x.Count))
+            .Take(3)
+            .Select(x => x.Restaurant)
+            .ToListAsync();
 
             // =============================
             // ViewModel
