@@ -87,21 +87,46 @@ namespace FoodLoop.Controllers
         public async Task<IActionResult> AddToCart(Guid offerId, int quantity = 1)
         {
             var user = await _userManager.GetUserAsync(User);
+
             if (user == null)
-                return Json(new { success = false });
+                return Json(new { success = false, message = "Not logged in" });
+
+            // ❗ ROLE CHECK
+            if (!User.IsInRole("Client"))
+                return Json(new { success = false, message = "Not allowed" });
 
             var offer = await _context.Offers
+                .Include(o => o.Restaurant) // 🔥 ВАЖНО
                 .FirstOrDefaultAsync(o => o.Id == offerId);
 
             if (offer == null ||
                 offer.EndsAt <= DateTime.UtcNow ||
                 offer.QuantityAvailable < quantity)
             {
-                return Json(new { success = false });
+                return Json(new { success = false, message = "Invalid offer" });
             }
 
-            var existing = await _context.CartItems
-                .FirstOrDefaultAsync(c => c.UserId == user.Id && c.OfferId == offerId);
+            var cartItems = await _context.CartItems
+                .Where(c => c.UserId == user.Id)
+                .Include(c => c.Offer)
+                .ToListAsync();
+
+            // 🔴 MAIN LOGIC – само 1 ресторант
+            if (cartItems.Any())
+            {
+                var existingRestaurantId = cartItems.First().Offer.RestaurantId;
+
+                if (existingRestaurantId != offer.RestaurantId)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Можеш да поръчваш само от един ресторант."
+                    });
+                }
+            }
+
+            var existing = cartItems.FirstOrDefault(c => c.OfferId == offerId);
 
             if (existing != null)
                 existing.Quantity += quantity;

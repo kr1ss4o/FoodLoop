@@ -92,8 +92,14 @@
 
         @if (!Model.Reviews.Any())
         {
-            <div class="reviews-empty">
-                Все още нямате оставени ревюта.
+            <div class="empty-state-box">
+                <div class="empty-icon">
+                    <i class="bi bi-star"></i>
+                </div>
+
+                <h4>Нямате оставени ревюта</h4>
+
+                <p>След като направите поръчка, ще можете да оставите отзив.</p>
             </div>
         }
         else
@@ -162,16 +168,27 @@
 
     </div>
 
-    <div class="orders-box">
-
-        @if (!Model.RecentOrders.Any())
-        {
-            <div class="reviews-empty">
-                Все още нямате направени поръчки.
+    @if (!Model.RecentOrders.Any())
+    {
+        <div class="empty-state-box">
+            <div class="empty-icon">
+                <i class="bi bi-bag"></i>
             </div>
-        }
-        else
-        {
+
+            <h4>Нямате направени поръчки</h4>
+
+            <p>Разгледайте офертите и направете първата си поръчка.</p>
+
+            <a asp-controller="Offers"
+                   asp-action="Index"
+                   class="empty-action-btn">
+                Разгледай оферти
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="orders-box">
             @foreach (var order in Model.RecentOrders)
             {
 
@@ -245,9 +262,8 @@
                 </div>
 
             }
-        }
-
-    </div>
+        </div>
+    }
 
     <!-- ACTIONS -->
 

@@ -143,14 +143,43 @@ namespace FoodLoop.Controllers
 
         public async Task<IActionResult> Details(Guid id)
         {
-            var offer = await _context.Offers
-                .Include(o => o.Restaurant)
-                .Include(o => o.OfferTags)
-                    .ThenInclude(ot => ot.Tag)
-                .FirstOrDefaultAsync(o => o.Id == id);
+            var offer = _context.Offers
+            .Include(o => o.Restaurant)
+            .Include(o => o.Category)
+            .Include(o => o.OfferTags)
+            .ThenInclude(ot => ot.Tag)
+            .FirstOrDefault(o => o.Id == id);
 
             if (offer == null)
                 return NotFound();
+
+            // SAFE rating
+            var ratings = await _context.Reviews
+            .Include(r => r.Reservation)
+            .ThenInclude(res => res.Items)
+            .Where(r => r.Reservation != null &&
+                r.Reservation.Items.Any(i => i.Offer.RestaurantId == offer.RestaurantId))
+            .Select(r => r.Rating)
+            .ToListAsync();
+
+            ViewBag.AvgRating = ratings.Count > 0 ? ratings.Average() : 0;
+            ViewBag.ReviewsCount = ratings.Count;
+
+            // All reviews for the restaurant info page in details
+            var latestReviews = _context.Reviews
+            .Where(r => r.Reservation.Items
+                .Any(i => i.Offer.RestaurantId == offer.RestaurantId))
+            .OrderByDescending(r => r.CreatedAt)
+            .Select(r => new {
+                r.Rating,
+                r.Comment,
+                r.CreatedAt,
+                AuthorName = !string.IsNullOrEmpty(r.Reservation.User.FullName)
+                    ? r.Reservation.User.FullName
+                    : r.Reservation.User.UserName
+            }).ToList();
+
+            ViewBag.LatestReviews = latestReviews;
 
             return View(offer);
         }

@@ -1,15 +1,26 @@
 ﻿@model FoodLoop.Models.Entities.Offer
-@using Microsoft.AspNetCore.Identity
-
-@{
-    ViewData["Title"] = Model.Title;
-    ViewData["BodyClass"] = "store-body";
-
-    bool isExpired = Model.EndsAt <= DateTime.UtcNow;
-    bool isOutOfStock = Model.QuantityAvailable <= 0;
-}
+@using System.Linq
 
 <link rel="stylesheet" href="~/css/offer-details.css" />
+
+@{
+    var isAuthenticated = User.Identity.IsAuthenticated;
+    var isClient = User.IsInRole("Client");
+
+    string buttonText = "Добави в количката";
+    bool disabled = false;
+
+    if (!isAuthenticated)
+    {
+        buttonText = "Влез за да поръчаш";
+        disabled = true;
+    }
+    else if (!isClient)
+    {
+        buttonText = "Не можете да поръчате";
+        disabled = true;
+    }
+}
 
 <div class="details-wrapper">
 
@@ -17,47 +28,72 @@
 
         <!-- IMAGE -->
         <div class="details-image-box">
-            <img src="@Model.ImageUrl" class="details-image" />
+            <div class="image-main">
+                <img src="@(string.IsNullOrEmpty(Model?.ImageUrl) ? "/images/default.jpg" : Model.ImageUrl)" />
+            </div>
         </div>
 
         <!-- INFO -->
         <div class="details-info">
 
-            <div class="details-restaurant">
-                by
-                <a asp-controller="Restaurant"
-                   asp-action="Details"
-                   asp-route-id="@Model.Restaurant.Id"
-                   class="restaurant-link">
-                    @Model.Restaurant.Name
-                </a>
+            <!-- CATEGORY + RATING -->
+            <div class="details-top-row">
+
+                @if (Model?.Category != null)
+                {
+                    <span class="category-pill">
+                        @Model.Category.Name
+                    </span>
+                }
+
+                <span class="rating">
+                    <i class="bi bi-star-fill"></i>
+
+                    @{
+                        double avg = ViewBag.AvgRating ?? 0;
+                        int count = ViewBag.ReviewsCount ?? 0;
+                    }
+
+                    @avg.ToString("0.0")
+
+                    <span class="rating-count">
+                        (@count ревюта)
+                    </span>
+                </span>
+
             </div>
 
-            <h1 class="details-title">
-                @Model.Title
-            </h1>
+            <!-- TITLE -->
+            <h1 class="details-title">@Model.Title</h1>
 
-            <!-- TAGS -->
-            @if (Model.OfferTags != null && Model.OfferTags.Any())
+            <!-- RESTAURANT -->
+            @if (Model.Restaurant != null)
             {
-                <div class="details-tags">
-                    @foreach (var tag in Model.OfferTags)
-                    {
-                        <a asp-controller="Offers"
-                           asp-action="Index"
-                           asp-route-search="@tag.Tag.Name"
-                           class="tag-pill">
-                            @tag.Tag.Name
-                        </a>
-                    }
-                </div>
+                <a asp-controller="Restaurant"
+                       asp-action="Details"
+                       asp-route-id="@Model.RestaurantId"
+                       class="details-restaurant">
+
+                    <i class="bi bi-shop"></i>
+                    @Model.Restaurant.Name
+                </a>
             }
+
+
+            <!-- DESCRIPTION -->
+            @if (!string.IsNullOrEmpty(Model?.Description))
+            {
+                <p class="details-description">
+                    @Model.Description
+                </p>
+            }
+
 
             <!-- PRICE -->
             <div class="details-price-section">
 
                 <span class="details-price">
-                    @Model.DiscountedPrice EUR
+                    @Model.DiscountedPrice.ToString("0.00") EUR
                 </span>
 
                 @if (Model.OriginalPrice > Model.DiscountedPrice)
@@ -65,7 +101,7 @@
                     var discount = (int)(100 - (Model.DiscountedPrice / Model.OriginalPrice * 100));
 
                     <span class="details-original">
-                        @Model.OriginalPrice EUR
+                        @Model.OriginalPrice.ToString("0.00") EUR
                     </span>
 
                     <span class="details-badge">
@@ -73,103 +109,320 @@
                     </span>
                 }
 
-                @if (isExpired)
-                {
-                    <div class="expired-badge">
-                        Expired
-                    </div>
-                }
-                else if (isOutOfStock)
-                {
-                    <div class="expired-badge out-of-stock">
-                        Out of stock
-                    </div>
-                }
-
             </div>
 
-            <!-- STOCK -->
-            <div class="details-stock">
-                @if (!isOutOfStock)
-                {
-                    if (Model.QuantityAvailable <= 5)
-                    {
-                        <span class="low-stock">
-                            Only @Model.QuantityAvailable left
-                        </span>
-                    }
-                    else
-                    {
-                        <span>
-                            @Model.QuantityAvailable available
-                        </span>
-                    }
-                }
-            </div>
-
-            <!-- DESCRIPTION -->
-            <p class="details-description">
-                @Model.Description
-            </p>
-
-            <!-- ADD TO CART -->
-            @if (User.Identity.IsAuthenticated)
+            <!-- TAGS -->
+            @if (Model.OfferTags != null && Model.OfferTags.Any())
             {
-                @if (User.IsInRole("Client"))
-                {
-                    if (isExpired || isOutOfStock)
+                <div class="details-tags">
+
+                    @foreach (var ot in Model.OfferTags)
                     {
-                        <button class="add-btn disabled-btn" disabled>
-                            Not available
-                        </button>
+                        if (ot.Tag != null)
+                        {
+                            <a asp-controller="Search"
+                                   asp-action="Index"
+                                   asp-route-query="@ot.Tag.Name"
+                                   class="tag-pill">
+
+                                @ot.Tag.Name
+                            </a>
+                        }
                     }
-                    else
-                    {
-                        <form id="addToCartForm" method="post">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="offerId" value="@Model.Id" />
 
-                            <input type="number"
-                                   name="quantity"
-                                   value="1"
-                                   min="1"
-                                   max="@Model.QuantityAvailable"
-                                   class="quantity-input" />
-
-                            <button type="submit" class="add-btn">
-                                Add to cart
-                            </button>
-                        </form>
-                    }
-                }
-                else if (User.IsInRole("Restaurant"))
-                {
-                    <div class="add-btn disabled-btn" style="text-align:center;">
-                        Restaurant accounts cannot place orders
-                    </div>
-                }
-            }
-            else
-            {
-                <a asp-controller="Account"
-                   asp-action="Login"
-                   class="add-btn"
-                   style="text-align:center; display:block;">
-                    Login to order
-                </a>
-            }
-
-            <!-- COUNTDOWN -->
-            @if (!isExpired)
-            {
-                <div id="countdown"
-                     class="details-countdown"
-                     data-end="@Model.EndsAt.ToString("o")">
                 </div>
             }
 
-            <div class="details-ends">
-                Ends at: @Model.EndsAt.ToString("dd MMM yyyy HH:mm")
+
+            <!-- QUANTITY -->
+            <div class="details-quantity">
+
+                <button type="button" class="qty-btn" onclick="changeQty(-1)">−</button>
+
+                <div class="qty-display" id="qtyDisplay">1</div>
+
+                <button type="button" class="qty-btn" onclick="changeQty(1)">+</button>
+
+                <div class="stock-info">
+
+                    @if (Model.QuantityAvailable > 0)
+                    {
+                        <span class="stock-status">
+                            <i class="bi bi-check-circle"></i> На стока
+                        </span>
+
+                        <span class="stock-count">
+                            @Model.QuantityAvailable налични
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="out-of-stock">
+                            Няма наличност
+                        </span>
+                    }
+
+                </div>
+
+            </div>
+
+            <!-- TIMER -->
+            <div class="details-timer">
+                <div id="countdown" data-end="@Model.EndsAt.ToString("o")"></div>
+
+                <div class="ends-date">
+                    Изтича на @Model.EndsAt.ToString("d MMM • HH:mm")
+                </div>
+            </div>
+
+            <!-- ADD TO CART -->
+            <form method="post" asp-controller="Cart" asp-action="AddToCart" id="addToCartForm" class="add-to-cart-form">
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" name="offerId" value="@Model.Id" />
+                <input type="hidden" name="quantity" id="qtyInput" value="1" />
+
+                <button type="submit"
+                        class="btn btn-primary @(disabled ? "disabled-btn" : "")"
+                    @(disabled ? "disabled" : "")>
+                    @buttonText
+                </button>
+            </form>
+
+            <!-- FEATURES -->
+            <div class="details-features">
+                <div><i class="bi bi-truck"></i> Бърза доставка</div>
+                <div><i class="bi bi-clock"></i> Лимитирани оферти</div>
+                <div><i class="bi bi-arrow-repeat"></i> Лесно поръчване</div>
+            </div>
+
+        </div>
+
+        <!-- INFO PAGES -->
+        <div class="details-tabs">
+
+            <!-- NAV -->
+            <div class="tabs-nav">
+                <button class="tab-btn active" data-tab="details">За заведението</button>
+                <button class="tab-btn" data-tab="reviews">Ревюта (@(ViewBag.ReviewsCount ?? 0))</button>
+                <button class="tab-btn" data-tab="delivery">За доставката</button>
+            </div>
+
+            <!-- DETAILS TAB -->
+            <div class="tab-content active" id="details">
+
+                @if (Model.Restaurant != null)
+                {
+                    <div class="restaurant-info-card">
+
+                        <div class="ric-header">
+
+                            <!-- IMAGE -->
+                            <div class="ric-avatar">
+                                <img src="@(string.IsNullOrEmpty(Model.Restaurant.ImageUrl)
+                                                                     ? "/images/default-restaurant.jpg"
+                                                                     : Model.Restaurant.ImageUrl)" />
+                            </div>
+
+                            <!-- INFO -->
+                            <div class="ric-header-info">
+
+                                <div class="ric-title">
+                                    @Model.Restaurant.Name
+                                </div>
+
+                                <div class="ric-sub">
+                                    Висококачествена храна, приготвена с внимание към детайла.
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="ric-contact-grid">
+
+                            <!-- EMAIL -->
+                            <div class="ric-contact-item">
+                                <i class="bi bi-envelope"></i>
+                                <div>
+                                    <div class="label">Имейл на ресторанта</div>
+                                    <div class="value">
+                                        <a href="mailto:@Model.Restaurant.BusinessEmail">
+                                            @Model.Restaurant.BusinessEmail
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- PHONE -->
+                            <div class="ric-contact-item">
+                                <i class="bi bi-telephone"></i>
+                                <div>
+                                    <div class="label">Телефон</div>
+                                    <div class="value">
+                                        <a href="tel:@Model.Restaurant.Phone">
+                                            @Model.Restaurant.Phone
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- DELIVERY (FIXED) -->
+                            <div class="ric-contact-item">
+                                <i class="bi bi-truck"></i>
+                                <div>
+                                    <div class="label">Цена на доставка</div>
+                                    <div class="value">2.00 €</div>
+                                </div>
+                            </div>
+
+                            <!-- ADDRESS -->
+                            <div class="ric-contact-item">
+                                <i class="bi bi-geo-alt"></i>
+                                <div>
+                                    <div class="label">Адрес</div>
+                                    <div class="value">
+                                        @Model.Restaurant.Address
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+
+            <!-- REVIEWS TAB -->
+            <div class="tab-content" id="reviews">
+
+                <!-- SUMMARY -->
+                <div class="reviews-summary">
+
+                    <div class="rs-score">
+                        @(ViewBag.AvgRating.ToString("0.0"))
+                    </div>
+
+                    <div class="rs-stars">
+                        @{
+                            var rating = (double)(ViewBag.AvgRating ?? 0);
+                            var full = (int)Math.Floor(rating);
+                            var half = rating - full >= 0.5;
+                        }
+
+                        @for (int i = 0; i < full; i++)
+                        {
+                            <i class="bi bi-star-fill"></i>
+                        }
+
+                        @if (half)
+                        {
+                            <i class="bi bi-star-half"></i>
+                        }
+
+                        @for (int i = full + (half ? 1 : 0); i < 5; i++)
+                        {
+                            <i class="bi bi-star"></i>
+                        }
+                    </div>
+
+                    <div class="rs-count">
+                        @(ViewBag.ReviewsCount ?? 0) отзива
+                    </div>
+
+                </div>
+
+                <!-- REVIEWS LIST (SCROLL) -->
+                <div class="reviews-list">
+
+                    @if (ViewBag.LatestReviews != null)
+                    {
+                        foreach (var review in ViewBag.LatestReviews)
+                        {
+                            <div class="review-card">
+
+                                <div class="review-header">
+
+                                    <div class="review-user">
+                                        <div class="avatar">
+                                            <i class="bi bi-person"></i>
+                                        </div>
+
+                                        <div>
+                                            <div class="review-name">
+                                                @review.AuthorName
+                                                <span class="verified">Потвърден</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="review-date">
+                                        @review.CreatedAt.ToString("d MMM")
+                                    </div>
+
+                                </div>
+
+                                <!-- STARS -->
+                                <div class="review-stars">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <i class="bi @(i <= review.Rating ? "bi-star-fill" : "bi-star")"></i>
+                                    }
+                                </div>
+
+                                <!-- TEXT -->
+                                <div class="review-text">
+                                    @review.Comment
+                                </div>
+
+                            </div>
+                        }
+                    }
+
+                </div>
+
+            </div>
+
+            <!-- DELIVERY TAB -->
+            <div class="tab-content" id="delivery">
+
+                <div class="delivery-grid">
+
+                    <div class="delivery-item highlight-green">
+                        <i class="bi bi-clock"></i>
+                        <div>
+                            <div class="title">Експресна доставка</div>
+                            <div class="desc">Доставка в същия ден</div>
+                        </div>
+                    </div>
+
+                    <div class="delivery-item highlight-blue">
+                        <i class="bi bi-snow"></i>
+                        <div>
+                            <div class="title">Контролирано съхранение</div>
+                            <div class="desc">Поддържана свежест</div>
+                        </div>
+                    </div>
+
+                    <div class="delivery-item highlight-orange">
+                        <i class="bi bi-bag-check"></i>
+                        <div>
+                            <div class="title">Сигурно опаковане</div>
+                            <div class="desc">Безопасно опаковане</div>
+                        </div>
+                    </div>
+
+                    <div class="delivery-item highlight-purple">
+                        <i class="bi bi-shield-check"></i>
+                        <div>
+                            <div class="title">Гаранция за свежест</div>
+                            <div class="desc">Гарантирано качество</div>
+                        </div>
+                    </div>
+
+                </div>
+
             </div>
 
         </div>
@@ -178,81 +431,142 @@
 </div>
 
 @section Scripts {
-
     <script>
 
         // ============================================
-        // ADD TO CART (AJAX + LIVE BADGE UPDATE)
+        // QUANTITY
         // ============================================
 
-        const form = document.getElementById("addToCartForm");
+        function changeQty(amount) {
+            const display = document.getElementById("qtyDisplay");
+            const hidden = document.getElementById("qtyInput");
 
-        if (form) {
+            let value = parseInt(display.innerText) || 1;
+            const max = @Model.QuantityAvailable;
+
+            value += amount;
+
+            if (value < 1) value = 1;
+            if (value > max) value = max;
+
+            display.innerText = value;
+            hidden.value = value;
+        }
+
+        // ============================================
+        // ADD TO CART (AJAX FIXED)
+        // ============================================
+
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const form = document.querySelector(".add-to-cart-form");
+
+            if (!form) return;
 
             form.addEventListener("submit", async function (e) {
-
-                e.preventDefault();
+                e.preventDefault(); // 🔥 спира reload + JSON page
 
                 const formData = new FormData(form);
 
-                const response = await fetch("/Cart/AddToCart", {
-                    method: "POST",
-                    headers: {
-                        "RequestVerificationToken":
-                            form.querySelector('input[name="__RequestVerificationToken"]').value
-                    },
-                    body: formData
-                });
+                try {
+                    const response = await fetch("/Cart/AddToCart", {
+                        method: "POST",
+                        headers: {
+                            "RequestVerificationToken":
+                                form.querySelector('input[name="__RequestVerificationToken"]').value
+                        },
+                        body: formData
+                    });
 
-                const data = await response.json();
+                    const data = await response.json();
 
-                if (data.success) {
+                    // ❌ ERROR
+                    if (!data.success) {
+                        showToast(data.message || "Грешка", "error");
+                        return;
+                    }
 
-                    showToast("Added to cart!", "success");
+                    // ✅ SUCCESS
+                    showToast("Успешно добавено в количката.", "success");
 
-                    // 🔥 Trigger global badge update
+                    // 🔥 badge update
                     document.dispatchEvent(
                         new CustomEvent("cartUpdated", {
                             detail: { count: data.cartCount }
                         })
                     );
 
-                    // 🔥 Reload mini cart content
+                    // 🔥 mini cart refresh
                     if (window.loadMiniCart)
                         window.loadMiniCart();
+
+                } catch (err) {
+                    showToast("Нещо се обърка.", "error");
                 }
             });
-        }
+
+        });
 
         // ============================================
         // COUNTDOWN TIMER
         // ============================================
 
-        const countdownEl = document.getElementById("countdown");
+        function formatTimeLeft(endDate) {
+            const now = new Date();
+            const end = new Date(endDate);
 
-        if (countdownEl) {
+            if (isNaN(end.getTime())) return "Невалидна дата";
 
-            const endDate = new Date(countdownEl.dataset.end);
+            const diff = end - now;
 
-            function updateCountdown() {
+            if (diff <= 0) return "Изтекла оферта";
 
-                const now = new Date();
-                const diff = endDate - now;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / (3600000 * 24));
 
-                if (diff <= 0) {
-                    countdownEl.innerText = "Offer expired";
-                    return;
-                }
+            if (days > 0) return `Остават ${days} дни`;
+            if (hours > 0) return `Остават ${hours} часа`;
 
-                const hours = Math.floor(diff / (1000 * 60 * 60));
-                const minutes = Math.floor((diff / (1000 * 60)) % 60);
-
-                countdownEl.innerText = `Ends in ${hours}h ${minutes}m`;
-            }
-
-            updateCountdown();
-            setInterval(updateCountdown, 60000);
+            return `Остават ${minutes} минути`;
         }
+
+        function updateCountdown() {
+            const el = document.getElementById("countdown");
+            if (!el) return;
+
+            const endDate = el.dataset.end;
+            el.innerText = formatTimeLeft(endDate);
+
+            const now = new Date();
+            const end = new Date(endDate);
+
+            if (end - now < 7200000) {
+                el.style.color = "#dc2626";
+            } else {
+                el.style.color = "#16a34a";
+            }
+        }
+
+        setInterval(updateCountdown, 60000);
+        updateCountdown();
+
+        // ============================================
+        // TABS
+        // ============================================
+
+        const tabs = document.querySelectorAll(".tab-btn");
+        const contents = document.querySelectorAll(".tab-content");
+
+        tabs.forEach(tab => {
+            tab.addEventListener("click", () => {
+                tabs.forEach(t => t.classList.remove("active"));
+                contents.forEach(c => c.classList.remove("active"));
+
+                tab.classList.add("active");
+                document.getElementById(tab.dataset.tab).classList.add("active");
+            });
+        });
 
     </script>
 }

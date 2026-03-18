@@ -80,8 +80,24 @@
 
             @if (!cart.Any())
             {
-                <div class="empty-state text-center">
-                    <p>Количката ви е празна.</p>
+                <div class="empty-state-box">
+
+                    <div class="empty-icon">
+                        <i class="bi bi-cart-x"></i>
+                    </div>
+
+                    <h4>Количката Ви е празна</h4>
+
+                    <p>
+                        Добавете продукти и започнете своята поръчка.
+                    </p>
+
+                    <a asp-controller="Offers"
+                           asp-action="Index"
+                           class="empty-action-btn">
+                        Разгледай оферти
+                    </a>
+
                 </div>
             }
             else
@@ -236,8 +252,20 @@
 
             @if (!ongoing.Any())
             {
-                <div class="empty-state text-center">
-                    <p>Нямате активни поръчки.</p>
+                <div class="empty-state-box">
+                    <div class="empty-icon">
+                        <i class="bi bi-truck"></i>
+                    </div>
+
+                    <h4>Нямате активни поръчки</h4>
+
+                    <p>Когато направите поръчка, тя ще се появи тук и ще можете да я проследявате.</p>
+
+                    <a asp-controller="Offers"
+                           asp-action="Index"
+                           class="empty-action-btn">
+                        Разгледай оферти
+                    </a>
                 </div>
             }
             else
@@ -342,8 +370,20 @@
 
             @if (!history.Any())
             {
-                <div class="empty-state text-center">
-                    <p>Нямате предишни поръчки.</p>
+                <div class="empty-state-box">
+                    <div class="empty-icon">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+
+                    <h4>Нямате предишни поръчки</h4>
+
+                    <p>След като направите поръчка, тя ще се появи тук.</p>
+
+                    <a asp-controller="Offers"
+                           asp-action="Index"
+                           class="empty-action-btn">
+                        Разгледай оферти
+                    </a>
                 </div>
             }
             else
@@ -588,15 +628,19 @@
             }
 
             // ------- prevent empty checkout -------
-            if (checkoutForm) {
-                checkoutForm.addEventListener("submit", function (e) {
-                    const base = getBaseTotal();
-                    if (base <= 0) {
-                        e.preventDefault();
-                        alert("Your cart is empty.");
-                    }
-                });
-            }
+                    if (checkoutForm) {
+            checkoutForm.addEventListener("submit", function (e) {
+                const base = getBaseTotal();
+
+                if (base <= 0) {
+                    e.preventDefault();
+                    showToast("Количката е празна", "error");
+                    return;
+                }
+
+                showToast("Поръчката се обработва...", "success");
+            });
+        }
 
             // ------- ajax quantity updates -------
             window.updateQuantity = async function (itemId, action, btn) {
@@ -616,7 +660,10 @@
                     if (!response.ok) return;
 
                     const data = await response.json();
-                    if (!data || data.success !== true) return;
+                    if (!data.success) {
+                        showToast(data.message || "Грешка при премахване.", "error");
+                        return;
+                    }
 
                     if (qtyEl) qtyEl.textContent = data.quantity;
                     if (priceEl) priceEl.textContent = parseFloat(data.itemTotal).toFixed(2) + " EUR";
@@ -645,6 +692,7 @@
                     if (!data || data.success !== true) return;
 
                     if (card) card.remove();
+                    showToast("Продуктът е премахнат от количката.", "success");
 
                     setBaseTotal(data.cartTotal);
 

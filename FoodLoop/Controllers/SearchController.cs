@@ -25,9 +25,11 @@ namespace FoodLoop.Controllers
             const int pageSize = 6;
 
             IQueryable<Offer> offersQuery = _context.Offers
-                .AsNoTracking()
-                .Include(o => o.Restaurant)
-                .Include(o => o.Category);
+            .AsNoTracking()
+            .Include(o => o.Restaurant)
+            .Include(o => o.Category)
+            .Include(o => o.OfferTags)
+                .ThenInclude(ot => ot.Tag);
 
             IQueryable<Restaurant> restaurantsQuery = _context.Restaurants
                 .AsNoTracking()
@@ -43,10 +45,17 @@ namespace FoodLoop.Controllers
 
                 if (!string.IsNullOrEmpty(normalized))
                 {
-                    offersQuery = offersQuery.Where(o =>
-                        o.Title.ToLower().Contains(normalized) ||
-                        o.Restaurant.Name.ToLower().Contains(normalized) ||
-                        o.Category.Name.ToLower().Contains(normalized));
+                    offersQuery = offersQuery
+                        .Include(o => o.OfferTags)
+                            .ThenInclude(ot => ot.Tag)
+                        .Where(o =>
+                            o.Title.ToLower().Contains(normalized) ||
+                            o.Restaurant.Name.ToLower().Contains(normalized) ||
+                            o.Category.Name.ToLower().Contains(normalized) ||
+
+                            // 🔥 ТАГОВЕ (това ти липсваше)
+                            o.OfferTags.Any(ot => ot.Tag.Name.ToLower().Contains(normalized))
+                        );
 
                     restaurantsQuery = restaurantsQuery
                         .Where(r => r.Name.ToLower().Contains(normalized));

@@ -5,7 +5,6 @@ wwwroot\css\cards.css
 wwwroot\css\cart.css
 wwwroot\css\dashboard.css
 wwwroot\css\edit-profile-modal.css
-wwwroot\css\offer-details.css
 wwwroot\css\offers-manage.css
 wwwroot\css\order-manager.css
 wwwroot\css\profile.css
@@ -135,3 +134,4 @@ wwwroot\lib\jquery\dist\jquery.js
 wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
+wwwroot\css\offer-details.css

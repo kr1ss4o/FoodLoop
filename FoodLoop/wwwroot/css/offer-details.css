@@ -1,4 +1,8 @@
-﻿.details-wrapper {
+﻿/* =====================================================
+   LAYOUT
+===================================================== */
+
+.details-wrapper {
     max-width: 1100px;
     margin: 0 auto;
     padding: 50px 20px;
@@ -11,7 +15,10 @@
     align-items: start;
 }
 
-/* IMAGE */
+
+/* =====================================================
+   IMAGE
+===================================================== */
 
 .details-image-box {
     background: #f9fafb;
@@ -19,13 +26,79 @@
     border-radius: 18px;
 }
 
-.details-image {
+.image-main {
     width: 100%;
-    border-radius: 12px;
-    object-fit: cover;
+    height: 320px;
+    overflow: hidden;
+    border-radius: 16px;
 }
 
-/* INFO */
+    .image-main img,
+    .details-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 12px;
+    }
+
+
+/* =====================================================
+   TOP INFO
+===================================================== */
+
+.details-top-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.category-pill {
+    background: #e0f2fe;
+    color: #0284c7;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.rating {
+    font-size: 14px;
+    color: #374151;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+    .rating i {
+        color: #facc15;
+    }
+
+.rating-count {
+    color: #6b7280;
+}
+
+
+/* =====================================================
+   TITLE + RESTAURANT
+===================================================== */
+
+.details-restaurant {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #16a34a;
+    text-decoration: none;
+    margin-bottom: 18px;
+    transition: all 0.2s ease;
+}
+
+    .details-restaurant:hover {
+        color: #0f7c4c;
+        transform: translateX(2px);
+    }
 
 .details-title {
     font-size: 30px;
@@ -33,10 +106,16 @@
     margin: 10px 0 20px 0;
 }
 
-.details-restaurant {
-    font-size: 14px;
-    color: #6b7280;
+.details-description {
+    color: #374151;
+    line-height: 1.6;
+    margin-bottom: 25px;
 }
+
+
+/* =====================================================
+   PRICE
+===================================================== */
 
 .details-price-section {
     display: flex;
@@ -64,103 +143,10 @@
     border-radius: 8px;
 }
 
-.details-stock {
-    font-size: 14px;
-    margin-bottom: 20px;
-}
 
-.low-stock {
-    color: #dc2626;
-    font-weight: 500;
-}
-
-.details-description {
-    color: #374151;
-    line-height: 1.6;
-    margin-bottom: 25px;
-}
-
-/* FORM */
-
-.details-form {
-    margin-bottom: 15px;
-}
-
-.qty-row {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 12px;
-}
-
-.qty-input {
-    width: 90px;
-    padding: 6px;
-    border-radius: 8px;
-    border: 1px solid #e5e7eb;
-}
-
-.details-add-btn {
-    background: #16a34a;
-    border: none;
-    color: white;
-    padding: 12px 30px;
-    border-radius: 12px;
-    font-size: 15px;
-    transition: 0.2s ease;
-}
-
-.details-add-btn:hover {
-    background: #15803d;
-}
-
-.details-login-btn {
-    display: inline-block;
-    padding: 12px 30px;
-    background: #f3f4f6;
-    border-radius: 12px;
-    text-decoration: none;
-    color: #111827;
-}
-
-    .details-login-btn:hover {
-        background: #e5e7eb;
-    }
-
-.details-ends {
-    margin-top: 20px;
-    font-size: 13px;
-    color: #6b7280;
-}
-
-.offer-meta {
-    margin-bottom: 18px;
-}
-
-.offer-restaurant {
-    color: #6b7280;
-    font-size: 14px;
-    margin-bottom: 8px;
-}
-
-.offer-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.offer-tag {
-    background: rgba(22, 163, 74, 0.1);
-    color: #16a34a;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 6px 12px;
-    border-radius: 999px;
-    transition: all 0.2s ease;
-}
-
-.offer-tag:hover {
-    background: rgba(22, 163, 74, 0.2);
-}
+/* =====================================================
+   TAGS
+===================================================== */
 
 .details-tags {
     margin: 10px 0 15px 0;
@@ -179,24 +165,82 @@
     transition: 0.2s;
 }
 
-.tag-pill:hover {
-    background: #1a7f3c;
-    color: white;
+    .tag-pill:hover {
+        background: #1a7f3c;
+        color: white;
+    }
+
+
+/* =====================================================
+   QUANTITY + STOCK
+===================================================== */
+
+/* Disabled button if you are not valid */
+.disabled-btn {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none; /* 🔥 това спира клика */
+    background: green;
 }
 
-.details-cart-form {
-    margin-top: 15px;
+.details-quantity {
     display: flex;
-    gap: 10px;
     align-items: center;
+    gap: 12px;
+    margin: 20px 0;
 }
 
-.quantity-input {
-    width: 70px;
-    padding: 8px;
+.qty-btn {
+    width: 32px;
+    height: 32px;
     border-radius: 8px;
-    border: 1px solid #ccc;
+    border: none;
+    background: #f3f4f6;
+    cursor: pointer;
+    font-size: 18px;
+    transition: 0.2s;
 }
+
+    .qty-btn:hover {
+        background: #e5e7eb;
+    }
+
+.qty-display {
+    width: 40px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.stock-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 10px;
+    font-size: 13px;
+}
+
+.stock-status {
+    color: #16a34a;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.stock-count {
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.out-of-stock {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+
+/* =====================================================
+   BUTTON
+===================================================== */
 
 .add-btn {
     background: #149b5f;
@@ -209,26 +253,417 @@
     transition: 0.2s;
 }
 
-.add-btn:hover {
-    background: #0f7c4c;
-    transform: translateY(-1px);
-}
-.add-btn:focus {
-    outline: none;
-    box-shadow: none;
-
-}
-.details-countdown {
-    margin-top: 12px;
-    font-weight: 600;
-    color: #198754;
-}
-
-/* RESPONSIVE */
-
-@media (max-width: 900px) {
-    .details-grid {
-        grid-template-columns: 1fr;
-        gap: 30px;
+    .add-btn:hover {
+        background: #0f7c4c;
+        transform: translateY(-1px);
     }
+
+    .add-btn.full {
+        width: 100%;
+        padding: 14px;
+        font-size: 16px;
+        border-radius: 14px;
+    }
+
+    .add-btn:focus {
+        outline: none;
+        box-shadow: none;
+    }
+
+
+/* =====================================================
+   TIMER
+===================================================== */
+
+.details-timer {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 15px 0 10px 0;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    padding: 10px 14px;
+    border-radius: 12px;
 }
+
+#countdown {
+    font-size: 15px;
+    font-weight: 600;
+    color: #16a34a;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+    #countdown::before {
+        content: "⏳";
+    }
+
+.ends-date {
+    font-size: 12px;
+    color: #6b7280;
+    margin-left: 22px;
+}
+
+
+/* =====================================================
+   FEATURES
+===================================================== */
+
+.details-features {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+    font-size: 13px;
+    color: #6b7280;
+}
+
+    .details-features i {
+        margin-right: 6px;
+        color: #16a34a;
+    }
+
+
+/* =====================================================
+   TABS
+===================================================== */
+
+.details-tabs {
+    grid-column: 1 / -1;
+    width: 100%;
+    margin-top: 50px;
+    background: #f9fafb;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    min-height: 400px;
+}
+
+.tabs-nav {
+    display: flex;
+    gap: 25px;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 10px 0;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+    .tab-btn.active {
+        color: #16a34a;
+        border-bottom: 2px solid #16a34a;
+    }
+
+.tab-content {
+    display: none;
+}
+
+    .tab-content.active {
+        display: block;
+    }
+
+
+/* =====================================================
+   RESTAURANT CARD
+===================================================== */
+
+.restaurant-info-card {
+    background: white;
+    padding: 20px;
+    border-radius: 14px;
+    margin-top: 40px;
+}
+
+.ric-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 15px;
+}
+
+.ric-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #f3f4f6;
+}
+
+    .ric-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+.ric-title {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.ric-sub {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.ric-contact-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.ric-contact-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+    .ric-contact-item i {
+        font-size: 18px;
+        color: #16a34a;
+        margin-top: 3px;
+    }
+
+    .ric-contact-item .label {
+        font-size: 12px;
+        color: #6b7280;
+    }
+
+    .ric-contact-item .value {
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .ric-contact-item a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+        .ric-contact-item a:hover {
+            text-decoration: underline;
+        }
+
+
+/* =====================================================
+   REVIEWS
+===================================================== */
+
+/* ⭐ FIXED summary stars */
+.stars i {
+    color: #facc15;
+    font-size: 18px;
+    margin-right: 2px;
+}
+
+.reviews-list {
+    max-height: 420px;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+    .reviews-list::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .reviews-list::-webkit-scrollbar-thumb {
+        background: #d1d5db;
+        border-radius: 10px;
+    }
+
+.review-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border: 1px solid #f1f5f9;
+    transition: 0.2s;
+}
+
+    .review-card:hover {
+        box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+    }
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.review-user {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.avatar {
+    width: 38px;
+    height: 38px;
+    background: #e5e7eb;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.review-name {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.review-date {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.review-stars i {
+    color: #facc15;
+    font-size: 16px;
+}
+
+.review-text {
+    font-size: 14px;
+    color: #374151;
+}
+
+.verified {
+    font-size: 11px;
+    color: #16a34a;
+    margin-left: 6px;
+}
+
+/* =========================
+   HORIZONTAL REVIEW SUMMARY
+========================= */
+
+.reviews-summary {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.rs-score {
+    font-size: 32px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.rs-stars {
+    display: flex;
+    gap: 4px;
+}
+
+    .rs-stars i {
+        font-size: 18px;
+        color: #f59e0b;
+    }
+
+.rs-count {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.reviews-count {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* =====================================================
+   DELIVERY
+===================================================== */
+
+.delivery-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 420px);
+    justify-content: center;
+    gap: 20px;
+    margin-top: 50px;
+}
+
+/* =========================
+   DELIVERY CARDS UPGRADE
+========================= */
+
+.delivery-item {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 18px 20px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    border: 1px solid #f1f5f9;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+    /* hover = лек lift */
+    .delivery-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+    }
+
+    /* ICON */
+    .delivery-item i {
+        font-size: 20px;
+        margin-top: 2px;
+    }
+
+    /* TITLE */
+    .delivery-item .title {
+        font-weight: 600;
+        font-size: 15px;
+    }
+
+    /* DESC */
+    .delivery-item .desc {
+        font-size: 13px;
+        color: #6b7280;
+    }
+
+
+/* =========================
+   COLORED BORDER SYSTEM
+========================= */
+
+/* зелено (default бранд) */
+.highlight-green {
+    border-left: 4px solid #16a34a;
+}
+
+    .highlight-green i {
+        color: #16a34a;
+    }
+
+/* синьо */
+.highlight-blue {
+    border-left: 4px solid #2563eb;
+}
+
+    .highlight-blue i {
+        color: #2563eb;
+    }
+
+/* оранжево */
+.highlight-orange {
+    border-left: 4px solid #f59e0b;
+}
+
+    .highlight-orange i {
+        color: #f59e0b;
+    }
+
+/* лилаво */
+.highlight-purple {
+    border-left: 4px solid #7c3aed;
+}
+
+    .highlight-purple i {
+        color: #7c3aed;
+    }
