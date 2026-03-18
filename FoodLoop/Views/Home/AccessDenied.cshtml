@@ -1,6 +1,36 @@
 ﻿@{
-    ViewData["Title"] = "Access Denied";
+    ViewData["Title"] = "Достъп отказан";
+    ViewData["BodyClass"] = "access-denied-body";
 }
 
-<h2>Access Denied</h2>
-<p>You do not have permission to access this page.</p>
+<div class="access-page">
+
+    <div class="access-card">
+
+        <div class="access-icon">🚧</div>
+
+        <h1>Стоп! Това е граница</h1>
+
+        <p class="access-sub">
+            Опитваш се да влезеш в зона, за която нямаш достъп.
+        </p>
+
+        <div class="access-message">
+            🔐 Само оторизирани потребители могат да продължат
+        </div>
+
+        <div class="access-actions">
+
+            <a asp-controller="Home" asp-action="Index" class="btn-primary">
+                Към началото
+            </a>
+
+            <a href="javascript:history.back()" class="btn-back">
+                ← Назад
+            </a>
+
+        </div>
+
+    </div>
+
+</div>

@@ -96,7 +96,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/js/toast.js"></script>
+     <script src="~/js/toast.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 
@@ -136,9 +136,7 @@
             <div class="footer-wrapper">
 
                 <!-- BRAND -->
-
                 <div class="footer-col footer-brand">
-
                     <div class="footer-logo">
                         <span>FoodLoop</span>
                     </div>
@@ -147,37 +145,42 @@
                         Спасваме храна, подкрепяме ресторантите
                         и предлагаме вкусни ястия на по-достъпни цени.
                     </p>
-
                 </div>
 
                 <!-- QUICK LINKS -->
-
                 <div class="footer-col">
-
                     <h4>Бързи връзки</h4>
 
                     <a asp-controller="Home" asp-action="Index">Начало</a>
                     <a asp-controller="Restaurant" asp-action="Index">Ресторанти</a>
                     <a asp-controller="Offers" asp-action="Index">Оферти</a>
                     <a asp-controller="Search" asp-action="Index">Търсене</a>
-
                 </div>
 
-                <!-- ACCOUNT -->
-
+                <!-- 🔥 DYNAMIC ACCOUNT / BUSINESS -->
                 <div class="footer-col">
 
-                    <h4>Акаунт</h4>
+                    @if (User.IsInRole("Restaurant"))
+                    {
+                        <h4>Моят бизнес</h4>
 
-                    <a asp-controller="Cart" asp-action="Index">Количка</a>
-                    <a asp-controller="Profile" asp-action="Index">Моят профил</a>
+                        <a asp-controller="RestaurantDashboard" asp-action="Index">Табло</a>
+                        <a asp-controller="OfferManager" asp-action="Index">Моите оферти</a>
+                        <a asp-controller="OrderManager" asp-action="Index">Поръчки</a>
+                        <a asp-controller="RestaurantReviews" asp-action="Index">Ревюта</a>
+                    }
+                    else
+                    {
+                        <h4>Акаунт</h4>
+
+                        <a asp-controller="Cart" asp-action="Index">Количка</a>
+                        <a asp-controller="Profile" asp-action="Index">Моят профил</a>
+                    }
 
                 </div>
 
                 <!-- CONTACT -->
-
                 <div class="footer-col">
-
                     <h4>Контакти</h4>
 
                     <div class="footer-contact">
@@ -194,7 +197,6 @@
                         <i class="bi bi-geo-alt"></i>
                         Пловдив, България
                     </div>
-
                 </div>
 
             </div>
