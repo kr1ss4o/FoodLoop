@@ -1,57 +1,208 @@
 ﻿@model FoodLoop.Models.ViewModels.LoginViewModel
 @{
-    ViewData["Title"] = "Login";
-    ViewData["BodyClass"] = "auth-body";
+    ViewData["Title"] = "Вход";
+    ViewData["FullWidth"] = true;
 }
 
-<link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/auth-login.css" asp-append-version="true" />
 
-<div class="auth-wrapper">
+<div class="landing">
 
-    <!-- LEFT IMAGE PANEL -->
-    <div class="auth-image-side">
-        <div class="auth-image-overlay">
-            <h1 class="brand-title">FoodLoop</h1>
-            <p class="brand-sub">Fresh food. Smart savings.</p>
+    <!-- ============================
+         HERO LOGIN
+    ============================ -->
+    <section class="hero-login">
+
+        <div class="hero-content">
+
+            <!-- LEFT -->
+            <div class="hero-left">
+
+                <div class="brand-stack">
+                    <h1 class="brand-main">FoodLoop</h1>
+                    <h1 class="brand-light">foodloop</h1>
+                    <h1 class="brand-outline">FOODLOOP</h1>
+                </div>
+
+                <p class="hero-tagline">
+                    Спестявай храна. Спестявай пари. С всяка поръчка.
+                </p>
+
+            </div>
+
+            <!-- RIGHT -->
+            <div class="hero-right">
+
+                <div class="login-card">
+
+                    <h2 class="auth-heading">Добре дошъл отново</h2>
+                    <p class="auth-sub">Влез в профила си</p>
+
+                    <form asp-action="Login" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="input-group input-icon">
+                            <i class="bi bi-envelope"></i>
+                            <input asp-for="Email" placeholder="Имейл адрес" />
+                        </div>
+
+                        <div class="input-group input-icon password-group">
+                            <i class="bi bi-lock"></i>
+                            <input asp-for="Password" type="password" placeholder="Парола" />
+                            <span class="toggle-password">
+                                <i class="bi bi-eye"></i>
+                            </span>
+                        </div>
+
+                        <button type="submit" class="btn-primary">Вход</button>
+
+                        <div class="auth-links">
+                            <a href="/Account/ForgotPassword">Забравена парола?</a>
+                            <a href="/Account/Register">Създай акаунт</a>
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
         </div>
-    </div>
 
-    <!-- RIGHT FORM PANEL -->
-    <div class="auth-form-side">
-        <div class="auth-card">
+    </section>
 
-            <h2 class="auth-heading">Welcome back</h2>
-            <p class="auth-desc">Log into your account</p>
 
-            <form asp-action="Login" method="post">
-                @Html.AntiForgeryToken()
+    <!-- ============================
+         ABOUT SECTION
+    ============================ -->
+    <section class="about-section">
 
-                <div class="input-group">
-                    <label>Email</label>
-                    <input asp-for="Email" />
-                    <span asp-validation-for="Email" class="val"></span>
-                </div>
+        <div class="about-container">
 
-                <div class="input-group">
-                    <label>Password</label>
-                    <input asp-for="Password" type="password" />
-                    <span asp-validation-for="Password" class="val"></span>
-                </div>
+            <!-- COLLAGE -->
+            <div class="about-images">
+                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80" class="img img-1" />
+                <img src="https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=400&q=80" class="img img-2" />
+                <img src="https://images.unsplash.com/photo-1466637574441-749b8f19452f?auto=format&fit=crop&w=400&q=80" class="img img-3" />
+                <img src="https://images.unsplash.com/photo-1543353071-873f17a7a088?auto=format&fit=crop&w=400&q=80" class="img img-4" />
+            </div>
 
-                <button type="submit" class="btn-primary">Sign in</button>
+            <!-- TEXT -->
+            <div class="about-text">
+                <h2>Променяме начина, по който храната достига до хората</h2>
 
-                <div class="auth-links">
-                    <a href="/Account/ForgotPassword">Forgot password?</a>
-                    <a href="/Account/Register">Create account</a>
-                </div>
+                <p>
+                    FoodLoop не е просто платформа — това е идея.
+                    Свързваме хората с ресторанти, за да дадем втори шанс
+                    на напълно качествена храна, вместо тя да бъде изхвърлена.
+                </p>
 
-            </form>
+                <p>
+                    Всяка поръчка помага да се намали разхищението,
+                    подкрепя местния бизнес и ти дава достъп до качествена храна
+                    на по-добра цена.
+                </p>
+
+                <h3>Защо това е важно</h3>
+
+                <p>
+                    Над 30% от храната в света се изхвърля. Ние вярваме,
+                    че технологиите могат да променят това.
+                    С FoodLoop всяко спасено ястие е малка стъпка
+                    към по-устойчиво бъдеще.
+                </p>
+            </div>
 
         </div>
-    </div>
+
+    </section>
+
+
+    <!-- ============================
+         RESTAURANTS SECTION
+    ============================ -->
+    <section class="restaurant-section">
+
+        <div class="restaurant-wrapper">
+
+            <!-- LEFT CONTENT -->
+            <div class="restaurant-text">
+
+                <h2>Превърни излишната храна в печалба</h2>
+
+                <p class="restaurant-sub">
+                    Присъедини се към FoodLoop и превърни непродадените ястия
+                    в нов източник на доход.
+                </p>
+
+                <div class="restaurant-benefits">
+
+                    <div class="benefit">
+                        <span>01</span>
+                        <div>
+                            <h4>Лесно включване</h4>
+                            <p>Изпрати ни информация и получи одобрение до 24 часа.</p>
+                        </div>
+                    </div>
+
+                    <div class="benefit">
+                        <span>02</span>
+                        <div>
+                            <h4>Нови клиенти</h4>
+                            <p>Достигни до хора, които търсят качествена храна на добра цена.</p>
+                        </div>
+                    </div>
+
+                    <div class="benefit">
+                        <span>03</span>
+                        <div>
+                            <h4>По-малко отпадъци</h4>
+                            <p>Намали загубите и допринеси за по-устойчив свят.</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <a href="mailto:foodloop@gmail.com" class="btn-primary">
+                    Кандидатствай за партньорство
+                </a>
+
+            </div>
+
+            <!-- RIGHT VISUAL -->
+            <div class="restaurant-visual">
+
+                <img src="https://images.unsplash.com/photo-1555992336-03a23c7b20ee?auto=format&fit=crop&w=600&q=80" class="main-img" />
+
+                <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=300&q=80" class="float-img img-a" />
+                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=300&q=80" class="float-img img-b" />
+
+            </div>
+
+        </div>
+
+    </section>
 
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.querySelectorAll('.toggle-password').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                const input = toggle.parentElement.querySelector('input');
+                const icon = toggle.querySelector('i');
+
+                const isPassword = input.type === 'password';
+
+                // toggle input type
+                input.type = isPassword ? 'text' : 'password';
+
+                // toggle icon
+                icon.classList.toggle('bi-eye');
+                icon.classList.toggle('bi-eye-slash');
+            });
+        });
+    </script>
 }

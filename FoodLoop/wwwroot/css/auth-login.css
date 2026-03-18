@@ -1,0 +1,407 @@
+﻿/* ============================
+   BASE
+============================ */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #ECFDF5;
+}
+
+/* section separators */
+section {
+    position: relative;
+}
+
+    section::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 10%;
+        width: 80%;
+        height: 1px;
+        background: rgba(0,0,0,0.05);
+    }
+
+/* ============================
+   HERO
+============================ */
+.hero-login {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #ECFDF5, #ffffff);
+    padding: 60px;
+    position: relative;
+    overflow: hidden;
+}
+
+    .hero-login::before {
+        content: "";
+        position: absolute;
+        width: 600px;
+        height: 600px;
+        background: rgba(0,139,90,0.08);
+        border-radius: 50%;
+        top: -100px;
+        left: -100px;
+    }
+
+.hero-content {
+    width: 100%;
+    max-width: 1300px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* ============================
+   LEFT (BRAND)
+============================ */
+.hero-left {
+    width: 50%;
+}
+
+.brand-stack h1 {
+    margin: 0;
+    line-height: 1;
+}
+
+.brand-main {
+    font-size: 72px;
+    font-weight: 900;
+    color: #003B33;
+}
+
+.brand-light {
+    font-size: 72px;
+    font-weight: 200;
+    color: #008B5A;
+}
+
+.brand-outline {
+    font-size: 72px;
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 2px #003B33;
+}
+
+.hero-tagline {
+    margin-top: 20px;
+    font-size: 18px;
+    opacity: 0.7;
+    max-width: 420px;
+}
+
+/* ============================
+   RIGHT (LOGIN)
+============================ */
+.hero-right {
+    width: 40%;
+}
+
+input:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* LOGIN CARD */
+.login-card {
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(20px);
+    padding: 50px;
+    border-radius: 28px;
+    box-shadow: 0 30px 70px rgba(0,0,0,0.15);
+}
+
+/* spacing */
+.auth-heading {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.auth-sub {
+    margin-bottom: 25px;
+    opacity: 0.6;
+}
+
+/* ============================
+   INPUTS
+============================ */
+.input-group {
+    margin-bottom: 22px;
+}
+
+.input-icon {
+    position: relative;
+}
+
+    .input-icon i {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #008B5A;
+    }
+
+    .input-icon input {
+        width: 100%;
+        padding: 13px 45px 13px 38px;
+        border-radius: 12px;
+        border: 2px solid transparent;
+        background: white;
+        transition: 0.2s;
+    }
+
+        .input-icon input:focus {
+            border-color: #008B5A;
+            box-shadow: 0 0 0 4px rgba(0,139,90,0.1);
+        }
+
+.password-group {
+    position: relative;
+}
+
+    .password-group .toggle-password {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+    }
+
+/* ============================
+   BUTTON
+============================ */
+.btn-primary {
+    width: 100%;
+    background: linear-gradient(135deg, #008B5A, #00A86B);
+    color: white;
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    font-weight: 700;
+    font-size: 16px;
+    transition: 0.25s;
+}
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0,139,90,0.3);
+    }
+
+/* ============================
+   LINKS
+============================ */
+.auth-links {
+    margin-top: 18px;
+    text-align: center;
+}
+
+    .auth-links a {
+        margin: 0 10px;
+        color: #003B33;
+        text-decoration: none;
+        font-size: 14px;
+        opacity: 0.7;
+    }
+
+        .auth-links a:hover {
+            text-decoration: underline;
+        }
+
+/* ============================
+   ABOUT SECTION
+============================ */
+.about-section,
+.restaurant-section {
+    min-height: 90vh;
+    padding: 140px 80px;
+    display: flex;
+    align-items: center;
+}
+
+.about-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 100px;
+}
+
+/* ============================
+   COLLAGE
+============================ */
+.about-images {
+    position: relative;
+    width: 500px;
+    height: 500px;
+}
+
+    .about-images::before {
+        content: "";
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        background: rgba(0,139,90,0.05);
+        border-radius: 50%;
+        top: 50px;
+        left: 100px;
+    }
+
+.img {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    object-fit: cover;
+    position: absolute;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    transition: 0.3s;
+}
+
+    .img:hover {
+        transform: scale(1.08);
+    }
+
+/* positions */
+.img-1 {
+    top: 0;
+    left: 40px;
+}
+
+.img-2 {
+    top: 120px;
+    left: 220px;
+}
+
+.img-3 {
+    top: 260px;
+    left: 60px;
+}
+
+.img-4 {
+    top: 180px;
+    left: 0;
+}
+
+/* ============================
+   TEXT
+============================ */
+.about-text {
+    width: 50%;
+}
+
+    .about-text h2 {
+        font-size: 46px;
+        font-weight: 800;
+        margin-bottom: 20px;
+        color: #003B33;
+    }
+
+    .about-text h3 {
+        margin-top: 25px;
+        font-size: 24px;
+        color: #008B5A;
+    }
+
+    .about-text p {
+        font-size: 17px;
+        line-height: 1.7;
+        opacity: 0.75;
+    }
+
+/* ============================
+   RESTAURANT
+============================ */
+.restaurant-section {
+    padding: 140px 80px;
+    background: linear-gradient(180deg, #f7fbf9, #eef5f2);
+}
+
+.restaurant-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 80px;
+}
+
+.restaurant-text {
+    width: 50%;
+}
+
+    .restaurant-text h2 {
+        font-size: 48px;
+        font-weight: 800;
+    }
+
+.restaurant-sub {
+    font-size: 18px;
+    opacity: 0.7;
+    margin-bottom: 40px;
+}
+
+.restaurant-benefits {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.benefit {
+    display: flex;
+    gap: 20px;
+}
+
+    .benefit span {
+        font-size: 22px;
+        font-weight: 700;
+        color: #008B5A;
+    }
+
+/* IMAGE SIDE */
+.restaurant-visual {
+    position: relative;
+    width: 50%;
+}
+
+.main-img {
+    width: 100%;
+    border-radius: 30px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+}
+
+.float-img {
+    position: absolute;
+    width: 180px;
+    border-radius: 20px;
+}
+
+.img-a {
+    top: -30px;
+    right: -40px;
+}
+
+.img-b {
+    bottom: -30px;
+    left: -40px;
+}
+
+/* ============================
+   RESPONSIVE
+============================ */
+@media (max-width: 900px) {
+    .hero-content {
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .hero-left,
+    .hero-right {
+        width: 100%;
+    }
+
+    .about-container {
+        flex-direction: column;
+    }
+}

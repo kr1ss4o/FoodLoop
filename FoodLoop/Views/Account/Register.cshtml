@@ -1,65 +1,100 @@
 ﻿@model FoodLoop.Models.ViewModels.RegisterViewModel
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = "Регистрация";
     ViewData["BodyClass"] = "auth-body";
 }
 
 <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
 
-<div class="auth-wrapper">
+<div class="auth-page">
 
-    <div class="auth-image-side">
-        <div class="auth-image-overlay">
-            <h1 class="brand-title">Join FoodLoop</h1>
-            <p class="brand-sub">Save food. Save money.</p>
+    <div class="auth-wrapper">
+
+        <!-- LEFT SIDE -->
+        <div class="auth-image-side">
+            <div class="auth-image-overlay">
+                <h1 class="brand-title">Присъедини се към FoodLoop</h1>
+                <p class="brand-sub">Спаси храна. Спести пари.</p>
+            </div>
         </div>
-    </div>
 
-    <div class="auth-form-side">
-        <div class="auth-card">
+        <!-- RIGHT SIDE -->
+        <div class="auth-form-side">
 
-            <h2 class="auth-heading">Create an account</h2>
+            <div class="auth-card">
 
-            <form asp-action="Register" method="post">
+                <h2 class="auth-heading">Създай акаунт</h2>
+                <p class="auth-sub">Започни да спасяваш храна още днес</p>
 
-                <div class="input-group">
-                    <label>Full name</label>
-                    <input asp-for="FullName" />
-                    <span asp-validation-for="FullName" class="val"></span>
-                </div>
+                <form asp-action="Register" method="post" class="form-grid">
 
-                <div class="input-group">
-                    <label>Email</label>
-                    <input asp-for="Email" />
-                    <span asp-validation-for="Email" class="val"></span>
-                </div>
+                    <!-- NAME -->
+                    <div class="form-group input-modern">
+                        <i class="bi bi-person"></i>
+                        <input asp-for="FullName" placeholder=" " required />
+                        <label>Пълно име</label>
+                    </div>
 
-                <div class="input-group">
-                    <label>Phone number</label>
-                    <input asp-for="Phone" />
-                    <span asp-validation-for="Phone" class="val"></span>
-                </div>
+                    <!-- EMAIL -->
+                    <div class="form-group input-modern">
+                        <i class="bi bi-envelope"></i>
+                        <input asp-for="Email" placeholder=" " required />
+                        <label>Имейл</label>
+                    </div>
 
-                <div class="input-group">
-                    <label>Password</label>
-                    <input asp-for="Password" type="password" />
-                    <span asp-validation-for="Password" class="val"></span>
-                </div>
+                    <!-- PHONE -->
+                    <div class="form-group input-modern">
+                        <i class="bi bi-telephone"></i>
+                        <input asp-for="Phone" placeholder=" " />
+                        <label>Телефонен номер</label>
+                    </div>
 
-                <div class="input-group">
-                    <label>Confirm password</label>
-                    <input asp-for="ConfirmPassword" type="password" />
-                    <span asp-validation-for="ConfirmPassword" class="val"></span>
-                </div>
+                    <!-- PASSWORD -->
+                    <div class="form-group input-modern password-group">
+                        <i class="bi bi-lock"></i>
+                        <input asp-for="Password" type="password" placeholder=" " required />
+                        <label>Парола</label>
+                        <i class="bi bi-eye toggle-password"></i>
+                    </div>
 
-                <button type="submit" class="btn-primary">Create account</button>
+                    <!-- CONFIRM -->
+                    <div class="form-group input-modern password-group full">
+                        <i class="bi bi-shield-check"></i>
+                        <input asp-for="ConfirmPassword" type="password" placeholder=" " required />
+                        <label>Потвърди парола</label>
+                    </div>
 
-            </form>
+                    <button type="submit" class="btn-primary full">
+                        Създай акаунт
+                    </button>
+
+                </form>
+
+            </div>
+
         </div>
+
     </div>
 
 </div>
-
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.querySelectorAll('.toggle-password').forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                const input = toggle.parentElement.querySelector('input');
+                const icon = toggle.querySelector('i');
+
+                const isPassword = input.type === 'password';
+
+                // toggle input type
+                input.type = isPassword ? 'text' : 'password';
+
+                // toggle icon
+                icon.classList.toggle('bi-eye');
+                icon.classList.toggle('bi-eye-slash');
+            });
+        });
+    </script>
 }
