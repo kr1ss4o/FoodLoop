@@ -10,8 +10,11 @@
     bool isLogged = User?.Identity?.IsAuthenticated ?? false;
 
     bool hideUI =
-        controller == "Account" &&
-        (action == "Login" || action == "Register");
+    controller == "Account" &&
+    (action == "Login"
+     || action == "Register"
+     || action == "ForgotPassword"
+     || action == "ResetPassword");
 
     // Footer only appears in public pages
     bool hideFooter =
