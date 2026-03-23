@@ -182,6 +182,19 @@ namespace FoodLoop.Controllers
                 })
                 .ToList();
 
+            // Total orders complete
+
+            var completedOrdersCount = await (
+            from res in _context.Reservations
+            join item in _context.ReservationItems on res.Id equals item.ReservationId
+            join offer in _context.Offers on item.OfferId equals offer.Id
+            where res.Status == ReservationStatus.Finished
+                && offer.RestaurantId == id
+            select res.Id
+            )
+            .Distinct()
+            .CountAsync();
+
             var viewModel = new RestaurantDetailsViewModel
             {
                 Id = restaurant.Id,
@@ -192,7 +205,8 @@ namespace FoodLoop.Controllers
                 AvgRating = avgRating,
                 ReviewsCount = reviewsCount,
                 ActiveOffers = activeOffers,
-                LatestReviews = latestReviews
+                LatestReviews = latestReviews,
+                CompletedOrdersCount = completedOrdersCount
             };
 
             return View(viewModel);

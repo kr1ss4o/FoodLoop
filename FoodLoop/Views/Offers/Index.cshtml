@@ -10,6 +10,28 @@
     var restaurantRatings = ViewBag.RestaurantRatings as Dictionary<Guid, double>;
 }
 
+<!-- RANDOM COLOR FOR THE CATEGORIES BACKGROUND -->
+
+@functions { 
+    string GetCategoryColor(string name)
+    {
+        var colors = new[]
+        {
+            "#E8F5E9",
+            "#FFF3E0",
+            "#E3F2FD",
+            "#FCE4EC",
+            "#F3E5F5",
+            "#E0F7FA"
+        };
+
+        int hash = name.GetHashCode();
+        int index = Math.Abs(hash) % colors.Length;
+
+        return colors[index];
+    }
+}
+
 <link rel="stylesheet" href="~/css/store.css" />
 
 <!-- HERO -->
@@ -92,65 +114,23 @@
 
         <div class="categories-carousel" data-step="6">
 
-            <a asp-controller="Search" asp-action="Index" asp-route-query="Азиатска храна" class="category-card">
-                <div class="category-icon asian">🍜</div>
-                <span>Азиатска храна</span>
-            </a>
+            @foreach (var category in ViewBag.Categories)
+            {
+                <a asp-controller="Search"
+                       asp-action="Index"
+                       asp-route-query="@category.Name"
+                       class="category-card">
 
-            <a asp-controller="Search" asp-action="Index" asp-route-query="Бургери" class="category-card">
-                <div class="category-icon burger">🍔</div>
-                <span>Бургери</span>
-            </a>
+                    <div class="category-icon"
+                         style="background:@GetCategoryColor(category.Name)">
 
-            <a asp-controller="Search" asp-action="Index" asp-route-query="Бърза храна" class="category-card">
-                <div class="category-icon fastfood">🍟</div>
-                <span>Бърза храна</span>
-            </a>
+                        @category.IconUrl
 
-            <a asp-controller="Search" asp-action="Index" asp-route-query="Вечеря" class="category-card">
-                <div class="category-icon dinner">🍽️</div>
-                <span>Вечеря</span>
-            </a>
+                    </div>
 
-            <a asp-controller="Search" asp-action="Index" asp-route-query="Грил" class="category-card">
-                <div class="category-icon grill">🍖</div>
-                <span>Грил</span>
-            </a>
-
-            <a asp-controller="Search" asp-action="Index" asp-route-query="Десерт" class="category-card">
-                <div class="category-icon dessert">🍰</div>
-                <span>Десерт</span>
-            </a>
-
-            <a asp-controller="Search" asp-action="Index" asp-route-query="Закуска" class="category-card">
-                <div class="category-icon breakfast">🥐</div>
-                <span>Закуска</span>
-            </a>
-
-            <a asp-controller="Search" asp-action="Index" asp-route-query="Здравословно" class="category-card">
-                <div class="category-icon healthy">🥗</div>
-                <span>Здравословно</span>
-            </a>
-
-            <a asp-controller="Search" asp-action="Index" asp-route-query="Морски дарове" class="category-card">
-                <div class="category-icon seafood">🦐</div>
-                <span>Морски дарове</span>
-            </a>
-
-            <a asp-controller="Search" asp-action="Index" asp-route-query="Обяд" class="category-card">
-                <div class="category-icon lunch">🍛</div>
-                <span>Обяд</span>
-            </a>
-
-            <a asp-controller="Search" asp-action="Index" asp-route-query="Паста" class="category-card">
-                <div class="category-icon pasta">🍝</div>
-                <span>Паста</span>
-            </a>
-
-            <a asp-controller="Search" asp-action="Index" asp-route-query="Пица" class="category-card">
-                <div class="category-icon pizza">🍕</div>
-                <span>Пица</span>
-            </a>
+                    <span class="category-name">@category.Name</span>
+                </a>
+            }
 
         </div>
 

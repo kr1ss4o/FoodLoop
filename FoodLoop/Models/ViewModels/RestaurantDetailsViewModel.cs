@@ -14,6 +14,8 @@ namespace FoodLoop.Models.ViewModels
         public double AvgRating { get; set; }
         public int ReviewsCount { get; set; }
 
+        public int CompletedOrdersCount { get; set; }
+
         public List<Offer> ActiveOffers { get; set; } = new();
         public List<RestaurantReviewViewModel> LatestReviews { get; set; } = new();
     }

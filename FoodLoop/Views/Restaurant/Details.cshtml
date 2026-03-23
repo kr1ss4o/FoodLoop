@@ -41,7 +41,16 @@
 
                 <div class="restaurant-tags">
                     <span class="tag cuisine">Ресторант</span>
-                    <span class="tag open">Отворено в момента</span>
+
+                    @if (Model.ActiveOffers.Count > 0)
+                    {
+                        <span class="tag open">Отворено в момента</span>
+                    }
+                    else
+                    {
+                        <span class="tag close">Затворен</span>
+                    }
+
                 </div>
 
             </div>
@@ -115,7 +124,7 @@
 
     <div class="stat stat-blue">
         <i class="bi bi-box-seam stat-icon"></i>
-        <div class="stat-number">0</div>
+        <div class="stat-number">@Model.CompletedOrdersCount</div>
         <div class="stat-label">Изпълнени поръчки</div>
     </div>
 

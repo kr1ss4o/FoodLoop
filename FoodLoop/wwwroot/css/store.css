@@ -191,6 +191,9 @@ CATEGORIES CAROUSEL
     flex: 0 0 calc((100% - 140px) / 6);
     min-width: 200px;
 }
+.category-name {
+    text-align: center;
+}
 
 
 /* ================================

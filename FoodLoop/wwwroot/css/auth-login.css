@@ -581,6 +581,7 @@ input:focus {
         font-size: 13px;
     }
 }
+
 @media (max-width: 790px) {
     .restaurant-wrapper {
         flex-direction: column;
@@ -605,6 +606,7 @@ input:focus {
         font-size: 13px;
     }
 }
+
 @media (max-width: 450px) {
     .restaurant-section {
         padding: 140px 40px;

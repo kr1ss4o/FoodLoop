@@ -28,6 +28,17 @@ namespace FoodLoop.Controllers
                 .Include(o => o.Restaurant)
                 .Include(o => o.Category);
 
+            //
+            // Categories
+            //
+
+            var categories = await _context.Categories
+                .AsNoTracking()
+                .OrderBy(c => c.Name)
+                .ToListAsync();
+
+            ViewBag.Categories = categories;
+
             // =============================
             // Restaurant Ratings (avg + count)
             // =============================

@@ -26,9 +26,16 @@ body {
 
 .admin-page {
     max-width: 1180px;
-    margin: 0 auto;
+    margin: 1.5cm auto;
     padding: 20px 6px 40px;
 }
+ .admin-section {
+    margin-top: 1.5cm;
+ }
+
+ .admin-container {
+     margin-top: 1.5cm;
+ }
 
 .admin-header {
     display: flex;

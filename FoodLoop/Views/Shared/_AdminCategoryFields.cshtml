@@ -20,11 +20,12 @@
 
     <div class="admin-field">
 
-        <label>Икона (URL)</label>
+        <label>Емоджи</label>
 
         <input asp-for="Icon"
                class="admin-input"
-               type="url"
+               placeholder="🍕"
+               maxlength="2"
                required />
 
         <span asp-validation-for="Icon" class="text-danger"></span>

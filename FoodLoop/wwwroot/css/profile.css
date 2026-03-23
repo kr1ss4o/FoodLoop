@@ -4,7 +4,7 @@ BACKGROUND
 
 .profile-body {
     min-height: 100vh;
-    background: radial-gradient(circle at 20% 20%, rgba(0,163,108,.15), transparent 40%), radial-gradient(circle at 80% 30%, rgba(0,200,150,.12), transparent 40%), linear-gradient(180deg,#f4fffb,#e9fff7);
+    background: #F5F8FA;
     background-attachment: fixed;
 }
 
@@ -24,7 +24,7 @@ CONTAINER
 
 .profile-container {
     max-width: 1050px;
-    margin: 40px auto;
+    margin: 3cm auto;
     padding: 0 20px;
 }
 
