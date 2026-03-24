@@ -127,7 +127,9 @@ namespace FoodLoop.Controllers
                     r.Name,
                     r.Address,
                     r.ImageUrl,
-                    r.BannerImageUrl
+                    r.BannerImageUrl,
+                    r.BusinessEmail,
+                    r.Phone
                 })
                 .FirstOrDefaultAsync();
 
@@ -206,7 +208,9 @@ namespace FoodLoop.Controllers
                 ReviewsCount = reviewsCount,
                 ActiveOffers = activeOffers,
                 LatestReviews = latestReviews,
-                CompletedOrdersCount = completedOrdersCount
+                CompletedOrdersCount = completedOrdersCount,
+                BusinessEmail = restaurant.BusinessEmail,
+                Phone = restaurant.Phone
             };
 
             return View(viewModel);

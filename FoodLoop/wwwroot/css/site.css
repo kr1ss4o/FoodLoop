@@ -820,7 +820,6 @@ img {
 /* PRIMARY BUTTON */
 .btn-primary {
     width: 100%;
-    max-width: 420px;
     height: 56px;
     border-radius: 20px;
     background: #4f8f66;
