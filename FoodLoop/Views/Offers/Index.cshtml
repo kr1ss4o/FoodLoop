@@ -100,11 +100,11 @@
 
             <div class="restaurants-nav">
 
-                <button class="restaurants-arrow categories-left">
+                <button type="button" class="restaurants-arrow categories-left">
                     <i class="bi bi-chevron-left"></i>
                 </button>
 
-                <button class="restaurants-arrow categories-right">
+                <button type="button" class="restaurants-arrow categories-right">
                     <i class="bi bi-chevron-right"></i>
                 </button>
 
@@ -112,7 +112,7 @@
 
         </div>
 
-        <div class="categories-carousel" data-step="6">
+        <div class="categories-carousel">
 
             @foreach (var category in ViewBag.Categories)
             {
@@ -303,32 +303,30 @@
     </section>
 }
 
+
 <script>
+    if (!window.carouselInitialized) {
 
-    document.getElementById("sortSelect").addEventListener("change", async function () {
+        window.carouselInitialized = true;
 
-        const sort = this.value;
+        const carousel = document.querySelector(".categories-carousel");
+        const btnLeft = document.querySelector(".categories-left");
+        const btnRight = document.querySelector(".categories-right");
 
-        const url = new URL(window.location.href);
+        function getScrollAmount() {
+            const card = carousel.querySelector(".category-card");
+            const gap = parseInt(getComputedStyle(carousel).gap) || 0;
+            return card.offsetWidth + gap;
+        }
 
-        if (sort)
-            url.searchParams.set("sort", sort);
-        else
-            url.searchParams.delete("sort");
-
-        const response = await fetch(url.toString(), {
-            headers: { "X-Requested-With": "XMLHttpRequest" }
-        });
-
-        const html = await response.text();
-
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, "text/html");
-
-        const newGrid = doc.querySelector("#offersGrid");
-
-        document.querySelector("#offersGrid").innerHTML = newGrid.innerHTML;
-
+            btnRight.addEventListener("click", (e) => {
+        e.preventDefault();
+        carousel.scrollLeft += getScrollAmount();
     });
 
+    btnLeft.addEventListener("click", (e) => {
+        e.preventDefault();
+        carousel.scrollLeft -= getScrollAmount();
+    });
+    }
 </script>
