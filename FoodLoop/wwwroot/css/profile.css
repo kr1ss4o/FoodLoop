@@ -539,3 +539,11 @@ RESPONSIVE
         justify-content: center;
     }
 }
+@media (max-width: 767px) {
+    .stat-badge {
+        width: 100%;
+        justify-content: space-between;
+        text-align: right;
+        padding: 18px 40px;
+    }
+}
