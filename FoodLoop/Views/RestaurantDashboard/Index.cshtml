@@ -123,7 +123,7 @@
         <div class="rd-section-head">
             <div>
                 <h2>Рейтинг и ревюта</h2>
-                <span class="rd-sub">Quality insights</span>
+                <span class="rd-sub">Какво мислят клиентите за Вас</span>
             </div>
 
             <a asp-controller="RestaurantReviews"
@@ -191,7 +191,7 @@
     <section class="rd-section">
         <div class="rd-section-head">
             <div>
-                <h2>Daily analytics</h2>
+                <h2>Дневни статистики</h2>
                 <span class="rd-sub">@Model.SelectedDate.ToString("dd MMM yyyy")</span>
             </div>
 
@@ -382,7 +382,7 @@
                 data: {
                     labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ChartLabels)),
                     datasets: [{
-                        label: 'Orders',
+                        label: 'Поръчки',
                         data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ChartOrders)),
                         borderColor: '#00a86b',
                         backgroundColor: 'rgba(0,168,107,0.10)',
@@ -437,7 +437,7 @@
                 data: {
                     labels: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.HourLabels)),
                     datasets: [{
-                        label: 'Orders by Hour',
+                        label: 'Порчъки на час',
                         data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.HourOrders))
                     }]
                 },

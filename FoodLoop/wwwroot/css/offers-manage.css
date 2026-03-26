@@ -439,9 +439,11 @@
     font-size: 14px;
 }
 
-/* =========================================================
+/*
+=========================================================
    RESPONSIVE
-========================================================= */
+=========================================================
+*/
 
 @media (max-width: 600px) {
     .offer-form-wrapper {
@@ -450,5 +452,19 @@
 
     .offer-img {
         height: 140px;
+    }
+}
+@media (max-width: 575px) {
+    .container {
+        padding: 1.5rem 50px;
+    }
+    .page-header {
+        flex-direction: column;
+        justify-content: center;
+    }
+}
+@media (max-width: 405px) {
+    .container {
+        padding: 1.5rem 30px;
     }
 }

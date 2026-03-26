@@ -663,6 +663,20 @@ html, body {
     }
 }
 
+@media (max-width: 767px) {
+    .rd-topbar {
+        justify-content: center !important;
+        align-items: center !important;
+    }
+
+    .rd-section-head {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+}
+
 @media (max-width: 520px) {
     .rd-date-input {
         width: 180px;

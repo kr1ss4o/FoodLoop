@@ -347,3 +347,28 @@
         background: #ffebee;
         color: #c62828;
     }
+
+/*
+    ================
+    RESPONSIVE
+    ================
+*/
+
+@media (max-width: 991px) {
+    .order-app-header {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+@media (max-width: 575px) {
+    .order-app h4 {
+        text-align: center;
+    }
+}
+
+@media (max-width: 405px) {
+    .stat-number {
+        font-size: 17px;
+    }
+}

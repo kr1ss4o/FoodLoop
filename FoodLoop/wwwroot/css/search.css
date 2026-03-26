@@ -12,7 +12,7 @@
 /* ===== SEARCH PAGE ===== */
 
 .search-page {
-    padding: 80px 0;
+    padding: 80px 40px;
     background: radial-gradient(circle at 20% 20%, rgba(30,143,74,0.05), transparent 40%), radial-gradient(circle at 80% 80%, rgba(0,0,0,0.03), transparent 50%), #f5f7f9;
 }
 
@@ -56,6 +56,7 @@
 
 .search-input-wrap {
     position: relative;
+    min-width: 405px;
     flex: 1;
 }
 
@@ -166,6 +167,7 @@
     overflow: hidden;
     box-shadow: 0 6px 20px rgba(0,0,0,0.07);
     transition: transform .2s ease;
+    margin: 0 !important;
 }
 
     .offer-card:hover {
@@ -252,6 +254,7 @@
     color: inherit;
     box-shadow: 0 20px 50px rgba(0,0,0,.08);
     transition: .35s;
+    margin: 0 !important;
 }
 
     .restaurant-card:hover {
@@ -345,3 +348,43 @@
         background: #f8d7da;
         color: #842029;
     }
+
+/*
+    =================
+    RESPONSIVE
+    =================
+*/
+
+@media (max-width: 935px) {
+    .search-form {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .search-results-count {
+        text-align: center;
+    }
+}
+
+@media (max-width: 710px) {
+    .search-input-wrap {
+        min-width: 250px;
+    }
+}
+
+@media (max-width: 640px) {
+    .search-form {
+        flex-direction: column;
+    }
+    .search-btn, .search-input-wrap, .search-sort-wrap, #sortSelect {
+        width: 100%;
+    }
+    .search-header {
+        padding:60px 30px;
+    }
+    .search-input-wrap {
+        min-width: 150px;
+    }
+    .search-section-header {
+        text-align: center;
+    }
+}

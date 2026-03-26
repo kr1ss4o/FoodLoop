@@ -358,3 +358,18 @@
         background: #16a34a;
         transform: translateY(-1px);
     }
+
+/*
+    ==============
+    RESPONSIVE
+    ==============
+*/
+
+@media (max-width: 575px) {
+    .reviews-summary {
+        grid-template-columns: 1fr;
+    }
+    .container {
+        padding: 1.5rem 30px;
+    }
+}
