@@ -245,3 +245,31 @@
     font-size: 12px;
     font-weight: 600;
 }
+
+/*
+    ===============
+    RESPONSIVE
+    ===============
+*/
+
+@media (max-width: 767px) {
+    .restaurants-title-row {
+        flex-direction: column;
+        text-align: center;
+    }
+    .restaurant-card-link {
+        padding: 0 50px;
+    }
+}
+
+@media (max-width: 550px) {
+    .restaurants-title {
+        font-size: 30px;
+    }
+    .restaurants-subtitle {
+        font-size: 13px;
+    }
+    .restaurant-card-link {
+        padding: 0 30px;
+    }
+}
