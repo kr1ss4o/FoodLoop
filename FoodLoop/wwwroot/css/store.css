@@ -127,6 +127,17 @@ HEADER
     margin-top: 6px;
 }
 
+.restaurant-address {
+    font-size: 14px;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 /* ================================
 NAV ARROWS
