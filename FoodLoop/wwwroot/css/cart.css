@@ -503,6 +503,15 @@
     }
 }
 
+@media (max-width: 575px) {
+    .nav-pills {
+        justify-content: center;
+    }
+    .cart-titles {
+        text-align: center;
+    }
+}
+
 /* ================= REVIEW SECTION ================= */
 
 .btn-review {
