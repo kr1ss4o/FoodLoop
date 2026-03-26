@@ -61,10 +61,6 @@ body {
     color: var(--admin-muted);
 }
 
-.admin-page h1, .admin-page div {
-    text-align: center;
-}
-
 /* =========================================================
    BUTTONS
 ========================================================= */
@@ -363,96 +359,141 @@ body {
    DETAILS
 ========================================================= */
 
-.admin-details-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
+/* HERO */
+
+.details-hero {
+    height: 260px;
+    border-radius: 16px;
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+    margin-bottom: 20px;
 }
 
-.admin-details-title {
+.details-hero-overlay {
+    height: 100%;
+    padding: 24px;
+    background: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45));
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.details-title {
     font-size: 28px;
     font-weight: 700;
 }
 
-.admin-details-meta {
+.details-sub {
+    font-size: 13px;
+    opacity: 0.85;
+}
+
+
+/* ACTION BUTTON */
+
+.details-actions {
+    margin-bottom: 20px;
     display: flex;
-    gap: 10px;
-    margin-top: 6px;
+    justify-content: flex-end;
 }
 
-.admin-badge {
-    background: #eef2ff;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
+    .details-actions .btn-primary {
+        background: #16a34a;
+        color: white;
+        padding: 10px 16px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: .2s;
+    }
+
+        .details-actions .btn-primary:hover {
+            background: #15803d;
+        }
+
+
+/* INFO GRID */
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
 }
 
-.admin-offer-description textarea {
-    min-height: 180px;
-}
-
-.admin-offer-image .drop-zone {
-    min-height: 180px;
-}
-
-.admin-detail-card {
+.details-card {
     background: white;
-    padding: 18px;
-    border-radius: 10px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
 }
 
-.admin-detail-label {
+.details-label {
     font-size: 12px;
     color: #6b7280;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
 }
 
-.admin-detail-value {
-    font-size: 15px;
-    font-weight: 500;
+.details-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #111827;
 }
 
-.admin-detail-image {
-    max-width: 220px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+
+/* MEDIA */
+
+.details-media {
+    margin-top: 25px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
 }
 
-.admin-detail-icon {
-    width: 40px;
-    height: 40px;
+    .details-media img {
+        width: 100%;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+
+/* LINKS */
+
+.details-card .link {
+    color: #16a34a;
+    text-decoration: none;
 }
 
-.admin-null {
+    .details-card .link:hover {
+        text-decoration: underline;
+    }
+
+
+/* NULL */
+
+.details-card .null {
     color: #9ca3af;
     font-style: italic;
 }
 
-.admin-details-hero {
-    height: 180px;
-    border-radius: 12px;
-    background-size: cover;
-    background-position: center;
-    margin-bottom: 25px;
-}
 
-.admin-details-section {
-    margin-top: 35px;
-}
+/* MOBILE */
 
-.admin-section-title {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 15px;
-}
+@media (max-width: 768px) {
 
-.admin-media-grid {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
+    .details-title {
+        font-size: 22px;
+    }
+
+    .details-hero {
+        height: 200px;
+    }
+
+    .details-actions {
+        justify-content: center;
+    }
 }
 
 /* =========================================================
