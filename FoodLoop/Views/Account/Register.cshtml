@@ -8,63 +8,71 @@
 
 <div class="auth-page">
 
-    <div class="auth-wrapper">
+    <div class="auth-container">
 
-        <!-- LEFT SIDE -->
-        <div class="auth-image-side">
-            <div class="auth-image-overlay">
-                <h1 class="brand-title">Присъедини се към FoodLoop</h1>
-                <p class="brand-sub">Спаси храна. Спести пари.</p>
+        <!-- LEFT HERO -->
+        <div class="auth-hero">
+
+            <div class="hero-content">
+                <h1>FoodLoop</h1>
+                <p>Спаси храна. Спести пари.</p>
+
+                <div class="hero-stats">
+                    <div>
+                        <strong>500+</strong>
+                        <span>ресторанта</span>
+                    </div>
+                    <div>
+                        <strong>10K+</strong>
+                        <span>спасени ястия</span>
+                    </div>
+                </div>
             </div>
+
         </div>
 
-        <!-- RIGHT SIDE -->
-        <div class="auth-form-side">
+        <!-- FORM -->
+        <div class="auth-form">
 
-            <div class="auth-card">
+            <div class="form-card">
 
-                <h2 class="auth-heading">Създай акаунт</h2>
-                <p class="auth-sub">Започни да спасяваш храна още днес</p>
+                <h2>Създай акаунт</h2>
+                <p>Започни още днес</p>
 
                 <form asp-action="Register" method="post" class="form-grid">
 
-                    <!-- NAME -->
-                    <div class="form-group input-modern">
+                    <div class="input-modern">
                         <i class="bi bi-person"></i>
                         <input asp-for="FullName" placeholder=" " required />
                         <label>Пълно име</label>
                     </div>
 
-                    <!-- EMAIL -->
-                    <div class="form-group input-modern">
+                    <div class="input-modern">
                         <i class="bi bi-envelope"></i>
                         <input asp-for="Email" placeholder=" " required />
                         <label>Имейл</label>
                     </div>
 
-                    <!-- PHONE -->
-                    <div class="form-group input-modern">
+                    <div class="input-modern">
                         <i class="bi bi-telephone"></i>
                         <input asp-for="Phone" placeholder=" " />
-                        <label>Телефонен номер</label>
+                        <label>Телефон</label>
                     </div>
 
-                    <!-- PASSWORD -->
-                    <div class="form-group input-modern password-group">
+                    <div class="input-modern password-group">
                         <i class="bi bi-lock"></i>
                         <input asp-for="Password" type="password" placeholder=" " required />
                         <label>Парола</label>
                         <i class="bi bi-eye toggle-password"></i>
                     </div>
 
-                    <!-- CONFIRM -->
-                    <div class="form-group input-modern password-group full">
+                    <div class="input-modern full password-group">
                         <i class="bi bi-shield-check"></i>
                         <input asp-for="ConfirmPassword" type="password" placeholder=" " required />
                         <label>Потвърди парола</label>
                     </div>
 
-                    <button type="submit" class="btn-primary full">
+                    <button type="submit" class="btn-auth full">
                         Създай акаунт
                     </button>
 
@@ -77,6 +85,7 @@
     </div>
 
 </div>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 
