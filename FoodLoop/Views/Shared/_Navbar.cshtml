@@ -18,330 +18,264 @@
     bool isBusiness = role == "Restaurant" && !isAdmin;
 
     var controller = ViewContext.RouteData.Values["controller"]?.ToString();
-
-    bool isProfileActive =
-        controller == "Profile" ||
-        controller == "BusinessProfile";
-
-    bool isOrderManagerActive =
-        controller == "OrderManager";
-
-    bool isOfferManagerActive =
-        controller == "OfferManager";
 }
 
 <nav class="navbar navbar-expand-lg app-navbar fixed-top">
 
     <div class="container-fluid navbar-layout">
 
-        <!-- BRAND -->
+        <!-- HAMBURGER (mobile only) -->
+        <button class="hamburger-btn d-lg-none"
+                type="button"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#mobileMenu">
 
+            <i class="bi bi-list"></i>
+
+        </button>
+
+        <!-- BRAND -->
         <a class="navbar-brand fw-bold text-success" href="/">
             <i class="bi bi-leaf-fill"></i> FoodLoop
         </a>
 
-
-        <!-- SEARCH -->
-
+        <!-- SEARCH (desktop only, със стария ти стил) -->
         <form asp-controller="Search"
               asp-action="Index"
               method="get"
-              class="navbar-search">
+              class="navbar-search d-none d-lg-flex">
 
             <i class="bi bi-search"></i>
 
             <input type="text"
                    name="query"
                    placeholder="Търси ресторант или оферта..." />
-
         </form>
 
-
-        <!-- MOBILE -->
-
-        <button class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#mainNavbar">
-
-            <span class="navbar-toggler-icon"></span>
-
-        </button>
-
-
-        <div class="collapse navbar-collapse justify-content-end"
-             id="mainNavbar">
+        <!-- DESKTOP MENU (ТВОЯ СТИЛ) -->
+        <div class="collapse navbar-collapse justify-content-end d-none d-lg-flex">
 
             <ul class="navbar-nav align-items-center gap-lg-3">
 
-
-                <!-- OFFERS -->
-
                 <li class="nav-item">
-
-                    <a asp-controller="Offers"
-                           asp-action="Index"
-                           class="nav-link">
-
-                        <i class="bi bi-tag"></i>
-                        Оферти
-
+                    <a asp-controller="Offers" asp-action="Index" class="nav-link">
+                        <i class="bi bi-tag"></i> Оферти
                     </a>
-
                 </li>
 
                 <li class="nav-item">
-
-                    <a asp-controller="Restaurant"
-                           asp-action="Index"
-                           class="nav-link">
-
-                        <i class="bi bi-shop"></i>
-                        Заведения
-
+                    <a asp-controller="Restaurant" asp-action="Index" class="nav-link">
+                        <i class="bi bi-shop"></i> Заведения
                     </a>
-
                 </li>
 
+                @if (isAdmin)
+                {
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="bi bi-shield-lock"></i> Админ
+                        </a>
 
-                @{
-                    if (isAdmin)
-                    {
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                                <i class="bi bi-shield-lock"></i> Админ
-                            </a>
-
-                            <ul class="dropdown-menu dropdown-menu-end">
-
-                                <li>
-                                    <a class="dropdown-item"
-                                           asp-controller="AdminDashboard"
-                                           asp-action="Index">
-
-                                        <i class="bi bi-speedometer2 me-2"></i>
-                                        Табло
-
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a class="dropdown-item"
-                                           asp-controller="AdminCategories"
-                                           asp-action="Categories">
-
-                                        <i class="bi bi-grid me-2"></i>
-                                        Категории
-
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a class="dropdown-item"
-                                           asp-controller="AdminTags"
-                                           asp-action="Tags">
-
-                                        <i class="bi bi-tags me-2"></i>
-                                        Тагове
-
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a class="dropdown-item"
-                                           asp-controller="AdminRestaurants"
-                                           asp-action="Restaurants">
-
-                                        <i class="bi bi-shop me-2"></i>
-                                        Ресторанти
-
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a class="dropdown-item"
-                                           asp-controller="AdminOffers"
-                                           asp-action="Offers">
-
-                                        <i class="bi bi-megaphone me-2"></i>
-                                        Оферти
-
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a class="dropdown-item"
-                                           asp-controller="AdminReservations"
-                                           asp-action="Reservations">
-
-                                        <i class="bi bi-receipt-cutoff me-2"></i>
-                                        Поръчки
-
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a class="dropdown-item"
-                                           asp-controller="AdminReviews"
-                                           asp-action="Reviews">
-
-                                        <i class="bi bi-star me-2"></i>
-                                        Ревюта
-
-                                    </a>
-                                </li>
-
-                            </ul>
-                        </li>
-                    }
-                    else if (isBusiness)
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link"
-                                   asp-controller="OrderManager"
-                                   asp-action="Index">
-
-                                <span>
-                                    <i class="bi bi-receipt-cutoff me-2"></i>
-                                    Поръчки
-                                </span>
-
-                                <span id="cartBadge"
-                                      class="badge bg-success @(ViewBag.CartCount > 0 ? "" : "d-none")">
-
-                                    @(ViewBag.CartCount ?? 0)
-
-                                </span>
-
-                            </a>
-                        </li>
-
-                        <li class="nav-item dropdown">
-
-                            <a class="nav-link dropdown-toggle"
-                                   data-bs-toggle="dropdown">
-
-                                <i class="bi bi-shop-window"></i> Бизнес
-
-                            </a>
-
-                            <ul class="dropdown-menu dropdown-menu-end">
-
-                                <li>
-                                    <a class="dropdown-item"
-                                           asp-controller="RestaurantDashboard"
-                                           asp-action="Index">
-
-                                        <i class="bi bi-graph-up-arrow me-2"></i>
-                                        Статистика
-
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a class="dropdown-item"
-                                           asp-controller="OfferManager"
-                                           asp-action="Index">
-
-                                        <i class="bi bi-megaphone me-2"></i>
-                                        Моите оферти
-
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a class="dropdown-item"
-                                           asp-controller="RestaurantReviews"
-                                           asp-action="Index">
-
-                                        <i class="bi bi-star me-2"></i>
-                                        Моите ревюта
-
-                                    </a>
-                                </li>
-                            </ul>
-
-                        </li>
-                    }
-                    else if (user != null)
-                    {
-                        <li class="nav-item position-relative">
-
-                            <a asp-controller="Cart"
-                                   asp-action="Index"
-                                   class="nav-icon-btn"
-                                   id="cartLink">
-
-                                <i class="bi bi-bag"></i>
-
-                                <span id="cartBadge"
-                                      class="cart-badge d-none">0</span>
-
-                            </a>
-
-                            <div id="miniCartDropdown" class="mini-cart d-none">
-                                <div id="miniCartContent">Зареждане...</div>
-                            </div>
-
-                        </li>
-                    }
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" asp-controller="AdminDashboard" asp-action="Index"><i class="bi bi-speedometer2 me-2"></i> Табло</a></li>
+                            <li><a class="dropdown-item" asp-controller="AdminCategories" asp-action="Categories"><i class="bi bi-grid me-2"></i> Категории</a></li>
+                            <li><a class="dropdown-item" asp-controller="AdminTags" asp-action="Tags"><i class="bi bi-tags me-2"></i> Тагове</a></li>
+                        </ul>
+                    </li>
                 }
 
-
-
-                <!-- PROFILE -->
-
-                <li class="nav-item">
-
-                    @if (isBusiness)
-                    {
-                        <a asp-controller="BusinessProfile"
-                               asp-action="Index"
-                               class="nav-icon-btn">
-
-                            <i class="bi bi-person-circle"></i>
-
-                        </a>
-                    }
-                    else
-                    {
-                        <a asp-controller="Profile"
-                               asp-action="Index"
-                               class="nav-icon-btn">
-
-                            <i class="bi bi-person-circle"></i>
-
-                        </a>
-                    }
-
-                </li>
-
-
-                <!-- LOGOUT -->
-
-                <li class="nav-item">
-
-                    <form asp-controller="Account"
-                          asp-action="Logout"
-                          method="post"
-                          class="d-inline">
-
-                        <button type="submit"
-                                class="nav-icon-btn logout-btn">
-
-                            <i class="bi bi-box-arrow-right"></i>
-
-                        </button>
-
-                    </form>
-
-                </li>
-
-
             </ul>
+
+        </div>
+
+        <!-- RIGHT ICONS (НЕ ГИ ПИПАМЕ) -->
+        <div class="navbar-right">
+
+            @if (user != null && !isBusiness && !isAdmin)
+            {
+                <a asp-controller="Cart"
+                       asp-action="Index"
+                       class="nav-icon-btn position-relative">
+
+                    <i class="bi bi-bag"></i>
+                    <span class="cart-badge d-none">0</span>
+                </a>
+            }
+
+            <a asp-controller="@(isBusiness ? "BusinessProfile" : "Profile")"
+                   asp-action="Index"
+                   class="nav-icon-btn">
+
+                <i class="bi bi-person-circle"></i>
+            </a>
 
         </div>
 
     </div>
 
 </nav>
+
+<!-- =========================
+     MOBILE MENU (HAMBURGER)
+========================= -->
+
+<div class="offcanvas offcanvas-start"
+     tabindex="-1"
+     id="mobileMenu">
+
+    <div class="offcanvas-header">
+        <h5>FoodLoop</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+
+    <div class="offcanvas-body">
+
+        <!-- SEARCH -->
+        <form asp-controller="Search"
+              asp-action="Index"
+              method="get"
+              class="mobile-search mb-4">
+
+            <i class="bi bi-search"></i>
+            <input type="text" name="query" placeholder="Търси..." />
+        </form>
+
+        <!-- LINKS С ИКОНКИ -->
+        <div class="mobile-links">
+
+            <a asp-controller="Offers" asp-action="Index">
+                <i class="bi bi-tag"></i> Оферти
+            </a>
+
+            <a asp-controller="Restaurant" asp-action="Index">
+                <i class="bi bi-shop"></i> Заведения
+            </a>
+
+        </div>
+
+        <hr />
+
+        <!-- ADMIN -->
+        @if (isAdmin)
+        {
+            <div class="mobile-links">
+                <span class="menu-title">Админ</span>
+
+                <a asp-controller="AdminDashboard" asp-action="Index">
+                    <i class="bi bi-speedometer2"></i> Табло
+                </a>
+
+                <a asp-controller="AdminCategories" asp-action="Categories">
+                    <i class="bi bi-grid"></i> Категории
+                </a>
+
+                <a asp-controller="AdminTags" asp-action="Tags">
+                    <i class="bi bi-tags"></i> Тагове
+                </a>
+            </div>
+        }
+
+        <hr />
+
+        <!-- LOGOUT -->
+        <form asp-controller="Account"
+              asp-action="Logout"
+              method="post">
+
+            <button type="submit" class="logout-btn w-100">
+                <i class="bi bi-box-arrow-right"></i> Изход
+            </button>
+
+        </form>
+
+    </div>
+</div>
+
+<!-- =========================
+     MOBILE MENU (OFFCANVAS)
+========================= -->
+
+<div class="offcanvas offcanvas-start"
+     tabindex="-1"
+     id="mobileMenu">
+
+    <div class="offcanvas-header">
+        <h5>Меню</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+
+    <div class="offcanvas-body">
+
+        <!-- SEARCH -->
+        <form asp-controller="Search"
+              asp-action="Index"
+              method="get"
+              class="mobile-search mb-4">
+
+            <i class="bi bi-search"></i>
+            <input type="text" name="query" placeholder="Търси..." />
+        </form>
+
+        <!-- MAIN LINKS -->
+        <div class="mobile-links">
+
+            <a asp-controller="Offers" asp-action="Index">
+                <i class="bi bi-tag"></i> Оферти
+            </a>
+
+            <a asp-controller="Restaurant" asp-action="Index">
+                <i class="bi bi-shop"></i> Заведения
+            </a>
+
+        </div>
+
+        <hr />
+
+        <!-- ROLE BASED -->
+        @if (isAdmin)
+        {
+            <div class="mobile-links">
+                <span class="menu-title">Админ</span>
+
+                <a asp-controller="AdminDashboard" asp-action="Index">
+                    <i class="bi bi-speedometer2"></i> Табло
+                </a>
+
+                <a asp-controller="AdminCategories" asp-action="Categories">
+                    <i class="bi bi-grid"></i> Категории
+                </a>
+
+                <a asp-controller="AdminTags" asp-action="Tags">
+                    <i class="bi bi-tags"></i> Тагове
+                </a>
+            </div>
+        }
+        else if (isBusiness)
+        {
+            <div class="mobile-links">
+                <span class="menu-title">Бизнес</span>
+
+                <a asp-controller="OrderManager" asp-action="Index">
+                    <i class="bi bi-receipt-cutoff"></i> Поръчки
+                </a>
+
+                <a asp-controller="OfferManager" asp-action="Index">
+                    <i class="bi bi-megaphone"></i> Оферти
+                </a>
+            </div>
+        }
+
+        <hr />
+
+        <!-- LOGOUT -->
+        <form asp-controller="Account"
+              asp-action="Logout"
+              method="post">
+
+            <button type="submit" class="logout-btn w-100">
+                <i class="bi bi-box-arrow-right"></i> Изход
+            </button>
+        </form>
+
+    </div>
+</div>
