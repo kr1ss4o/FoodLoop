@@ -7,7 +7,7 @@
 
     if (items == null || !items.Any())
     {
-        <p>No data available.</p>
+        <p>Няма данни.</p>
         return;
     }
 
@@ -90,7 +90,7 @@
 
                             else if (value is decimal d)
                             {
-                                @($"{d:F2} лв")
+                                @($"{d:F2} EUR")
                             }
 
                             else

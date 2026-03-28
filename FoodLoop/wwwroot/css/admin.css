@@ -394,9 +394,13 @@ body {
 /* ACTION BUTTON */
 
 .details-actions {
-    margin-bottom: 20px;
+    margin: 20px 0;
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
+}
+.details-actions a {
+    width: 100%;
+    text-align: center;
 }
 
     .details-actions .btn-primary {
@@ -529,7 +533,7 @@ body {
     gap: 14px;
 }
 
-.admin-field label {
+.admin-field label, .bottom-label {
     font-size: 12px;
     font-weight: 800;
     margin-bottom: 6px;
