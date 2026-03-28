@@ -2,6 +2,21 @@
 @using FoodLoop.Helpers
 @model FoodLoop.Models.Entities.Reservation
 
+@functions {
+    private string GetStatusClass(ReservationStatus status)
+    {
+        return status switch
+        {
+            ReservationStatus.Pending => "pending",
+            ReservationStatus.Confirmed => "confirmed",
+            ReservationStatus.OutForDelivery => "outfordelivery",
+            ReservationStatus.Finished => "finished",
+            ReservationStatus.Canceled => "canceled",
+            _ => ""
+        };
+    }
+}
+
 <div class="order-card">
 
     <div class="order-card-header">
@@ -170,18 +185,3 @@
     </div>
 
 </div>
-
-@functions {
-    private string GetStatusClass(ReservationStatus status)
-    {
-        return status switch
-        {
-            ReservationStatus.Pending => "pending",
-            ReservationStatus.Confirmed => "confirmed",
-            ReservationStatus.OutForDelivery => "outfordelivery",
-            ReservationStatus.Finished => "finished",
-            ReservationStatus.Canceled => "canceled",
-            _ => ""
-        };
-    }
-}

@@ -144,23 +144,102 @@
                         </ul>
                     </li>
                 }
+                @if (isBusiness)
+                {
+                    <!-- ПОРЪЧКИ (OUTSIDE) -->
+                    <li class="nav-item">
+                        <a asp-controller="OrderManager"
+                               asp-action="Index"
+                               class="nav-link">
+
+                            <i class="bi bi-receipt-cutoff"></i>
+                            Поръчки
+
+                        </a>
+                    </li>
+
+                    <!-- BUSINESS DROPDOWN -->
+                    <li class="nav-item dropdown">
+
+                        <a class="nav-link dropdown-toggle"
+                               data-bs-toggle="dropdown">
+
+                            <i class="bi bi-shop-window"></i>
+                            Бизнес
+
+                        </a>
+
+                        <ul class="dropdown-menu dropdown-menu-end">
+
+                            <li>
+                                <a class="dropdown-item"
+                                       asp-controller="RestaurantDashboard"
+                                       asp-action="Index">
+
+                                    <i class="bi bi-graph-up-arrow"></i>
+                                    Табло
+
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item"
+                                       asp-controller="OfferManager"
+                                       asp-action="Index">
+
+                                    <i class="bi bi-megaphone"></i>
+                                    Моите оферти
+
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item"
+                                       asp-controller="RestaurantReviews"
+                                       asp-action="Index">
+
+                                    <i class="bi bi-star"></i>
+                                    Моите ревюта
+
+                                </a>
+                            </li>
+
+                        </ul>
+
+                    </li>
+                }
 
             </ul>
 
         </div>
 
-        <!-- RIGHT ICONS (НЕ ГИ ПИПАМЕ) -->
+        <!-- RIGHT ICONS -->
         <div class="navbar-right">
 
             @if (user != null && !isBusiness && !isAdmin)
             {
-                <a asp-controller="Cart"
-                       asp-action="Index"
-                       class="nav-icon-btn position-relative">
+                <div class="nav-item position-relative">
 
-                    <i class="bi bi-bag"></i>
-                    <span class="cart-badge d-none">0</span>
-                </a>
+                    <a asp-controller="Cart"
+                           asp-action="Index"
+                           class="nav-icon-btn"
+                           id="cartLink">
+
+                        <i class="bi bi-bag"></i>
+
+                        <span id="cartBadge"
+                              class="cart-badge d-none">
+                            0
+                        </span>
+
+                    </a>
+
+                    <!-- MINI CART -->
+                    <div id="miniCartDropdown" class="mini-cart d-none">
+                        <div id="miniCartContent">Зареждане...</div>
+                    </div>
+
+                </div>
             }
 
             <!-- PROFILE -->
@@ -201,7 +280,7 @@
      id="mobileMenu">
 
     <div class="offcanvas-header">
-        <h5>Меню</h5>
+        <h5>FoodLoop</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
     </div>
 
@@ -269,16 +348,31 @@
         }
         else if (isBusiness)
         {
+            <!-- BUSINESS SECTION -->
             <div class="mobile-links">
+
                 <span class="menu-title">Бизнес</span>
 
                 <a asp-controller="OrderManager" asp-action="Index">
-                    <i class="bi bi-receipt-cutoff"></i> Поръчки
+                    <i class="bi bi-receipt-cutoff"></i>
+                    Поръчки
+                </a>
+
+                <a asp-controller="RestaurantDashboard" asp-action="Index">
+                    <i class="bi bi-graph-up-arrow"></i>
+                    Табло
                 </a>
 
                 <a asp-controller="OfferManager" asp-action="Index">
-                    <i class="bi bi-megaphone"></i> Оферти
+                    <i class="bi bi-megaphone"></i>
+                    Моите оферти
                 </a>
+
+                <a asp-controller="RestaurantReviews" asp-action="Index">
+                    <i class="bi bi-star"></i>
+                    Моите ревюта
+                </a>
+
             </div>
         }
 

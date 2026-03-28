@@ -11,28 +11,44 @@
         ReservationStatus.Finished
     };
 
+    // ако е cancel → добавяме последна стъпка
     if (Model.Status == ReservationStatus.Canceled)
     {
         steps.Add(ReservationStatus.Canceled);
     }
+
+    // индекс на текущ статус
+    var currentIndex = steps.IndexOf(Model.Status);
+    if (currentIndex < 0)
+        currentIndex = 0;
+
+    // за progress line
+    var totalSteps = steps.Count - 1;
+
+    var progress = totalSteps > 0
+        ? (double)currentIndex / totalSteps * 100
+        : 0;
 }
 
-<div class="client-timeline modern">
+<!-- ТОВА ТУК Е ВАЖНОТО -->
+<div class="client-timeline modern" style="--progress:@progress%">
 
     @foreach (var step in steps)
     {
-        var reached = Model.StatusLogs.Any(l => l.NewStatus == step)
-        || Model.Status == step
-        || step == ReservationStatus.Pending;
+        var stepIndex = steps.IndexOf(step);
+
+        // дали е стигнато
+        var reached = stepIndex <= currentIndex;
 
         var time = Model.StatusLogs
-        .Where(l => l.NewStatus == step)
-        .OrderBy(l => l.ChangedAt)
-        .Select(l => (DateTime?)l.ChangedAt)
-        .FirstOrDefault();
+            .Where(l => l.NewStatus == step)
+            .OrderBy(l => l.ChangedAt)
+            .Select(l => (DateTime?)l.ChangedAt)
+            .FirstOrDefault();
 
         <div class="timeline-step @(reached ? "done" : "") @(step == ReservationStatus.Canceled ? "cancel" : "")">
             <div class="circle"></div>
+
             <span>@step.ToBg()</span>
 
             @if (time != null)
@@ -43,7 +59,7 @@
             }
         </div>
 
-        if (step != steps.Last())
+        @if (step != steps.Last())
         {
             <div class="timeline-line"></div>
         }

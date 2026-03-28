@@ -38,6 +38,9 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Home/AccessDenied";
 });
 
+//Reservation expiration service
+builder.Services.AddScoped<IReservationService, ReservationService>();
+
 var app = builder.Build();
 
 // Error handling

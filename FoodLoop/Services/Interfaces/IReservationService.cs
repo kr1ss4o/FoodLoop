@@ -1,6 +1,7 @@
 ﻿namespace FoodLoop.Services.Interfaces
 {
-    public class IReservationService
+    public interface IReservationService
     {
+        Task ExpirePendingReservationsAsync();
     }
 }

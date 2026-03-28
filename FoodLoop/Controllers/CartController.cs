@@ -2,6 +2,7 @@
 using FoodLoop.Models.Entities;
 using FoodLoop.Models.Enums;
 using FoodLoop.Models.ViewModels;
+using FoodLoop.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,12 +15,15 @@ namespace FoodLoop.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
+        private readonly IReservationService _reservationService;
 
         public CartController(ApplicationDbContext context,
-                              UserManager<User> userManager)
+                       UserManager<User> userManager,
+                       IReservationService reservationService)
         {
             _context = context;
             _userManager = userManager;
+            _reservationService = reservationService;
         }
 
         // ==============================================================
@@ -28,6 +32,8 @@ namespace FoodLoop.Controllers
 
         public async Task<IActionResult> Index()
         {
+            await _reservationService.ExpirePendingReservationsAsync();
+
             var user = await _userManager.GetUserAsync(User);
 
             if (user == null)

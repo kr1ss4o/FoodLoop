@@ -333,9 +333,6 @@
     padding: 22px;
     border-radius: 20px;
     margin-bottom: 22px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     border: 1px solid #eef2f3;
     box-shadow: 0 6px 20px rgba(0,0,0,0.06);
     transition: 0.2s ease;
@@ -381,30 +378,25 @@
     color: #005f39;
 }
 
+/* =========================
+   ORDER CARD FIX (LAYOUT)
+========================= */
 
-/* =========================================================
-   PROGRESS / TIMELINE (MERGED CLEAN)
-   ========================================================= */
+.order-card {
+    padding: 20px;
+}
 
-.progress-status {
+/* HEADER FIX (badge alignment) */
+.order-card-header {
     display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
     gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 10px;
 }
 
-.progress-status .step {
-    padding: 6px 12px;
-    border-radius: 999px;
-    background: #eef2f3;
-    font-size: 12px;
-    font-weight: 600;
-    color: #6c7a86;
-}
-
-.progress-status .step.done {
-    background: linear-gradient(135deg,#00a86b,#008b5a);
-    color: white;
+/* TIMELINE POSITION */
+.order-card .client-timeline {
+    margin-top: 16px;
 }
 
 /* =========================================================
@@ -449,6 +441,72 @@
     color: #4caf50;
 }
 
+/* =========================
+   STATUS BADGES (ORDER)
+========================= */
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+    /* Pending */
+    .status-badge.pending {
+        background: #fff4d6;
+        color: #b58105;
+    }
+
+    /* Confirmed */
+    .status-badge.confirmed {
+        background: #e6f9ee;
+        color: #0f7a43;
+    }
+
+    /* Delivery */
+    .status-badge.outfordelivery {
+        background: #e6f0ff;
+        color: #1e4ed8;
+    }
+
+    /* Finished */
+    .status-badge.finished {
+        background: #e7f8ec;
+        color: #166534;
+    }
+
+    /* Canceled */
+    .status-badge.canceled {
+        background: #fde8e8;
+        color: #b91c1c;
+    }
+
+/* =========================
+   ORDER ITEMS (COPY FROM ORDER MANAGER)
+========================= */
+
+.order-items {
+    margin-top: 12px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 14px;
+}
+
+    .order-item:last-child {
+        border-bottom: none;
+    }
+
 
 /* MOBILE */
 
@@ -478,28 +536,6 @@
     .nav-pills .nav-link {
         font-size: 14px;
         padding: 6px 12px;
-    }
-
-    .client-timeline {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .timeline-line {
-        width: 3px;
-        height: 30px;
-        margin: 6px 0 6px 7px;
-    }
-
-    .timeline-step {
-        flex-direction: row;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 8px;
-    }
-
-    .timeline-step .circle {
-        background: #e0e0e0;
     }
 }
 

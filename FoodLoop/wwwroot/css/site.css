@@ -678,3 +678,356 @@ img {
     border-radius: 12px;
     padding: 10px 16px;
 }
+
+/* FIX: restore bootstrap primary button */
+.btn-primary {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+}
+
+    .btn-primary:hover {
+        background-color: var(--primary-600) !important;
+        border-color: var(--primary-600) !important;
+    }
+
+.mini-cart {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 260px;
+    padding: 12px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 18px 50px rgba(0,0,0,.15);
+    border: 1px solid #e5e7eb;
+    backdrop-filter: blur(8px);
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: .2s;
+    z-index: 1000;
+}
+
+.mini-cart {
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+    .mini-cart.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+/* HEADER */
+
+.mini-cart-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 12px;
+}
+
+/* ITEM */
+
+.mini-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.mini-info {
+    flex: 1;
+    min-width: 0;
+}
+
+/* IMAGE */
+.mini-thumb {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+    .mini-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+/* INFO */
+
+.mini-title {
+    font-size: 0.85rem;
+}
+
+.mini-meta {
+    font-size: 0.75rem;
+}
+
+.mini-price {
+    font-size: 0.85rem;
+}
+
+/* PRICE */
+
+.mini-price {
+    font-weight: 700;
+    color: #16a34a;
+    font-size: .9rem;
+}
+
+/* TOTAL */
+
+.mini-total {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 12px;
+    margin-top: 10px;
+    font-weight: 600;
+}
+
+/* BUTTON */
+
+.mini-cart-btn {
+    display: block;
+    margin-top: 14px;
+    text-align: center;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 700;
+    background: linear-gradient(135deg,#22c55e,#16a34a);
+    color: white;
+    text-decoration: none;
+}
+
+/* EMPTY */
+
+.mini-empty {
+    text-align: center;
+    padding: 20px 0;
+    color: #6b7280;
+}
+
+    .mini-empty i {
+        font-size: 26px;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+/* =========================
+   TOAST
+========================= */
+
+#toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast-custom {
+    padding: 14px 18px;
+    border-radius: 12px;
+    color: #fff;
+    min-width: 240px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 14px 34px rgba(0,0,0,0.15);
+    animation: toast-in .3s ease;
+}
+
+/* TYPES */
+
+.toast-success {
+    background: #16a34a;
+}
+
+.toast-error {
+    background: #dc2626;
+}
+
+.toast-warning {
+    background: #f59e0b;
+}
+
+.toast-info {
+    background: #2563eb;
+}
+
+/* PROGRESS BAR */
+
+.toast-progress {
+    height: 3px;
+    background: rgba(255,255,255,0.6);
+    margin-top: 6px;
+    border-radius: 2px;
+    animation: toast-progress 4s linear forwards;
+}
+
+/* ANIMATIONS */
+
+@keyframes toast-progress {
+    from {
+        width: 100%;
+    }
+
+    to {
+        width: 0%;
+    }
+}
+
+@keyframes toast-in {
+    from {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* =========================
+   CART BADGE
+========================= */
+
+.cart-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--primary);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ============================
+   ACCESS DENIED
+============================ */
+
+.access-denied-body {
+    background: linear-gradient(135deg, #ECFDF5, #d9f3e8);
+}
+
+/* PAGE LAYOUT */
+.access-page {
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+/* CARD */
+.access-card {
+    width: 520px;
+    padding: 60px 50px;
+    border-radius: 32px;
+    background: #ffffff;
+    text-align: center;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.08);
+    transition: 0.25s ease;
+}
+
+    .access-card:hover {
+        transform: translateY(-4px);
+    }
+
+/* ICON */
+.access-icon {
+    font-size: 64px;
+    margin-bottom: 15px;
+}
+
+/* TITLE */
+.access-card h1 {
+    font-size: 34px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    color: #003B33;
+}
+
+/* SUBTEXT */
+.access-sub {
+    font-size: 16px;
+    opacity: 0.7;
+    margin-bottom: 25px;
+}
+
+/* MESSAGE BOX */
+.access-message {
+    background: #f1f3f2;
+    padding: 18px;
+    border-radius: 16px;
+    font-size: 14px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* ============================
+   ACTIONS
+============================ */
+
+.access-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+}
+
+/* PRIMARY BUTTON */
+.btn-primary {
+    width: 100%;
+    height: 56px;
+    border-radius: 20px;
+    background: #4f8f66;
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s ease;
+}
+
+    .btn-primary:hover {
+        background: #3f7b56;
+        transform: translateY(-2px);
+    }
+
+/* BACK LINK */
+.btn-back {
+    font-size: 14px;
+    color: #6b7c75;
+    text-decoration: none;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0.85;
+    transition: 0.2s ease;
+}
+
+    .btn-back:hover {
+        opacity: 1;
+        transform: translateX(-4px);
+    }
