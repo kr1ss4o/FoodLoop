@@ -352,30 +352,38 @@ img {
     }
 
 /* =========================
-   OFFCANVAS LOGOUT BUTTON
+   LOGOUT
 ========================= */
 
+.logout-btn {
+    border: none;
+    background: transparent;
+    padding: 0;
+}
+
+/* navbar hover */
+.navbar .logout-btn:hover,
+.app-navbar .logout-btn:hover {
+    color: #ef4444;
+}
+
+/* offcanvas logout да изглежда като link */
 .offcanvas .logout-btn {
     width: 100%;
-    padding: 12px 14px;
-    border: none;
-    border-radius: 12px;
-    background: #fef2f2;
-    color: #dc2626;
-    font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    transition: all .15s ease;
+    padding: 10px;
+    border-radius: 10px;
+    color: var(--text);
+    font-weight: 600;
+    background: transparent;
 }
 
-    /* HOVER */
-
     .offcanvas .logout-btn:hover {
-        background: #dc2626;
-        color: #ffffff;
-        transform: translateY(-1px);
+        background: rgba(239,68,68,0.08);
+        color: #ef4444;
     }
 
     /* ICON */

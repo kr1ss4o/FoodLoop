@@ -77,9 +77,70 @@
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" asp-controller="AdminDashboard" asp-action="Index"><i class="bi bi-speedometer2 me-2"></i> Табло</a></li>
-                            <li><a class="dropdown-item" asp-controller="AdminCategories" asp-action="Categories"><i class="bi bi-grid me-2"></i> Категории</a></li>
-                            <li><a class="dropdown-item" asp-controller="AdminTags" asp-action="Tags"><i class="bi bi-tags me-2"></i> Тагове</a></li>
+
+                            <li>
+                                <a class="dropdown-item"
+                                       asp-controller="AdminDashboard"
+                                       asp-action="Index">
+                                    <i class="bi bi-speedometer2 me-2"></i>
+                                    Табло
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item"
+                                       asp-controller="AdminCategories"
+                                       asp-action="Categories">
+                                    <i class="bi bi-grid me-2"></i>
+                                    Категории
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item"
+                                       asp-controller="AdminTags"
+                                       asp-action="Tags">
+                                    <i class="bi bi-tags me-2"></i>
+                                    Тагове
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item"
+                                       asp-controller="AdminRestaurants"
+                                       asp-action="Restaurants">
+                                    <i class="bi bi-shop me-2"></i>
+                                    Ресторанти
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item"
+                                       asp-controller="AdminOffers"
+                                       asp-action="Offers">
+                                    <i class="bi bi-megaphone me-2"></i>
+                                    Оферти
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item"
+                                       asp-controller="AdminReservations"
+                                       asp-action="Reservations">
+                                    <i class="bi bi-receipt-cutoff me-2"></i>
+                                    Поръчки
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item"
+                                       asp-controller="AdminReviews"
+                                       asp-action="Reviews">
+                                    <i class="bi bi-star me-2"></i>
+                                    Ревюта
+                                </a>
+                            </li>
+
                         </ul>
                     </li>
                 }
@@ -102,6 +163,7 @@
                 </a>
             }
 
+            <!-- PROFILE -->
             <a asp-controller="@(isBusiness ? "BusinessProfile" : "Profile")"
                    asp-action="Index"
                    class="nav-icon-btn">
@@ -109,87 +171,26 @@
                 <i class="bi bi-person-circle"></i>
             </a>
 
+            <!-- LOGOUT -->
+            <form asp-controller="Account"
+                  asp-action="Logout"
+                  method="post"
+                  class="d-inline">
+
+                <button type="submit"
+                        class="nav-icon-btn logout-btn">
+
+                    <i class="bi bi-box-arrow-right"></i>
+
+                </button>
+
+            </form>
+
         </div>
 
     </div>
 
 </nav>
-
-<!-- =========================
-     MOBILE MENU (HAMBURGER)
-========================= -->
-
-<div class="offcanvas offcanvas-start"
-     tabindex="-1"
-     id="mobileMenu">
-
-    <div class="offcanvas-header">
-        <h5>FoodLoop</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
-    </div>
-
-    <div class="offcanvas-body">
-
-        <!-- SEARCH -->
-        <form asp-controller="Search"
-              asp-action="Index"
-              method="get"
-              class="mobile-search mb-4">
-
-            <i class="bi bi-search"></i>
-            <input type="text" name="query" placeholder="Търси..." />
-        </form>
-
-        <!-- LINKS С ИКОНКИ -->
-        <div class="mobile-links">
-
-            <a asp-controller="Offers" asp-action="Index">
-                <i class="bi bi-tag"></i> Оферти
-            </a>
-
-            <a asp-controller="Restaurant" asp-action="Index">
-                <i class="bi bi-shop"></i> Заведения
-            </a>
-
-        </div>
-
-        <hr />
-
-        <!-- ADMIN -->
-        @if (isAdmin)
-        {
-            <div class="mobile-links">
-                <span class="menu-title">Админ</span>
-
-                <a asp-controller="AdminDashboard" asp-action="Index">
-                    <i class="bi bi-speedometer2"></i> Табло
-                </a>
-
-                <a asp-controller="AdminCategories" asp-action="Categories">
-                    <i class="bi bi-grid"></i> Категории
-                </a>
-
-                <a asp-controller="AdminTags" asp-action="Tags">
-                    <i class="bi bi-tags"></i> Тагове
-                </a>
-            </div>
-        }
-
-        <hr />
-
-        <!-- LOGOUT -->
-        <form asp-controller="Account"
-              asp-action="Logout"
-              method="post">
-
-            <button type="submit" class="logout-btn w-100">
-                <i class="bi bi-box-arrow-right"></i> Изход
-            </button>
-
-        </form>
-
-    </div>
-</div>
 
 <!-- =========================
      MOBILE MENU (OFFCANVAS)
@@ -248,6 +249,22 @@
                 <a asp-controller="AdminTags" asp-action="Tags">
                     <i class="bi bi-tags"></i> Тагове
                 </a>
+
+                <a asp-controller="AdminRestaurants" asp-action="Restaurants">
+                    <i class="bi bi-shop"></i> Ресторанти
+                </a>
+
+                <a asp-controller="AdminOffers" asp-action="Offers">
+                    <i class="bi bi-megaphone"></i> Оферти
+                </a>
+
+                <a asp-controller="AdminReservations" asp-action="Reservations">
+                    <i class="bi bi-receipt-cutoff"></i> Поръчки
+                </a>
+
+                <a asp-controller="AdminReviews" asp-action="Reviews">
+                    <i class="bi bi-star"></i> Ревюта
+                </a>
             </div>
         }
         else if (isBusiness)
@@ -272,7 +289,7 @@
               asp-action="Logout"
               method="post">
 
-            <button type="submit" class="logout-btn w-100">
+            <button type="submit" class="logout-btn">
                 <i class="bi bi-box-arrow-right"></i> Изход
             </button>
         </form>

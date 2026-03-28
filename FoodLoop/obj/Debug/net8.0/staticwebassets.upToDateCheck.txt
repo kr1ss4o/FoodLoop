@@ -1,5 +1,5 @@
+wwwroot\css\admin.css
 wwwroot\css\auth-login.css
-wwwroot\css\auth.css
 wwwroot\css\business-profile.css
 wwwroot\css\cards.css
 wwwroot\css\cart.css
@@ -13,7 +13,6 @@ wwwroot\css\restaurant-details.css
 wwwroot\css\restaurant.css
 wwwroot\css\reviews.css
 wwwroot\css\search.css
-wwwroot\css\site.css
 wwwroot\css\store.css
 wwwroot\css\timeline.css
 wwwroot\favicon.ico
@@ -135,4 +134,5 @@ wwwroot\lib\jquery\dist\jquery.js
 wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
-wwwroot\css\admin.css
+wwwroot\css\auth.css
+wwwroot\css\site.css
