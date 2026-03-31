@@ -1031,3 +1031,20 @@ img {
         opacity: 1;
         transform: translateX(-4px);
     }
+@media (max-width: 475px) {
+    .access-card {
+        padding: 45px 30px;
+    }
+    .access-icon {
+        font-size: 32px;
+    }
+    .access-card h1 {
+        font-size: 24px;
+    }
+    .access-sub {
+        font-size: 12px;
+    }
+    .access-message {
+        font-size: 11px;
+    }
+}

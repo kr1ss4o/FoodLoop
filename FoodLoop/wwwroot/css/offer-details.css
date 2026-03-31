@@ -6,6 +6,9 @@
     max-width: 1100px;
     margin: 0 auto;
     padding: 50px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .details-grid {
@@ -13,6 +16,7 @@
     grid-template-columns: 1fr 1fr;
     gap: 60px;
     align-items: start;
+    justify-items: center;
 }
 
 
@@ -22,7 +26,6 @@
 
 .details-image-box {
     background: #f9fafb;
-    padding: 20px;
     border-radius: 18px;
 }
 
@@ -664,6 +667,268 @@
     border-left: 4px solid #7c3aed;
 }
 
-    .highlight-purple i {
-        color: #7c3aed;
+.highlight-purple i {
+    color: #7c3aed;
+}
+
+@media (max-width: 1000px) {
+
+    .details-wrapper {
+        padding: 30px 10px;
     }
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        justify-items: center;
+    }
+
+        .details-image-box img {
+            max-width: 100%;
+            height: auto;
+        }
+
+    .details-top-row {
+        justify-content: center;
+    }
+
+    .details-info {
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        width: 100%;
+    }
+
+    .details-title, .details-restaurant, .details-description {
+        text-align: center;
+    }
+
+    .details-price-section,
+    .details-quantity,
+    .details-restaurant,
+    #countdown {
+        justify-content: center;
+    }
+
+    .add-to-cart-form button {
+        width: 100%;
+    }
+
+    /* Adjust for mobile view with small text and image centering */
+    .details-title {
+        font-size: 26px;
+    }
+
+    .details-description {
+        font-size: 14px;
+    }
+
+    .details-price,
+    .details-original {
+        font-size: 20px;
+    }
+
+    .details-badge {
+        font-size: 14px;
+    }
+
+    .stock-info {
+        font-size: 12px;
+    }
+
+    .details-features {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 560px) {
+    .image-main {
+        height: auto;
+    }
+    .details-top-row {
+        margin-top: 0.5cm;
+    }
+}
+
+@media (max-width: 500px) {
+    .details-title {
+        font-size: 23px;
+    }
+}
+
+@media (max-width: 410px) {
+    #addToCartForm, .details-timer {
+        width: 350px;
+        align-self: center;
+    }
+    .details-features {
+        flex-direction: column;
+        gap: 0.5cm;
+    }
+    .details-description, .details-title {
+        padding: 0 20px;
+    }
+}
+
+/* Info pages */
+
+/* Ensuring the tabs stack on smaller screens */
+@media (max-width: 768px) {
+
+    .details-tabs {
+        padding: 30px 10px;
+    }
+    .tab-btn {
+        width: 100%;
+        padding: 10px;
+        font-size: 14px;
+        text-align: left;
+    }
+
+        .tab-btn.active {
+            border-bottom: none;
+        }
+
+    .tab-content {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 515px) {
+    .tab-btn {
+        text-align: center;
+        font-size: 12px;
+    }
+}
+
+/* Ensuring the restaurant info card is well-structured */
+@media (max-width: 1000px) {
+    .restaurant-info-card {
+        padding: 20px;
+        margin-top: 25px;
+    }
+
+    .ric-header {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .ric-title {
+        font-size: 24px;
+        text-align: center;
+    }
+
+    .ric-sub {
+        font-size: 14px;
+        color: #6b7280;
+        text-align: center;
+    }
+
+    .ric-contact-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .ric-contact-item i {
+            font-size: 22px;
+        }
+}
+
+/* Review section tweaks for mobile screens */
+@media (max-width: 768px) {
+    .reviews-summary {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .rs-score {
+        font-size: 28px;
+    }
+
+    .rs-stars {
+        margin-bottom: 10px;
+    }
+
+    .rs-count {
+        font-size: 14px;
+    }
+
+    .review-card {
+        margin-bottom: 15px;
+    }
+
+    .review-user {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .review-name {
+        font-size: 16px;
+    }
+
+    .review-date {
+        font-size: 12px;
+    }
+}
+
+/* Delivery section adjustments */
+@media (max-width: 1000px) {
+    .delivery-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .delivery-item {
+        padding: 12px;
+        text-align: center;
+    }
+
+        .delivery-item i {
+            font-size: 24px;
+        }
+
+        .delivery-item .title {
+            font-size: 16px;
+        }
+
+        .delivery-item .desc {
+            font-size: 14px;
+        }
+}
+
+/* General responsiveness for very small screens */
+@media (max-width: 500px) {
+    .details-wrapper {
+        padding: 20px;
+    }
+
+    .details-title {
+        font-size: 22px;
+    }
+
+    .details-description {
+        font-size: 12px;
+        padding: 0 15px;
+    }
+
+    .details-price-section {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .add-btn {
+        width: 100%;
+    }
+
+    .details-tags {
+        justify-content: center;
+    }
+
+    .tag-pill {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+}
