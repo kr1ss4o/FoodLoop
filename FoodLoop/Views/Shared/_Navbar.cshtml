@@ -251,19 +251,17 @@
             </a>
 
             <!-- LOGOUT -->
-            <form asp-controller="Account"
-                  asp-action="Logout"
-                  method="post"
-                  class="d-inline">
+            @if (User.Identity.IsAuthenticated)
+            {
+                <form asp-controller="Account"
+                      asp-action="Logout"
+                      method="post">
 
-                <button type="submit"
-                        class="nav-icon-btn logout-btn">
-
-                    <i class="bi bi-box-arrow-right"></i>
-
-                </button>
-
-            </form>
+                    <button type="submit" class="logout-btn">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </button>
+                </form>
+            }
 
         </div>
 
@@ -379,14 +377,17 @@
         <hr />
 
         <!-- LOGOUT -->
-        <form asp-controller="Account"
-              asp-action="Logout"
-              method="post">
+        @if (User.Identity.IsAuthenticated)
+        {
+            <form asp-controller="Account"
+                  asp-action="Logout"
+                  method="post">
 
-            <button type="submit" class="logout-btn">
-                <i class="bi bi-box-arrow-right"></i> Изход
-            </button>
-        </form>
+                <button type="submit" class="logout-btn">
+                    <i class="bi bi-box-arrow-right"></i> Изход
+                </button>
+            </form>
+        }
 
     </div>
 </div>

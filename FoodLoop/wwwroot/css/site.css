@@ -1031,6 +1031,7 @@ img {
         opacity: 1;
         transform: translateX(-4px);
     }
+
 @media (max-width: 475px) {
     .access-card {
         padding: 45px 30px;
