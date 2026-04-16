@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Kris\\Desktop\\FoodLoop\\FoodLoop\\FoodLoop.csproj": {}
+    "D:\\FoodLoop\\FoodLoop\\FoodLoop.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Kris\\Desktop\\FoodLoop\\FoodLoop\\FoodLoop.csproj": {
+    "D:\\FoodLoop\\FoodLoop\\FoodLoop.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Kris\\Desktop\\FoodLoop\\FoodLoop\\FoodLoop.csproj",
+        "projectUniqueName": "D:\\FoodLoop\\FoodLoop\\FoodLoop.csproj",
         "projectName": "FoodLoop",
-        "projectPath": "C:\\Users\\Kris\\Desktop\\FoodLoop\\FoodLoop\\FoodLoop.csproj",
+        "projectPath": "D:\\FoodLoop\\FoodLoop\\FoodLoop.csproj",
         "packagesPath": "C:\\Users\\Kris\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Kris\\Desktop\\FoodLoop\\FoodLoop\\obj\\",
+        "outputPath": "D:\\FoodLoop\\FoodLoop\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

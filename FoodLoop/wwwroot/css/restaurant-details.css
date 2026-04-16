@@ -118,6 +118,7 @@
 .restaurant-left {
     display: flex;
     gap: 20px;
+    align-items: center;
 }
 
 .restaurant-logo {
@@ -197,26 +198,93 @@
 
 .restaurant-info {
     display: grid;
-    grid-template-columns: repeat(3,1fr);
+    grid-template-columns: repeat(3, 1fr); /* 3 на ред */
     gap: 30px;
     margin-top: 30px;
     border-top: 1px solid #eee;
     padding-top: 25px;
 }
 
+/* CARD */
 .info-item {
     display: flex;
-    gap: 15px;
+    align-items: center;
+    gap: 14px;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 16px 20px;
+    border: 1px solid #f1f5f9;
+    transition: all 0.2s ease;
 }
 
+    .info-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+    }
+
+    /* ICON */
+    .info-item .icon {
+        font-size: 22px;
+        flex-shrink: 0;
+    }
+
+    /* TEXT */
+    .info-item > div {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
     .info-item label {
-        font-size: 12px;
+        font-size: 11px;
         color: #9ca3af;
+        letter-spacing: 0.5px;
     }
 
     .info-item p {
-        font-weight: 600;
+        margin: 0;
+        font-weight: 700;
+        font-size: 16px;
+        color: #0f172a;
     }
+
+/* =========================
+   TABLET → 2 + 1 centered
+========================= */
+
+@media (max-width: 1000px) {
+    .restaurant-info {
+        grid-template-columns: repeat(2, 1fr);
+        justify-content: center;
+    }
+
+   div.info-item {
+        justify-content: center;
+   }
+
+    .restaurant-info .info-item:nth-child(3) {
+        grid-column: 1 / -1;
+        justify-self: center;
+        max-width: 300px;
+        width: 100%;
+    }
+}
+
+/* =========================
+   MOBILE → 1 column
+========================= */
+
+@media (max-width: 600px) {
+    .restaurant-info {
+        grid-template-columns: 1fr;
+    }
+
+        .restaurant-info .info-item:nth-child(3) {
+            grid-column: auto;
+            justify-self: stretch;
+            max-width: 100%;
+        }
+}
 
 
 /* STATS */
@@ -226,7 +294,7 @@
     max-width: 1200px;
     margin: 30px auto;
     display: grid;
-    grid-template-columns: repeat(4,1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 20px;
 }
 
@@ -235,6 +303,9 @@
     border-radius: 16px;
     padding: 26px;
     border: 2px solid transparent;
+    min-width: 0;
+
+    text-align: center;
 }
 
     .stat:hover {
@@ -267,6 +338,22 @@
     border-color: #3b82f6;
 }
 
+/* 2 на ред */
+@media (max-width: 992px) {
+    .restaurant-stats {
+        width: 90%;
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 1 на ред */
+@media (max-width: 576px) {
+    .restaurant-stats {
+        width: 100%;
+        grid-template-columns: 1fr;
+        padding: 0 30px;
+    }
+}
 
 /* OFFERS */
 
@@ -277,7 +364,8 @@
 }
 
 .section-header {
-    margin-bottom: 20px;
+    margin: 1.5cm 0;
+    text-align: center;
 }
 
 .section-title {
@@ -292,7 +380,9 @@
 
 .offers-grid {
     display: grid;
-    grid-template-columns: repeat(3,1fr);
+    grid-template-columns: repeat(auto-fit, minmax(340px, 380px));
+    justify-content: center;
+    justify-items: center;
     gap: 28px;
 }
 
@@ -365,6 +455,24 @@
     color: #6b7280;
 }
 
+@media (max-width: 992px) {
+    .offers-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 850px) {
+    .offers-grid {
+        grid-template-columns: minmax(300px, 380px);
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .offers-grid {
+        grid-template-columns: 1fr;
+    }
+}
 
 /* COUNTDOWN */
 
@@ -518,3 +626,49 @@
     .show-more-btn:hover {
         background: #e5e7eb;
     }
+/* RESPONSIVE */
+
+@media (max-width: 1200px) {
+    .stat-label {
+        font-size: 13.5px;
+    }
+}
+@media (max-width: 1000px) {
+    .restaurant-header {
+        flex-direction: column;
+        gap: 50px;
+    }
+    div.restaurant-main {
+        text-align: center;
+    }
+    .restaurant-tags{
+        justify-content: center;
+    }
+}
+
+@media (max-width: 775px) {
+    .restaurant-stats {
+        margin: 30px auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .info-item label {
+        font-size: 10px;
+    }
+    .info-item p {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 385px) {
+    .restaurant-actions a {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .restaurant-left {
+        flex-direction: column;
+    }
+}

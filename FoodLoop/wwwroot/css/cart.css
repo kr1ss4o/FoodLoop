@@ -437,9 +437,6 @@
     color: #ff9800;
 }
 
-.timeline-step.done span {
-    color: #4caf50;
-}
 
 /* =========================
    STATUS BADGES (ORDER)
@@ -551,14 +548,18 @@
 /* ================= REVIEW SECTION ================= */
 
 .btn-review {
-    background: linear-gradient(135deg,#00a86b,#008b5a);
+    background: linear-gradient(135deg, #00a86b, #008b5a);
     color: white;
     border-radius: 10px;
     padding: 6px 14px;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     transition: 0.2s ease;
     border: none;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 0 !important;
 }
 
     .btn-review:hover {
@@ -567,8 +568,9 @@
     }
 
 .review-status {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
+    margin-left: 0 !important;
 }
 
     .review-status.submitted {
@@ -576,11 +578,24 @@
     }
 
     .review-status.expired {
-        color: #888;
+        color: darkred;
     }
 
+    .review-status.editable {
+        background: #f59e0b;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 700;
+    }
+
+.canceled-text {
+    color: red !important;
+    font-weight: bold;
+}
+
 .review-display {
-    margin-top: 10px;
+    margin-top: 15px;
 }
 
 .review-stars {
@@ -601,14 +616,6 @@
     margin-top: 4px;
 }
 
-.review-status.expired {
-    font-size: 14px;
-    color: #9ca3af;
-    font-style: italic;
-}
-
-/* ===== REVIEW DELETE BUTTON ===== */
-
 .btn-review,
 .btn-danger {
     border-radius: 10px !important;
@@ -627,3 +634,8 @@
         transform: translateY(-1px);
         box-shadow: 0 6px 16px rgba(220, 53, 69, 0.3);
     }
+
+.actions .btn-review,
+.actions .review-status {
+    margin-top: 15px;
+}

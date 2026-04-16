@@ -121,6 +121,8 @@ namespace FoodLoop.Controllers
             _db.Reviews.Add(review);
             await _db.SaveChangesAsync();
 
+            TempData["Success"] = "Успешно написахте ревю.";
+
             return RedirectToAction("Index", "Cart", new { tab = "history" });
         }
 
@@ -214,6 +216,8 @@ namespace FoodLoop.Controllers
 
             await _db.SaveChangesAsync();
 
+            TempData["Success"] = "Успешно редактирахте вашето ревю.";
+
             return RedirectToAction("Index", "Cart", new { tab = "history" });
         }
 
@@ -250,6 +254,8 @@ namespace FoodLoop.Controllers
 
             _db.Reviews.Remove(reservation.Review);
             await _db.SaveChangesAsync();
+
+            TempData["Success"] = "Успешно изтрихте ревю.";
 
             return RedirectToAction("Index", "Cart", new { tab = "history" });
         }

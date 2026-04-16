@@ -17,6 +17,38 @@
     }
 }
 
+@{
+    bool isClient = User.IsInRole("Client");
+
+    var reviewDeadline = Model.CreatedAt.AddDays(3);
+
+    // Проверка дали има свързано ревю
+    bool hasReview = Model.Review != null;
+    Guid? reviewId = Model.Review?.Id;
+
+    // Логика за позволяване на оставяне на ревю
+    bool canLeaveReview =
+        isClient &&
+        Model.Status == ReservationStatus.Finished &&
+        !hasReview &&
+        DateTime.UtcNow <= reviewDeadline;
+
+    // Логика за позволяване на редактиране на ревю
+    bool canEditReview =
+        isClient &&
+        Model.Status == ReservationStatus.Finished &&
+        hasReview &&
+        reviewId.HasValue &&
+        DateTime.UtcNow <= reviewDeadline;
+
+    // Логика за проверка дали ревюто е изтекло
+    bool reviewExpired =
+        isClient &&
+        Model.Status == ReservationStatus.Finished &&
+        !hasReview &&
+        DateTime.UtcNow > reviewDeadline;
+}
+
 <div class="order-card">
 
     <div class="order-card-header">
@@ -66,13 +98,12 @@
             <span class="status-badge @GetStatusClass(Model.Status)">
                 @Model.Status.GetDisplayName()
 
-                <!-- EXPIRATION BADGE -->
-
-                @if (Model.Status == ReservationStatus.Pending)
+                <!-- Таймер за Бизнес -->
+                @if ((User.IsInRole("Restaurant") || User.IsInRole("Admin")) && Model.Status == ReservationStatus.Pending)
                 {
                     var expiresAt = DateTime.SpecifyKind(
-                    Model.CreatedAt,
-                    DateTimeKind.Utc
+                        Model.CreatedAt,
+                        DateTimeKind.Utc
                     ).AddMinutes(30);
 
                     <span class="pending-countdown"
@@ -105,37 +136,16 @@
 
         <div class="actions">
 
-            @* PENDING *@
-            @if (Model.Status == ReservationStatus.Pending)
+            <!-- Контролни бутони само за Бизнес профили (не за Клиент) -->
+            @if (User.IsInRole("Restaurant") || User.IsInRole("Admin"))
             {
-                <form asp-action="Confirm" method="post" class="d-inline">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="id" value="@Model.Id" />
-                    <button type="submit" class="btn-action confirm-btn">
-                        Потвърди
-                    </button>
-                </form>
-
-                <form asp-action="Cancel" method="post" class="d-inline ms-2">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="id" value="@Model.Id" />
-                    <button type="submit" class="btn-action cancel-btn">
-                        Откажи
-                    </button>
-                </form>
-            }
-
-            @* CONFIRMED *@
-            @if (Model.Status == ReservationStatus.Confirmed)
-            {
-                if (Model.DeliveryType.Equals("Delivery", StringComparison.OrdinalIgnoreCase))
+                @if (Model.Status == ReservationStatus.Pending)
                 {
-                    <!-- Delivery order - only Send + Cancel -->
-                    <form asp-action="OutForDelivery" method="post" class="d-inline">
+                    <form asp-action="Confirm" method="post" class="d-inline">
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="id" value="@Model.Id" />
-                        <button type="submit" class="btn-action delivery-btn">
-                            Изпрати
+                        <button type="submit" class="btn-action confirm-btn">
+                            Потвърди
                         </button>
                     </form>
 
@@ -147,9 +157,49 @@
                         </button>
                     </form>
                 }
-                else
+
+                @if (Model.Status == ReservationStatus.Confirmed)
                 {
-                    <!-- Pickup order -->
+                    if (Model.DeliveryType.Equals("Delivery", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <form asp-action="OutForDelivery" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button type="submit" class="btn-action delivery-btn">
+                                Изпрати
+                            </button>
+                        </form>
+
+                        <form asp-action="Cancel" method="post" class="d-inline ms-2">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button type="submit" class="btn-action cancel-btn">
+                                Откажи
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-action="Finish" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button type="submit" class="btn-action finish-btn">
+                                Завърши
+                            </button>
+                        </form>
+
+                        <form asp-action="Cancel" method="post" class="d-inline ms-2">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button type="submit" class="btn-action cancel-btn">
+                                Откажи
+                            </button>
+                        </form>
+                    }
+                }
+
+                @if (Model.Status == ReservationStatus.OutForDelivery)
+                {
                     <form asp-action="Finish" method="post" class="d-inline">
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="id" value="@Model.Id" />
@@ -157,27 +207,45 @@
                             Завърши
                         </button>
                     </form>
-
-                    <form asp-action="Cancel" method="post" class="d-inline ms-2">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="id" value="@Model.Id" />
-                        <button type="submit" class="btn-action cancel-btn">
-                            Откажи
-                        </button>
-                    </form>
                 }
             }
 
-            @if (Model.Status == ReservationStatus.OutForDelivery)
+            <!-- Ревю бутони, които ще се показват за всички потребители, които са Клиенти -->
+            @if (canLeaveReview)
             {
-                <!-- Only Finish -->
-                <form asp-action="Finish" method="post" class="d-inline">
+                <a asp-controller="Reviews"
+                       asp-action="Create"
+                       asp-route-reservationId="@Model.Id"
+                       class="btn-action btn-review ms-2">
+                    Остави ревю
+                </a>
+            }
+            else if (canEditReview)
+            {
+                <a asp-controller="Reviews"
+                       asp-action="Edit"
+                       asp-route-id="@reviewId"
+                       class="btn-action btn-review ms-2">
+                    Редактирай ревю
+                </a>
+
+                <!-- Бутон за изтриване на ревю -->
+                <form asp-controller="Reviews"
+                      asp-action="Delete"
+                      asp-route-reservationId="@Model.Id"
+                      method="post"
+                      class="d-inline ms-2">
                     @Html.AntiForgeryToken()
-                    <input type="hidden" name="id" value="@Model.Id" />
-                    <button type="submit" class="btn-action finish-btn">
-                        Завърши
+                    <button type="submit" class="btn-action btn-danger">
+                        Изтрий ревю
                     </button>
                 </form>
+            }
+            else if (reviewExpired)
+            {
+                <span class="review-status expired ms-2">
+                    Срокът за ревю изтече
+                </span>
             }
 
         </div>
