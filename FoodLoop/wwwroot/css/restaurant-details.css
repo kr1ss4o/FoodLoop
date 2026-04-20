@@ -344,6 +344,9 @@
         width: 90%;
         grid-template-columns: repeat(2, 1fr);
     }
+    .section-header {
+        text-align: center;
+    }
 }
 
 /* 1 на ред */
@@ -365,7 +368,6 @@
 
 .section-header {
     margin: 1.5cm 0;
-    text-align: center;
 }
 
 .section-title {
@@ -380,9 +382,7 @@
 
 .offers-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(340px, 380px));
-    justify-content: center;
-    justify-items: center;
+    grid-template-columns: repeat(3, 1fr);
     gap: 28px;
 }
 
@@ -392,6 +392,8 @@
     overflow: hidden;
     box-shadow: 0 12px 30px rgba(0,0,0,.12);
     transition: .25s;
+    margin: 0 !important;
+    width: 100%;
 }
 
     .offer-card:hover {

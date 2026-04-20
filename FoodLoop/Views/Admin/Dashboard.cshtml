@@ -16,6 +16,19 @@
 
     <div class="admin-kpi-grid">
 
+        <a class="admin-kpi" asp-controller="AdminClients" asp-action="Clients">
+            <div class="admin-kpi-icon">
+                <i class="bi bi-people"></i>
+            </div>
+            <div class="admin-kpi-body">
+                <div class="admin-kpi-label">Общо клиенти</div>
+                <div class="admin-kpi-value js-count" data-count="@Model.Clients">0</div>
+            </div>
+            <div class="admin-kpi-arrow">
+                <i class="bi bi-arrow-right-short"></i>
+            </div>
+        </a>
+
         <a class="admin-kpi" asp-controller="AdminRestaurants" asp-action="Restaurants">
             <div class="admin-kpi-icon">
                 <i class="bi bi-shop"></i>

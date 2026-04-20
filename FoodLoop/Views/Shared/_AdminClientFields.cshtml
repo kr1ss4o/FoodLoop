@@ -1,0 +1,72 @@
+﻿@model FoodLoop.ViewModels.Admin.AdminFormViewModel
+
+<h3 class="admin-section-title">Информация за клиент</h3>
+
+<div class="admin-form-grid">
+
+    <div class="admin-field">
+
+        <label>Пълно име</label>
+
+        <input asp-for="ClientFullName"
+               class="admin-input"
+               required
+               minlength="2"
+               maxlength="100" />
+
+        <span asp-validation-for="ClientFullName" class="text-danger"></span>
+
+    </div>
+
+    <div class="admin-field">
+
+        <label>Имейл</label>
+
+        <input asp-for="ClientEmail"
+               type="email"
+               class="admin-input"
+               required />
+
+        <span asp-validation-for="ClientEmail" class="text-danger"></span>
+
+    </div>
+
+    <div class="admin-field">
+
+        <label>Телефон</label>
+
+        <input asp-for="ClientPhone"
+               class="admin-input"
+               placeholder="0888123456"
+               maxlength="10" />
+
+        <span asp-validation-for="ClientPhone" class="text-danger"></span>
+
+    </div>
+
+    <div class="admin-field">
+
+        <label>Снимка (URL)</label>
+
+        <input asp-for="ClientImageUrl"
+               class="admin-input"
+               placeholder="https://..." />
+
+        <span asp-validation-for="ClientImageUrl" class="text-danger"></span>
+
+    </div>
+
+    @if (Model.ClientCreatedAt.HasValue)
+    {
+        <div class="admin-field">
+
+            <label>Регистриран на</label>
+
+            <input value="@Model.ClientCreatedAt.Value.ToString("dd.MM.yyyy HH:mm")"
+                   class="admin-input"
+                   disabled />
+
+        </div>
+    }
+
+</div>

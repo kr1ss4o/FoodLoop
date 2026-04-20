@@ -77,6 +77,16 @@ public class AdminFormViewModel : IValidatableObject
     public string? Icon { get; set; }
 
     // =========================
+    // CLIENT (User)
+    // =========================
+
+    public string? ClientFullName { get; set; }
+    public string? ClientEmail { get; set; }
+    public string? ClientPhone { get; set; }
+    public string? ClientImageUrl { get; set; }
+    public DateTime? ClientCreatedAt { get; set; }
+
+    // =========================
     // DROPDOWNS
     // =========================
 
@@ -112,6 +122,15 @@ public class AdminFormViewModel : IValidatableObject
 
             if (Id == null && string.IsNullOrWhiteSpace(OwnerPassword))
                 yield return new ValidationResult("Паролата е задължителна", new[] { nameof(OwnerPassword) });
+        }
+
+        if (Type == "Client")
+        {
+            if (string.IsNullOrWhiteSpace(ClientFullName))
+                yield return new ValidationResult("Името е задължително", new[] { nameof(ClientFullName) });
+
+            if (string.IsNullOrWhiteSpace(ClientEmail))
+                yield return new ValidationResult("Имейлът е задължителен", new[] { nameof(ClientEmail) });
         }
 
         if (Type == "Offer")

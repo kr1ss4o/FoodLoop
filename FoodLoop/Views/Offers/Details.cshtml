@@ -430,6 +430,60 @@
     </div>
 </div>
 
+@if (ViewBag.RelatedOffers != null && ((List<FoodLoop.Models.Entities.Offer>)ViewBag.RelatedOffers).Any())
+{
+    var related = (List<FoodLoop.Models.Entities.Offer>)ViewBag.RelatedOffers;
+
+    <div class="related-offers-section">
+
+        <div class="related-header">
+            <h2 class="related-title">Още от @Model.Restaurant?.Name</h2>
+        </div>
+
+        <div class="related-carousel-wrapper">
+
+            <button class="carousel-arrow carousel-arrow--left" id="carouselPrev">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+
+            <div class="related-carousel" id="relatedCarousel">
+
+                @foreach (var o in related)
+                {
+                    var disc = (int)Math.Round((1 - (o.DiscountedPrice / o.OriginalPrice)) * 100);
+
+                    <a asp-controller="Offers"
+                           asp-action="Details"
+                           asp-route-id="@o.Id"
+                           class="related-card">
+
+                        <div class="related-image">
+                            <img src="@(string.IsNullOrEmpty(o.ImageUrl) ? "/images/default.jpg" : o.ImageUrl)" />
+                            <span class="related-badge">-@disc%</span>
+                        </div>
+
+                        <div class="related-info">
+                            <div class="related-card-title">@o.Title</div>
+                            <div class="related-prices">
+                                <span class="related-price-new">@o.DiscountedPrice.ToString("0.00") EUR</span>
+                                <span class="related-price-old">@o.OriginalPrice.ToString("0.00") EUR</span>
+                            </div>
+                        </div>
+
+                    </a>
+                }
+
+            </div>
+
+            <button class="carousel-arrow carousel-arrow--right" id="carouselNext">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+
+        </div>
+
+    </div>
+}
+
 @section Scripts {
     <script>
 
@@ -565,6 +619,24 @@
 
                 tab.classList.add("active");
                 document.getElementById(tab.dataset.tab).classList.add("active");
+            });
+        });
+
+                // CAROUSEL
+        document.addEventListener("DOMContentLoaded", () => {
+            const carousel = document.getElementById("relatedCarousel");
+            if (!carousel) return;
+
+            document.getElementById("carouselPrev")?.addEventListener("click", () => {
+                const card = carousel.querySelector(".related-card");
+                const width = card ? card.offsetWidth + 20 : 240;
+                carousel.scrollBy({ left: -width, behavior: "smooth" });
+            });
+
+            document.getElementById("carouselNext")?.addEventListener("click", () => {
+                const card = carousel.querySelector(".related-card");
+                const width = card ? card.offsetWidth + 20 : 240;
+                carousel.scrollBy({ left: width, behavior: "smooth" });
             });
         });
 

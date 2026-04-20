@@ -1,0 +1,42 @@
+﻿@using FoodLoop.Models.ViewModels
+@model IEnumerable<FoodLoop.Models.Entities.User>
+
+@{
+    Layout = "_Layout";
+}
+
+<div class="admin-section">
+
+    <div class="admin-page-head">
+
+        <div>
+            <h2 class="admin-page-title">Клиенти</h2>
+            <p class="admin-page-subtitle">Управлявай всички клиентски профили</p>
+        </div>
+
+        <div class="admin-toolbar">
+
+            <form method="get" class="admin-search">
+
+                <i class="bi bi-search"></i>
+
+                <input type="text"
+                       name="query"
+                       value="@Context.Request.Query["query"]"
+                       placeholder="Търси клиент..." />
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <div class="admin-card">
+        <partial name="_AdminTable"
+                 model="Model.Cast<object>()" />
+    </div>
+
+    <partial name="_SectionPagination"
+             model="(PaginationViewModel)ViewBag.Pagination" />
+
+</div>

@@ -116,6 +116,23 @@
    CART ITEMS
    ========================================================= */
 
+/* Restaurant and offer names design adjustment */
+    .item-title,
+    .item-restaurant {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .item-title:hover {
+        text-decoration: underline;
+        color: #16a34a;
+    }
+
+    .item-restaurant:hover {
+        text-decoration: underline;
+        color: #16a34a;
+    }
+
 .cart-item-card {
     background: #ffffff;
     padding: 22px;

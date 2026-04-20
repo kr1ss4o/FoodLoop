@@ -122,8 +122,23 @@
                             </div>
 
                             <div class="cart-info">
-                                <div class="item-title">@item.Offer?.Title</div>
-                                <div class="item-restaurant">@item.Offer?.Restaurant?.Name</div>
+                                <a asp-controller="Offers"
+                                       asp-action="Details"
+                                       asp-route-id="@item.Offer.Id"
+                                       class="item-title">
+                                    @item.Offer?.Title
+                                </a>
+
+                                @if (item.Offer?.Restaurant != null)
+                                {
+                                    <a asp-controller="Restaurant"
+                                           asp-action="Details"
+                                           asp-route-id="@item.Offer.RestaurantId"
+                                           class="item-restaurant">
+                                        <i class="bi bi-shop"></i>
+                                        @item.Offer.Restaurant.Name
+                                    </a>
+                                }
 
                                 <div class="quantity-controls mt-2">
 

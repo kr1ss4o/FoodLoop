@@ -89,6 +89,15 @@
 
                             <li>
                                 <a class="dropdown-item"
+                                       asp-controller="AdminClients"
+                                       asp-action="Clients">
+                                    <i class="bi bi-people me-2"></i>
+                                    Клиенти
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item"
                                        asp-controller="AdminCategories"
                                        asp-action="Categories">
                                     <i class="bi bi-grid me-2"></i>
@@ -317,6 +326,10 @@
 
                 <a asp-controller="AdminDashboard" asp-action="Index">
                     <i class="bi bi-speedometer2"></i> Табло
+                </a>
+
+                <a asp-controller="AdminClients" asp-action="Clients">
+                    <i class="bi bi-people"></i> Клиенти
                 </a>
 
                 <a asp-controller="AdminCategories" asp-action="Categories">

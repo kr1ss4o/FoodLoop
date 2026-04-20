@@ -192,6 +192,20 @@ namespace FoodLoop.Controllers
 
             ViewBag.LatestReviews = latestReviews;
 
+            // Other offers from the same restaurant
+            var relatedOffers = await _context.Offers
+                .AsNoTracking()
+                .Where(o => o.RestaurantId == offer.RestaurantId
+                         && o.Id != offer.Id
+                         && o.QuantityAvailable > 0
+                         && o.EndsAt > DateTime.UtcNow)
+                .Include(o => o.Restaurant)
+                .OrderByDescending(o => o.CreatedAt)
+                .Take(10)
+                .ToListAsync();
+
+            ViewBag.RelatedOffers = relatedOffers;
+
             return View(offer);
         }
     }

@@ -65,7 +65,8 @@ app.MapControllerRoute(
     pattern: "{controller=Offers}/{action=Index}/{id?}"
 );
 
-// Seeding (ако тези класове съществуват при Педал)
+// Seeding
+/*
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -85,5 +86,6 @@ using (var scope = app.Services.CreateScope())
         Console.WriteLine("SEEDING ERROR: " + ex.Message);
     }
 }
+*/
 
 app.Run();
