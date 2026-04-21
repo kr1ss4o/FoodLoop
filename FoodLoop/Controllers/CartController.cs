@@ -49,8 +49,10 @@ namespace FoodLoop.Controllers
                 .Where(r => r.UserId == user.Id)
                 .Include(r => r.Items)
                     .ThenInclude(i => i.Offer)
+                        .ThenInclude(o => o.Restaurant)
                 .Include(r => r.StatusLogs)
                 .Include(r => r.Review)
+                .Include(r => r.User)
                 .OrderByDescending(r => r.CreatedAt)
                 .ToListAsync();
 

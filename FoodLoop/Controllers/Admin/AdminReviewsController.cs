@@ -1,17 +1,22 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using FoodLoop.Data;
+﻿using FoodLoop.Data;
 using FoodLoop.Models.ViewModels;
+using FoodLoop.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FoodLoop.Controllers.Admin;
 
 public class AdminReviewsController : AdminBaseController
 {
     private const int PageSize = 10;
+    private readonly AdminDeleteService _deleteService;
 
-    public AdminReviewsController(ApplicationDbContext context)
+    public AdminReviewsController(
+        ApplicationDbContext context,
+        AdminDeleteService deleteService)
         : base(context)
     {
+        _deleteService = deleteService;
     }
 
     public async Task<IActionResult> Reviews(string? query, int page = 1)
@@ -52,5 +57,15 @@ public class AdminReviewsController : AdminBaseController
         ViewBag.Pagination = pagination;
 
         return AdminView("Reviews", reviews);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        await _deleteService.DeleteReviewAsync(id);
+
+        Info("Ревюто беше изтрито.");
+
+        return RedirectToAction(nameof(Reviews));
     }
 }

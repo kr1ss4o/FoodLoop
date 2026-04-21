@@ -120,7 +120,16 @@
         @foreach (var item in Model.Items)
         {
             <div class="order-item">
-                <span>@item.Offer.Title</span>
+                <div>
+                    <span>@item.Offer.Title</span>
+                    @if (item.Offer.Restaurant != null)
+                    {
+                        <div class="order-item-restaurant">
+                            <i class="bi bi-shop"></i>
+                            @item.Offer.Restaurant.Name
+                        </div>
+                    }
+                </div>
                 <span class="qty">Количество: @item.Quantity бр.</span>
             </div>
         }
@@ -224,7 +233,7 @@
             {
                 <a asp-controller="Reviews"
                        asp-action="Edit"
-                       asp-route-id="@reviewId"
+                       asp-route-reservationId="@Model.Id"
                        class="btn-action btn-review ms-2">
                     Редактирай ревю
                 </a>

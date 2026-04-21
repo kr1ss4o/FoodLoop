@@ -372,17 +372,29 @@
         updatePagination(page);
     }
 
-    function updatePagination(activePage) {
+        function updatePagination(activePage) {
         const items = document.querySelectorAll("#offersPagination .page-item");
-        items.forEach(item => {
+        const totalPages = items.length - 2;
+
+        items.forEach((item, index) => {
             const btn = item.querySelector(".page-link");
             if (!btn) return;
 
-            const onclick = btn.getAttribute("onclick");
-            if (!onclick) return;
+            if (index === 0) {
+                item.classList.toggle("disabled", activePage === 1);
+                btn.onclick = activePage === 1 ? null : () => loadPage(activePage - 1);
+                return;
+            }
 
-            const pageNum = parseInt(onclick.match(/\d+/)?.[0]);
+            if (index === items.length - 1) {
+                item.classList.toggle("disabled", activePage === totalPages);
+                btn.onclick = activePage === totalPages ? null : () => loadPage(activePage + 1);
+                return;
+            }
+
+            const pageNum = parseInt(btn.textContent.trim());
             item.classList.toggle("active", pageNum === activePage);
         });
     }
+
 </script>

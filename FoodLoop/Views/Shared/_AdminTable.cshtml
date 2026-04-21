@@ -112,7 +112,17 @@
 
                             @if (type.Name == "Review")
                             {
-                                <span class="admin-null">-</span>
+                                <form asp-action="Delete"
+                                      asp-route-id="@id"
+                                      method="post"
+                                      style="display:inline">
+
+                                    <button class="admin-mini-btn admin-mini-btn--danger"
+                                            title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+
+                                </form>
                             }
                             else
                             {

@@ -223,7 +223,7 @@ namespace FoodLoop.Controllers
 
         public async Task<IActionResult> PagedOffers(string? sort, int page = 1)
         {
-            const int pageSize = 3;
+            const int pageSize = 9;
 
             IQueryable<Offer> query = _context.Offers
                 .AsNoTracking()
