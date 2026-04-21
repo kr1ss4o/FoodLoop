@@ -178,14 +178,6 @@
         text-overflow: ellipsis;
     }
 
-    /* ако е в header */
-    .order-card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 10px;
-    }
-
     .order-right {
         flex-shrink: 0;
     }

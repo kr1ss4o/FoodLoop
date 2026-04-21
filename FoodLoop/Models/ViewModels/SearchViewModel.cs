@@ -19,6 +19,9 @@ namespace FoodLoop.Models.ViewModels
         public string? Sort { get; set; }
         public Guid? CategoryId { get; set; }
 
+        // Pagination ресторанти в търсачката
+        public int RestaurantsCurrentPage { get; set; }
+
         // Общ брой резултати
         public int OffersCount { get; set; }
         public int RestaurantsCount { get; set; }

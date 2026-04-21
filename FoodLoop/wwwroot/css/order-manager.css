@@ -367,6 +367,27 @@
     }
 }
 
+/* RESPONSIVE CART */
+
+@media (max-width: 485px) {
+    .order-card-header {
+        flex-direction: column-reverse;
+
+        justify-content: center;
+        align-items: center;
+    }
+
+    .order-card-footer {
+        flex-direction: column;
+        gap: 20px;
+        margin-top: 1cm;
+    }
+
+    .order-left {
+        text-align: center;
+    }
+}
+
 @media (max-width: 405px) {
     .stat-number {
         font-size: 17px;

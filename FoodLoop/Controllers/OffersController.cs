@@ -16,8 +16,10 @@ namespace FoodLoop.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(string? sort)
+        public async Task<IActionResult> Index(string? sort, int page = 1)
         {
+            const int pageSize = 3;
+
             // =============================
             // Base Query
             // =============================
@@ -68,7 +70,7 @@ namespace FoodLoop.Controllers
             var restaurantScores = restaurantRatingsRaw
                 .ToDictionary(
                     x => x.RestaurantId,
-                    x => x.AvgRating * Math.Log(1 + x.Count) // 💡 smart ranking
+                    x => x.AvgRating * Math.Log(1 + x.Count)
                 );
 
             var restaurantRatings = restaurantRatingsRaw
@@ -107,30 +109,42 @@ namespace FoodLoop.Controllers
             };
 
             // =============================
+            // Pagination
+            // =============================
+
+            var totalItems = offers.Count;
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            var pagedOffers = offers
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            // =============================
             // Trending Restaurants (SMART)
             // =============================
 
             var trendingRestaurants = await _context.Reviews
-            .Include(r => r.Reservation)
-                .ThenInclude(res => res.Items)
-                    .ThenInclude(i => i.Offer)
-                        .ThenInclude(o => o.Restaurant)
-            .SelectMany(r => r.Reservation.Items.Select(i => new
-            {
-                Restaurant = i.Offer.Restaurant,
-                Rating = r.Rating
-            }))
-            .GroupBy(x => x.Restaurant)
-            .Select(g => new
-            {
-                Restaurant = g.Key,
-                AvgRating = g.Average(x => x.Rating),
-                Count = g.Count()
-            })
-            .OrderByDescending(x => x.AvgRating * Math.Log(1 + x.Count))
-            .Take(3)
-            .Select(x => x.Restaurant)
-            .ToListAsync();
+                .Include(r => r.Reservation)
+                    .ThenInclude(res => res.Items)
+                        .ThenInclude(i => i.Offer)
+                            .ThenInclude(o => o.Restaurant)
+                .SelectMany(r => r.Reservation.Items.Select(i => new
+                {
+                    Restaurant = i.Offer.Restaurant,
+                    Rating = r.Rating
+                }))
+                .GroupBy(x => x.Restaurant)
+                .Select(g => new
+                {
+                    Restaurant = g.Key,
+                    AvgRating = g.Average(x => x.Rating),
+                    Count = g.Count()
+                })
+                .OrderByDescending(x => x.AvgRating * Math.Log(1 + x.Count))
+                .Take(3)
+                .Select(x => x.Restaurant)
+                .ToListAsync();
 
             // =============================
             // ViewModel
@@ -138,8 +152,10 @@ namespace FoodLoop.Controllers
 
             var vm = new MarketplaceViewModel
             {
-                Offers = offers,
-                Sort = sort
+                Offers = pagedOffers,
+                Sort = sort,
+                CurrentPage = page,
+                TotalPages = totalPages
             };
 
             ViewBag.TrendingRestaurants = trendingRestaurants;
@@ -147,10 +163,6 @@ namespace FoodLoop.Controllers
 
             return View(vm);
         }
-
-        // =============================
-        // Offer Details
-        // =============================
 
         public async Task<IActionResult> Details(Guid id)
         {
@@ -207,6 +219,34 @@ namespace FoodLoop.Controllers
             ViewBag.RelatedOffers = relatedOffers;
 
             return View(offer);
+        }
+
+        public async Task<IActionResult> PagedOffers(string? sort, int page = 1)
+        {
+            const int pageSize = 3;
+
+            IQueryable<Offer> query = _context.Offers
+                .AsNoTracking()
+                .Where(o => o.QuantityAvailable > 0 && o.EndsAt > DateTime.UtcNow)
+                .Include(o => o.Restaurant)
+                .Include(o => o.Category);
+
+            var offers = await query.ToListAsync();
+
+            offers = sort switch
+            {
+                "price_asc" => offers.OrderBy(o => o.DiscountedPrice).ToList(),
+                "price_desc" => offers.OrderByDescending(o => o.DiscountedPrice).ToList(),
+                "oldest" => offers.OrderBy(o => o.CreatedAt).ToList(),
+                _ => offers.OrderByDescending(o => o.CreatedAt).ToList()
+            };
+
+            var pagedOffers = offers
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return PartialView("~/Views/Shared/_OffersGrid.cshtml", pagedOffers);
         }
     }
 }

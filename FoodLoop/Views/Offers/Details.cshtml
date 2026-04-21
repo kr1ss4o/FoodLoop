@@ -182,11 +182,23 @@
                 <input type="hidden" name="offerId" value="@Model.Id" />
                 <input type="hidden" name="quantity" id="qtyInput" value="1" />
 
-                <button type="submit"
-                        class="btn btn-primary @(disabled ? "disabled-btn" : "")"
-                    @(disabled ? "disabled" : "")>
-                    @buttonText
-                </button>
+                @if (!isAuthenticated)
+                {
+                    <a asp-controller="Account"
+                           asp-action="Login"
+                           class="btn btn-primary w-100">
+                        Влез за да поръчаш
+                    </a>
+                }
+                else
+                {
+                    <button type="submit"
+                            class="btn btn-primary @(disabled ? "disabled-btn" : "")"
+                        @(disabled ? "disabled" : "")>
+                        @buttonText
+                    </button>
+                }
+
             </form>
 
             <!-- FEATURES -->

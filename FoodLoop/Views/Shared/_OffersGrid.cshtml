@@ -1,0 +1,32 @@
+﻿@model List<FoodLoop.Models.Entities.Offer>
+
+@foreach (var offer in Model)
+{
+    <a asp-controller="Offers"
+           asp-action="Details"
+           asp-route-id="@offer.Id"
+           class="offer-card card-link">
+
+        <div class="offer-image">
+            <img src="@offer.ImageUrl">
+            <div class="offer-rating">
+                <i class="bi bi-star-fill"></i>
+                @(offer.Restaurant?.Rating.ToString("0.0") ?? "0.0")
+            </div>
+        </div>
+
+        <div class="offer-body">
+            <h3 class="offer-title">@offer.Title</h3>
+            <div class="offer-restaurant">@offer.Restaurant?.Name</div>
+            <div class="offer-price-row">
+                <div class="offer-price">@offer.DiscountedPrice EUR</div>
+                <div class="offer-stock">@offer.QuantityAvailable налични</div>
+            </div>
+            <div class="offer-timer">
+                <i class="bi bi-hourglass-split"></i>
+                @(offer.EndsAt.Subtract(DateTime.UtcNow).TotalHours.ToString("0"))ч
+            </div>
+        </div>
+
+    </a>
+}

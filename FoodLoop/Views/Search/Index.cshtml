@@ -1,4 +1,6 @@
 ﻿@model FoodLoop.Models.ViewModels.SearchViewModel
+@using FoodLoop.Models.ViewModels
+
 <link rel="stylesheet" href="~/css/search.css" />
 
 @{
@@ -165,6 +167,18 @@
 
                 </div>
 
+                <partial name="_SearchPagination" model='new PaginationViewModel
+                    {
+                    CurrentPage = Model.CurrentPage,
+                    TotalPages = Model.TotalPages,
+                    Controller = "Search",
+                    Action = "Index",
+                    Query = Model.Query,
+                        Sort = Model.Sort,
+                    CategoryId = Model.CategoryId,
+                    Section = "offers"
+                    }'
+                />
             </div>
         }
 
@@ -244,6 +258,18 @@
 
                 </div>
 
+                <partial name="_SearchPagination" model='new PaginationViewModel
+                    {
+                        CurrentPage = Model.RestaurantsCurrentPage,
+                        TotalPages = Model.RestaurantPages,
+                        Controller = "Search",
+                        Action = "Index",
+                        Query = Model.Query,
+                        Sort = Model.Sort,
+                        CategoryId = Model.CategoryId,
+                        Section = "restaurants"
+                    }'
+                />
             </div>
         }
 

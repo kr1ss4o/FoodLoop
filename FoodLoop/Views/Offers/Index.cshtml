@@ -11,8 +11,7 @@
 }
 
 <!-- RANDOM COLOR FOR THE CATEGORIES BACKGROUND -->
-
-@functions { 
+@functions {
     string GetCategoryColor(string name)
     {
         var colors = new[]
@@ -158,7 +157,6 @@
 
                 </div>
 
-                <!-- ✅ ВАЖНО: grid вместо carousel -->
                 <div class="restaurants-grid">
 
                     @foreach (var r in trending)
@@ -207,7 +205,6 @@
     </section>
 }
 
-
 <!-- ALL OFFERS -->
 @if (Model.Offers != null && Model.Offers.Any())
 {
@@ -215,32 +212,35 @@
 
         <div class="offers-wrapper">
 
-            <div class="offers-header">
+            <form method="get" asp-controller="Offers" asp-action="Index" id="offersForm">
 
-                <div class="offers-header-left">
-                    <h2>Нашите предложения</h2>
-                    <p>Разгледайте наличните оферти</p>
+                <div class="offers-header">
+
+                    <div class="offers-header-left">
+                        <h2>Нашите предложения</h2>
+                        <p>Разгледайте наличните оферти</p>
+                    </div>
+
+                    <div class="offers-sort">
+
+                        <label for="sortSelect" class="sort-label">
+                            <i class="bi bi-sort-down"></i>
+                            Сортиране
+                        </label>
+
+                        <select id="sortSelect" name="sort" class="sort-select">
+                            <option value="" selected="@(string.IsNullOrEmpty(Model.Sort))">Най-нови</option>
+                            <option value="oldest" selected="@(Model.Sort == "oldest")">Най-стари</option>
+                            <option value="rating_desc" selected="@(Model.Sort == "rating_desc")">Рейтинг</option>
+                            <option value="price_asc" selected="@(Model.Sort == "price_asc")">Цена ↑</option>
+                            <option value="price_desc" selected="@(Model.Sort == "price_desc")">Цена ↓</option>
+                        </select>
+
+                    </div>
+
                 </div>
 
-                <div class="offers-sort">
-
-                    <label for="sortSelect" class="sort-label">
-                        <i class="bi bi-sort-down"></i>
-                        Сортиране
-                    </label>
-
-                    <select id="sortSelect" name="sort" class="sort-select">
-
-                        <option value="">Най-нови</option>
-                        <option value="oldest">Най-стари</option>
-                        <option value="rating_desc">Рейтинг</option>
-                        <option value="price_asc">Цена ↑</option>
-                        <option value="price_desc">Цена ↓</option>
-                    </select>
-
-                </div>
-
-            </div>
+            </form>
 
             <div class="offers-grid" id="offersGrid">
 
@@ -298,11 +298,34 @@
 
             </div>
 
-        </div>
+            @if (Model.TotalPages > 1)
+            {
+                <nav class="mt-4">
+                    <ul class="pagination justify-content-center" id="offersPagination">
+
+                        <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                            <button class="page-link" onclick="loadPage(@(Model.CurrentPage - 1))">«</button>
+                        </li>
+
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                                <button class="page-link" onclick="loadPage(@i)">@i</button>
+                            </li>
+                        }
+
+                        <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                            <button class="page-link" onclick="loadPage(@(Model.CurrentPage + 1))">»</button>
+                        </li>
+
+                    </ul>
+                </nav>
+            }
+
+            </div>
 
     </section>
 }
-
 
 <script>
     if (!window.carouselInitialized) {
@@ -319,14 +342,47 @@
             return card.offsetWidth + gap;
         }
 
-            btnRight.addEventListener("click", (e) => {
-        e.preventDefault();
-        carousel.scrollLeft += getScrollAmount();
-    });
+        btnRight.addEventListener("click", (e) => {
+            e.preventDefault();
+            carousel.scrollLeft += getScrollAmount();
+        });
 
-    btnLeft.addEventListener("click", (e) => {
-        e.preventDefault();
-        carousel.scrollLeft -= getScrollAmount();
-    });
+        btnLeft.addEventListener("click", (e) => {
+            e.preventDefault();
+            carousel.scrollLeft -= getScrollAmount();
+        });
+    }
+
+    const sortSelect = document.getElementById("sortSelect");
+    if (sortSelect) {
+        sortSelect.addEventListener("change", function () {
+            document.getElementById("offersForm").submit();
+        });
+    }
+
+        async function loadPage(page) {
+        const sort = document.getElementById("sortSelect")?.value ?? "";
+
+        const response = await fetch(`/Offers/PagedOffers?page=${page}&sort=${sort}`);
+        if (!response.ok) return;
+
+        const html = await response.text();
+
+        document.getElementById("offersGrid").innerHTML = html;
+        updatePagination(page);
+    }
+
+    function updatePagination(activePage) {
+        const items = document.querySelectorAll("#offersPagination .page-item");
+        items.forEach(item => {
+            const btn = item.querySelector(".page-link");
+            if (!btn) return;
+
+            const onclick = btn.getAttribute("onclick");
+            if (!onclick) return;
+
+            const pageNum = parseInt(onclick.match(/\d+/)?.[0]);
+            item.classList.toggle("active", pageNum === activePage);
+        });
     }
 </script>

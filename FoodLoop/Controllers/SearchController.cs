@@ -20,16 +20,17 @@ namespace FoodLoop.Controllers
             string query,
             string? sort,
             Guid? categoryId,
-            int page = 1)
+            int offersPage = 1,
+            int restaurantsPage = 1)
         {
-            const int pageSize = 6;
+            const int pageSize = 8;
 
             IQueryable<Offer> offersQuery = _context.Offers
-            .AsNoTracking()
-            .Include(o => o.Restaurant)
-            .Include(o => o.Category)
-            .Include(o => o.OfferTags)
-                .ThenInclude(ot => ot.Tag);
+                .AsNoTracking()
+                .Include(o => o.Restaurant)
+                .Include(o => o.Category)
+                .Include(o => o.OfferTags)
+                    .ThenInclude(ot => ot.Tag);
 
             IQueryable<Restaurant> restaurantsQuery = _context.Restaurants
                 .AsNoTracking()
@@ -52,8 +53,6 @@ namespace FoodLoop.Controllers
                             o.Title.ToLower().Contains(normalized) ||
                             o.Restaurant.Name.ToLower().Contains(normalized) ||
                             o.Category.Name.ToLower().Contains(normalized) ||
-
-                            // 🔥 ТАГОВЕ (това ти липсваше)
                             o.OfferTags.Any(ot => ot.Tag.Name.ToLower().Contains(normalized))
                         );
 
@@ -97,21 +96,21 @@ namespace FoodLoop.Controllers
             };
 
             // =============================
-            // COUNTS (за текста "намерени")
+            // COUNTS
             // =============================
 
             var offersCount = await offersQuery.CountAsync();
             var restaurantsCount = await restaurantsQuery.CountAsync();
 
             // =============================
-            // PAGINATION
+            // PAGINATION (разделена)
             // =============================
 
             var (offers, totalOfferPages) =
-                await offersQuery.ToPagedListAsync(page, pageSize);
+                await offersQuery.ToPagedListAsync(offersPage, pageSize);
 
             var (restaurants, totalRestaurantPages) =
-                await restaurantsQuery.ToPagedListAsync(page, pageSize);
+                await restaurantsQuery.ToPagedListAsync(restaurantsPage, pageSize);
 
             // =============================
             // CALCULATE RESTAURANT RATINGS
@@ -163,14 +162,14 @@ namespace FoodLoop.Controllers
                 Query = query,
                 Offers = offers,
                 Restaurants = restaurants,
-                CurrentPage = page,
+                CurrentPage = offersPage,
                 TotalPages = totalOfferPages,
+                RestaurantsCurrentPage = restaurantsPage,
+                RestaurantPages = totalRestaurantPages,
                 Sort = sort,
                 CategoryId = categoryId,
-
                 OffersCount = offersCount,
-                RestaurantsCount = restaurantsCount,
-                RestaurantPages = totalRestaurantPages
+                RestaurantsCount = restaurantsCount
             };
 
             return View(vm);
