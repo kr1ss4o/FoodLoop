@@ -234,6 +234,9 @@ TEXT
 .category-name {
     text-align: center;
 }
+.category-name:hover {
+    color: #21c35d;
+}
 
 
 /* ================================

@@ -29,7 +29,7 @@
                     r.Status == ReservationStatus.Canceled)
         .ToList();
 
-    decimal total = cart.Sum(c => (decimal)c.Offer.DiscountedPrice * c.Quantity);
+    decimal total = cart.Sum(c => (decimal)(c.Offer?.DiscountedPrice ?? 0) * c.Quantity);
 }
 
 @functions {
@@ -38,8 +38,8 @@
         if (status == ReservationStatus.Pending)
             return true;
 
-        return order.StatusLogs.Any(l => l.NewStatus == status)
-               || order.Status == status;
+        return (order.StatusLogs?.Any(l => l.NewStatus == status) ?? false)
+       || order.Status == status;
     }
 
     private DateTime? GetStatusTime(Reservation order, ReservationStatus status)
@@ -122,12 +122,19 @@
                             </div>
 
                             <div class="cart-info">
-                                <a asp-controller="Offers"
+                                @if (item.Offer != null)
+                                {
+                                    <a asp-controller="Offers"
                                        asp-action="Details"
                                        asp-route-id="@item.Offer.Id"
                                        class="item-title">
-                                    @item.Offer?.Title
-                                </a>
+                                        @item.Offer.Title
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="item-title">Офертата не е налична</span>
+                                }
 
                                 @if (item.Offer?.Restaurant != null)
                                 {
@@ -164,7 +171,7 @@
                         <div class="cart-right">
 
                             <div class="item-price">
-                                @((item.Offer.DiscountedPrice * item.Quantity).ToString("F2")) EUR
+                                @(((item.Offer?.DiscountedPrice ?? 0) * item.Quantity).ToString("F2")) EUR
                             </div>
 
                             <button type="button"
