@@ -3,7 +3,7 @@
 @using FoodLoop.Models.ViewModels
 
 @{
-    ViewData["Title"] = "Маркетплейс";
+    ViewData["Title"] = "FoodLoop - Маркетплейс";
     ViewData["FullWidth"] = true;
 
     var trending = ViewBag.TrendingRestaurants as List<Restaurant>;
@@ -298,24 +298,45 @@
 
             </div>
 
+            <!-- Offers grid pagination -->
             @if (Model.TotalPages > 1)
             {
                 <nav class="mt-4">
-                    <ul class="pagination justify-content-center" id="offersPagination">
+                    <ul class="offers-pagination" id="offersPagination">
 
                         <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
-                            <button class="page-link" onclick="loadPage(@(Model.CurrentPage - 1))">«</button>
+                            <button class="page-link prev-next" onclick="loadPage(@(Model.CurrentPage - 1))">
+                                ‹
+                            </button>
                         </li>
 
                         @for (int i = 1; i <= Model.TotalPages; i++)
                         {
-                            <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
-                                <button class="page-link" onclick="loadPage(@i)">@i</button>
-                            </li>
+                            if (i == 1 || i == Model.TotalPages ||
+                                (i >= Model.CurrentPage - 1 && i <= Model.CurrentPage + 1))
+                            {
+                                <li class="page-item @(Model.CurrentPage == i ? "active" : "")">
+                                    <button class="page-link" onclick="loadPage(@i)">@i</button>
+                                </li>
+                            }
+                            else if (i == Model.CurrentPage - 2 || i == Model.CurrentPage + 2)
+                            {
+                                <li class="page-item page-dots">
+                                    <div class="page-input-wrap">
+                                        <input type="number"
+                                               class="page-input"
+                                               placeholder="..."
+                                               min="1"
+                                               max="@Model.TotalPages" />
+                                    </div>
+                                </li>
+                            }
                         }
 
                         <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
-                            <button class="page-link" onclick="loadPage(@(Model.CurrentPage + 1))">»</button>
+                            <button class="page-link prev-next" onclick="loadPage(@(Model.CurrentPage + 1))">
+                                ›
+                            </button>
                         </li>
 
                     </ul>
@@ -328,6 +349,10 @@
 }
 
 <script>
+    // ============================================
+    // CATEGORIES CAROUSEL
+    // ============================================
+
     if (!window.carouselInitialized) {
 
         window.carouselInitialized = true;
@@ -353,48 +378,88 @@
         });
     }
 
+    // ============================================
+    // SORT — AJAX (no page reload)
+    // ============================================
+
     const sortSelect = document.getElementById("sortSelect");
+
     if (sortSelect) {
         sortSelect.addEventListener("change", function () {
-            document.getElementById("offersForm").submit();
+            loadOffers(1, this.value);
         });
     }
 
-        async function loadPage(page) {
-        const sort = document.getElementById("sortSelect")?.value ?? "";
+    // ============================================
+    // LOAD OFFERS — fetch partial view
+    // ============================================
 
+    async function loadOffers(page, sort) {
         const response = await fetch(`/Offers/PagedOffers?page=${page}&sort=${sort}`);
         if (!response.ok) return;
 
         const html = await response.text();
-
         document.getElementById("offersGrid").innerHTML = html;
         updatePagination(page);
     }
 
-        function updatePagination(activePage) {
+    // Load a specific page keeping the current sort
+    async function loadPage(page) {
+        const sort = document.getElementById("sortSelect")?.value ?? "";
+        await loadOffers(page, sort);
+    }
+
+    // ============================================
+    // PAGINATION — update active state and arrows
+    // ============================================
+
+    function updatePagination(activePage) {
         const items = document.querySelectorAll("#offersPagination .page-item");
-        const totalPages = items.length - 2;
+        const totalPages = @Model.TotalPages;
 
         items.forEach((item, index) => {
+
+            // Skip the dots input fields
+            if (item.classList.contains("page-dots")) return;
+
             const btn = item.querySelector(".page-link");
             if (!btn) return;
 
+            // Previous arrow (first item)
             if (index === 0) {
                 item.classList.toggle("disabled", activePage === 1);
                 btn.onclick = activePage === 1 ? null : () => loadPage(activePage - 1);
                 return;
             }
 
+            // Next arrow (last item)
             if (index === items.length - 1) {
                 item.classList.toggle("disabled", activePage === totalPages);
                 btn.onclick = activePage === totalPages ? null : () => loadPage(activePage + 1);
                 return;
             }
 
+            // Page number buttons
             const pageNum = parseInt(btn.textContent.trim());
             item.classList.toggle("active", pageNum === activePage);
         });
     }
+
+    // ============================================
+    // PAGE INPUT — jump to page on Enter
+    // ============================================
+
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" && e.target.classList.contains("page-input")) {
+            const page = parseInt(e.target.value);
+            const max = parseInt(e.target.max);
+
+            if (page >= 1 && page <= max) {
+                loadPage(page);
+            } else {
+                e.target.value = "";
+            }
+        }
+    });
 
 </script>

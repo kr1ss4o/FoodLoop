@@ -742,46 +742,94 @@ META
     font-weight: 500;
 }
 
-/* OFFERS PAGINATION */
-.pagination {
-    gap: 6px;
+/* OFFERS GRID PAGINATION */
+
+.offers-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    list-style: none;
+    padding: 0;
+    flex-wrap: wrap;
 }
 
-    .pagination .page-link {
-        width: 38px;
+    .offers-pagination .page-link {
         height: 38px;
+        padding: 0 14px;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 10px !important;
-        border: none;
-        font-weight: 600;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
         font-size: 14px;
-        color: #16a34a;
-        background: white;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        transition: 0.2s;
+        font-weight: 500;
+        color: #374151;
+        background: white !important;
         cursor: pointer;
+        transition: 0.2s;
     }
 
-        .pagination .page-link:hover {
-            background: #16a34a;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(22,163,74,0.3);
+        .offers-pagination .page-link:hover {
+            border-color: #16a34a;
+            color: #16a34a;
         }
 
-    .pagination .page-item.active .page-link {
-        background: linear-gradient(135deg, #16a34a, #22c55e);
+    .offers-pagination .page-item.active .page-link {
+        border: 2px solid #16a34a;
         color: white;
-        box-shadow: 0 6px 16px rgba(22,163,74,0.3);
+        background: #16a34a !important;
+        font-weight: 700;
     }
 
-    .pagination .page-item.disabled .page-link {
-        background: white;
-        color: #d1d5db;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    .offers-pagination .page-link:focus {
+        outline: none;
+        box-shadow: none;
+    }
+
+    .offers-pagination .page-item.disabled .page-link {
+        color: #9ca3af;
+        border-color: #e5e7eb;
         cursor: not-allowed;
+    }
+
+    .offers-pagination .prev-next {
+        font-weight: 600 !important;
+    }
+
+.page-input-wrap {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    padding: 0 8px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+}
+
+.page-input {
+    width: 44px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: #16a34a;
+    text-align: center;
+}
+
+.offers-pagination .prev-next {
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+}
+
+    .page-input::-webkit-outer-spin-button,
+    .page-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .page-input[type=number] {
+        -moz-appearance: textfield;
     }
 
 /*

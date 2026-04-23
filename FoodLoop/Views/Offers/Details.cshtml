@@ -4,6 +4,8 @@
 <link rel="stylesheet" href="~/css/offer-details.css" />
 
 @{
+    ViewData["Title"] = $"FoodLoop - {Model.Title}";
+
     var isAuthenticated = User.Identity.IsAuthenticated;
     var isClient = User.IsInRole("Client");
 

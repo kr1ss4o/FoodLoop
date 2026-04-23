@@ -3,6 +3,7 @@ wwwroot\css\auth-login.css
 wwwroot\css\auth.css
 wwwroot\css\business-profile.css
 wwwroot\css\cards.css
+wwwroot\css\cart.css
 wwwroot\css\dashboard.css
 wwwroot\css\edit-profile-modal.css
 wwwroot\css\offer-details.css
@@ -19,6 +20,7 @@ wwwroot\css\timeline.css
 wwwroot\favicon.ico
 wwwroot\images\banners\94d298cf-87ae-4fee-941a-5a1b6bfabe45.jpg
 wwwroot\images\default-avatar.jpg
+wwwroot\images\foodloop-icon.png
 wwwroot\images\icons\nav-back.png
 wwwroot\images\icons\nav-cart.png
 wwwroot\images\icons\nav-offermanager.png
@@ -135,4 +137,3 @@ wwwroot\lib\jquery\dist\jquery.js
 wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
-wwwroot\css\cart.css
