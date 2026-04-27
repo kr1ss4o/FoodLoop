@@ -565,3 +565,4 @@ D:\FoodLoop\FoodLoop\obj\Debug\net8.0\refint\FoodLoop.dll
 D:\FoodLoop\FoodLoop\obj\Debug\net8.0\FoodLoop.pdb
 D:\FoodLoop\FoodLoop\obj\Debug\net8.0\FoodLoop.genruntimeconfig.cache
 D:\FoodLoop\FoodLoop\obj\Debug\net8.0\ref\FoodLoop.dll
+C:\Users\krist\OneDrive\Desktop\FoodLoop\FoodLoop\bin\Debug\net8.0\appsettings.Production.json

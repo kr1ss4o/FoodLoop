@@ -142,4 +142,7 @@ wwwroot\lib\jquery\LICENSE.txt
 wwwroot\site.webmanifest
 wwwroot\web-app-manifest-192x192.png
 wwwroot\web-app-manifest-512x512.png
+<<<<<<< HEAD
 wwwroot\css\store.css
+=======
+>>>>>>> f762ae3bf7bcff0885ca97b2a376ec3a18603345
