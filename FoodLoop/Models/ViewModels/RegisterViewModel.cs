@@ -10,9 +10,9 @@ namespace FoodLoop.Models.ViewModels
         [Required, EmailAddress]
         public string Email { get; set; }
 
-        [Required]
-        [StringLength(13, MinimumLength = 10, ErrorMessage = "Phone number must be between 10 and 13 digits (for +359).")]
-        public string Phone { get; set; }
+        [StringLength(10, MinimumLength = 10, ErrorMessage = "Телефонът трябва да е точно 10 цифри.")]
+        [RegularExpression(@"^\d{10}$", ErrorMessage = "Телефонът трябва да съдържа само цифри.")]
+        public string? Phone { get; set; }
 
         [Required]
         [DataType(DataType.Password)]

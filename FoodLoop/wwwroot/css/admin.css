@@ -178,6 +178,9 @@ body {
     .admin-kpi:hover {
         transform: translateY(-3px);
     }
+.admin-kpi:hover i {
+    color: var(--admin-green);
+}
 
 .admin-kpi-icon {
     width: 64px;

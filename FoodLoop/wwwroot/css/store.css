@@ -409,6 +409,7 @@ META
 
     .category-card:hover {
         transform: translateY(-4px);
+        color: #21c35d;
     }
 
 .category-icon {

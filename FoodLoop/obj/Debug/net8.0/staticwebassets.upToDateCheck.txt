@@ -1,3 +1,4 @@
+wwwroot\apple-touch-icon.png
 wwwroot\css\admin.css
 wwwroot\css\auth-login.css
 wwwroot\css\auth.css
@@ -15,9 +16,10 @@ wwwroot\css\restaurant.css
 wwwroot\css\reviews.css
 wwwroot\css\search.css
 wwwroot\css\site.css
-wwwroot\css\store.css
 wwwroot\css\timeline.css
+wwwroot\favicon-96x96.png
 wwwroot\favicon.ico
+wwwroot\favicon.svg
 wwwroot\images\banners\94d298cf-87ae-4fee-941a-5a1b6bfabe45.jpg
 wwwroot\images\default-avatar.jpg
 wwwroot\images\foodloop-icon.png
@@ -137,3 +139,7 @@ wwwroot\lib\jquery\dist\jquery.js
 wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
+wwwroot\site.webmanifest
+wwwroot\web-app-manifest-192x192.png
+wwwroot\web-app-manifest-512x512.png
+wwwroot\css\store.css

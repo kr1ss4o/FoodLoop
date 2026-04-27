@@ -55,7 +55,8 @@
 
                     <div class="input-modern">
                         <i class="bi bi-telephone"></i>
-                        <input asp-for="Phone" placeholder=" " />
+                        <input asp-for="Phone" placeholder=" " maxlength="10" inputmode="numeric"
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                         <label>Телефон</label>
                     </div>
 

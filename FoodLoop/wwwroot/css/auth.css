@@ -3,16 +3,15 @@
 ========================= */
 
 .auth-page {
-    min-height: 100vh;
+    height: 100dvh;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 20px;
-    margin-bottom: 1.5cm;
 }
 
 /* =========================
-   CONTAINER
+   CONTAINER (two-column login/register layout)
 ========================= */
 
 .auth-container {
@@ -24,7 +23,23 @@
     border-radius: 32px;
     overflow: hidden;
     background: white;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.12);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.12);
+}
+
+/* =========================
+   SMALL CARD (forgot password / reset / confirmation)
+========================= */
+
+.auth-card {
+    background: white;
+    border-radius: 24px;
+    padding: 48px 44px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.10);
+    width: 100%;
+}
+
+.auth-small {
+    max-width: 460px;
 }
 
 /* =========================
@@ -73,7 +88,7 @@
 }
 
 /* =========================
-   CARD
+   CARD (two-column inner)
 ========================= */
 
 .form-card {
@@ -91,6 +106,60 @@
     }
 
 /* =========================
+   HEADINGS & SUB (small card)
+========================= */
+
+.auth-heading {
+    font-size: 28px;
+    font-weight: 800;
+    color: #003B33;
+    margin-bottom: 6px;
+    line-height: 1.2;
+}
+
+.auth-sub {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 28px;
+}
+
+/* =========================
+   INFO BOX
+========================= */
+
+.auth-info {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    color: #15803d;
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+/* =========================
+   LINKS FOOTER
+========================= */
+
+.auth-links {
+    margin-top: 22px;
+    text-align: center;
+    font-size: 14px;
+}
+
+    .auth-links a {
+        color: #16a34a;
+        text-decoration: none;
+        font-weight: 600;
+        transition: opacity 0.2s;
+    }
+
+        .auth-links a:hover {
+            opacity: 0.75;
+            text-decoration: underline;
+        }
+
+/* =========================
    GRID
 ========================= */
 
@@ -105,6 +174,14 @@
     }
 
 /* =========================
+   FORM GROUP
+========================= */
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+/* =========================
    INPUT
 ========================= */
 
@@ -112,50 +189,59 @@
     position: relative;
 }
 
-    /* LEFT ICON SPACE + RIGHT ICON SPACE */
     .input-modern input {
         width: 100%;
         padding: 14px 48px 14px 44px;
         border-radius: 12px;
         border: 1px solid #e5e7eb;
         background: #f9fafb;
-        transition: 0.2s;
+        font-size: 14px;
+        color: #111827;
+        transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        box-sizing: border-box;
+        outline: none;
     }
 
         .input-modern input:focus {
             border-color: #16a34a;
             background: white;
-            box-shadow: 0 0 0 3px rgba(22,163,74,0.15);
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
         }
 
     /* LEFT ICON */
-    .input-modern i:first-child {
+    .input-modern > i:first-child {
         position: absolute;
-        left: 12px;
+        left: 14px;
         top: 50%;
         transform: translateY(-50%);
         color: #16a34a;
+        font-size: 15px;
+        pointer-events: none;
     }
 
-    /* LABEL */
+    /* FLOATING LABEL */
     .input-modern label {
         position: absolute;
         left: 44px;
         top: 50%;
         transform: translateY(-50%);
         font-size: 13px;
-        opacity: 0.6;
-        transition: 0.2s;
+        color: #9ca3af;
+        pointer-events: none;
+        transition: top 0.18s, font-size 0.18s, color 0.18s;
+        background: transparent;
+        padding: 0 2px;
     }
 
     .input-modern input:focus + label,
     .input-modern input:not(:placeholder-shown) + label {
-        top: 5px;
+        top: 7px;
         font-size: 10px;
+        color: #16a34a;
     }
 
 /* =========================
-   PASSWORD ICON FIX
+   PASSWORD GROUP
 ========================= */
 
 .password-group {
@@ -176,34 +262,77 @@
     border-radius: 10px;
     cursor: pointer;
     color: #16a34a;
-    transition: 0.2s;
+    transition: background 0.2s;
+    z-index: 2;
 }
 
     .toggle-password:hover {
-        background: rgba(22,163,74,0.1);
+        background: rgba(22, 163, 74, 0.1);
     }
 
 /* =========================
-   BUTTON
+   VALIDATION MESSAGE
 ========================= */
 
+.val {
+    display: block;
+    font-size: 12px;
+    color: #dc2626;
+    margin-top: -10px;
+    margin-bottom: 10px;
+    padding-left: 4px;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+/* Primary — used in small card views */
+.btn-primary {
+    display: block;
+    width: 100%;
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    border: none;
+    padding: 14px;
+    border-radius: 14px;
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-top: 8px;
+    box-sizing: border-box;
+}
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(22, 163, 74, 0.35);
+        color: white;
+        text-decoration: none;
+    }
+
+/* Auth button — used in two-column container */
 .btn-auth {
-    background: linear-gradient(135deg,#16a34a,#22c55e);
+    background: linear-gradient(135deg, #16a34a, #22c55e);
     border: none;
     padding: 14px;
     border-radius: 14px;
     color: white;
     font-weight: 700;
-    transition: 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s;
+    width: 100%;
+    cursor: pointer;
 }
 
     .btn-auth:hover {
         transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(22,163,74,0.3);
+        box-shadow: 0 10px 25px rgba(22, 163, 74, 0.3);
     }
 
 /* =========================
-   RESPONSIVE
+   RESPONSIVE — two-column container
 ========================= */
 
 @media (max-width: 992px) {
@@ -227,7 +356,6 @@
         padding: 30px;
     }
 
-    /* HERO TEXT SCALE */
     .hero-content h1 {
         font-size: 36px;
     }
@@ -248,6 +376,50 @@
     }
 }
 
+/* =========================
+   RESPONSIVE — small card
+========================= */
+
+@media (max-width: 520px) {
+
+    .auth-page {
+        padding: 12px;
+        align-items: flex-start;
+        padding-top: 32px;
+    }
+
+    .auth-card {
+        padding: 32px 20px;
+        border-radius: 18px;
+    }
+
+    .auth-heading {
+        font-size: 22px;
+    }
+
+    .auth-sub {
+        font-size: 13px;
+        margin-bottom: 20px;
+    }
+
+    .btn-primary {
+        font-size: 14px;
+        padding: 13px;
+    }
+
+    .auth-info {
+        font-size: 13px;
+    }
+
+    .auth-links {
+        font-size: 13px;
+    }
+}
+
+/* =========================
+   RESPONSIVE — form grid on small screens
+========================= */
+
 @media (max-width: 480px) {
 
     .form-grid {
@@ -257,12 +429,11 @@
         .form-grid .full {
             grid-column: span 1;
         }
-    
-        .auth-form {
-            padding: 0 15px;
-        }
 
-    /* HERO TEXT SMALL */
+    .auth-form {
+        padding: 0 15px;
+    }
+
     .hero-content h1 {
         font-size: 28px;
     }
