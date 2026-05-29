@@ -1,4 +1,5 @@
 ﻿using FoodLoop.Data;
+using FoodLoop.Helpers;
 using FoodLoop.Models.Enums;
 using FoodLoop.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -81,7 +82,7 @@ namespace FoodLoop.Controllers
                     BannerImageUrl = r.BannerImageUrl,
                     ActiveOffersCount = offersCount,
                     ReviewsCount = reviews?.Count ?? 0,
-                    AvgRating = reviews != null ? Math.Round(reviews.Avg, 1) : 0
+                    AvgRating = reviews != null ? RatingHelper.Round(reviews.Avg) : 0
                 };
             }).ToList();
 
@@ -168,7 +169,7 @@ namespace FoodLoop.Controllers
 
             var avgRating = reviewsCount == 0
                 ? 0
-                : Math.Round(reviewsBase.Average(x => x.Rating), 1);
+                : RatingHelper.Round(RatingHelper.Average(reviewsBase, x => x.Rating));
 
             var latestReviews = reviewsBase
                 .OrderByDescending(x => x.CreatedAt)

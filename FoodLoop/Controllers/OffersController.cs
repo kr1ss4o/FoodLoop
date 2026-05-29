@@ -1,4 +1,5 @@
 ﻿using FoodLoop.Data;
+using FoodLoop.Helpers;
 using FoodLoop.Models.Entities;
 using FoodLoop.Models.Enums;
 using FoodLoop.Models.ViewModels;
@@ -11,9 +12,13 @@ namespace FoodLoop.Controllers
     {
         private readonly ApplicationDbContext _context;
 
-        public OffersController(ApplicationDbContext context)
+        // Инжектирам loader-a за рейтинга
+        private readonly RatingLoader _ratingLoader;
+
+        public OffersController(ApplicationDbContext context, RatingLoader ratingLoader)
         {
             _context = context;
+            _ratingLoader = ratingLoader;
         }
 
         public async Task<IActionResult> Index(string? sort, int page = 1)
@@ -45,23 +50,7 @@ namespace FoodLoop.Controllers
             // Restaurant Ratings (avg + count)
             // =============================
 
-            var restaurantRatingsRaw = await _context.Reviews
-                .Include(r => r.Reservation)
-                    .ThenInclude(res => res.Items)
-                        .ThenInclude(i => i.Offer)
-                .SelectMany(r => r.Reservation.Items.Select(i => new
-                {
-                    RestaurantId = i.Offer.RestaurantId,
-                    Rating = r.Rating
-                }))
-                .GroupBy(x => x.RestaurantId)
-                .Select(g => new
-                {
-                    RestaurantId = g.Key,
-                    AvgRating = g.Average(x => x.Rating),
-                    Count = g.Count()
-                })
-                .ToListAsync();
+            var restaurantRatingsRaw = await _ratingLoader.LoadRestaurantRatingStatsAsync();
 
             // =============================
             // Smart Score (rating + volume)
@@ -70,7 +59,7 @@ namespace FoodLoop.Controllers
             var restaurantScores = restaurantRatingsRaw
                 .ToDictionary(
                     x => x.RestaurantId,
-                    x => x.AvgRating * Math.Log(1 + x.Count)
+                    x => RatingHelper.SmartScore(x.AvgRating, x.Count)
                 );
 
             var restaurantRatings = restaurantRatingsRaw
@@ -124,27 +113,13 @@ namespace FoodLoop.Controllers
             // Trending Restaurants (SMART)
             // =============================
 
-            var trendingRestaurants = await _context.Reviews
-                .Include(r => r.Reservation)
-                    .ThenInclude(res => res.Items)
-                        .ThenInclude(i => i.Offer)
-                            .ThenInclude(o => o.Restaurant)
-                .SelectMany(r => r.Reservation.Items.Select(i => new
-                {
-                    Restaurant = i.Offer.Restaurant,
-                    Rating = r.Rating
-                }))
-                .GroupBy(x => x.Restaurant)
-                .Select(g => new
-                {
-                    Restaurant = g.Key,
-                    AvgRating = g.Average(x => x.Rating),
-                    Count = g.Count()
-                })
-                .OrderByDescending(x => x.AvgRating * Math.Log(1 + x.Count))
+            var trendingRestaurants = restaurantRatingsRaw
+                .Where(x => x.Restaurant != null)
+                // Lambda expression for every element in the restaurantRatingRaw list
+                .OrderByDescending(x => RatingHelper.SmartScore(x.AvgRating, x.Count))
                 .Take(3)
-                .Select(x => x.Restaurant)
-                .ToListAsync();
+                .Select(x => x.Restaurant!)
+                .ToList();
 
             // =============================
             // ViewModel
@@ -176,17 +151,16 @@ namespace FoodLoop.Controllers
             if (offer == null)
                 return NotFound();
 
-            // SAFE rating
-            var ratings = await _context.Reviews
-            .Include(r => r.Reservation)
-            .ThenInclude(res => res.Items)
-            .Where(r => r.Reservation != null &&
-                r.Reservation.Items.Any(i => i.Offer.RestaurantId == offer.RestaurantId))
-            .Select(r => r.Rating)
-            .ToListAsync();
+            // Load the rating values from the database.
+            var averageRating = await _ratingLoader.LoadAverageRatingAsync(offer.RestaurantId);
+            var reviewsCount = await _ratingLoader.LoadReviewsCountAsync(offer.RestaurantId);
 
-            ViewBag.AvgRating = ratings.Count > 0 ? ratings.Average() : 0;
-            ViewBag.ReviewsCount = ratings.Count;
+            // Calculate the smart score with the helper method.
+            var smartScore = RatingHelper.SmartScore(averageRating, reviewsCount);
+
+            ViewBag.AvgRating = averageRating;
+            ViewBag.ReviewsCount = reviewsCount;
+            ViewBag.SmartScore = smartScore;
 
             // All reviews for the restaurant info page in details
             var latestReviews = _context.Reviews

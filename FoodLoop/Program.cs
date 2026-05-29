@@ -1,5 +1,6 @@
 ﻿using FoodLoop.Data;
 using FoodLoop.Data.Seed;
+using FoodLoop.Helpers;
 using FoodLoop.Models.Entities;
 using FoodLoop.Services;
 using FoodLoop.Services.Implementations;
@@ -13,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 // Dashboard service
 builder.Services.AddScoped<IDashboardAnalyticsService, DashboardAnalyticsService>();
+builder.Services.AddScoped<RatingLoader>();
 // DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -66,7 +68,6 @@ app.MapControllerRoute(
 );
 
 // Seeding
-/*
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -86,6 +87,5 @@ using (var scope = app.Services.CreateScope())
         Console.WriteLine("SEEDING ERROR: " + ex.Message);
     }
 }
-*/
 
 app.Run();

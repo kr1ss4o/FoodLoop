@@ -1,4 +1,5 @@
 ﻿using FoodLoop.Data;
+using FoodLoop.Helpers;
 using FoodLoop.Models.Entities;
 using FoodLoop.Models.Enums;
 using FoodLoop.Models.ViewModels;
@@ -76,7 +77,7 @@ namespace FoodLoop.Controllers
                 .FirstOrDefaultAsync();
 
             int reviewCount = reviewStats?.Count ?? 0;
-            double averageRating = reviewStats?.Average ?? 0;
+            double averageRating = RatingHelper.Round(reviewStats?.Average ?? 0);
 
             // =========================
             // ACTIVE OFFERS

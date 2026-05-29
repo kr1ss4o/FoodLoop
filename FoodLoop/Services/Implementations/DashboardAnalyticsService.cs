@@ -1,4 +1,5 @@
 ﻿using FoodLoop.Data;
+using FoodLoop.Helpers;
 using FoodLoop.Models.DTOs;
 using FoodLoop.Models.Entities;
 using FoodLoop.Models.Enums;
@@ -229,7 +230,7 @@ namespace FoodLoop.Services.Implementations
 
             int totalReviews = await reviewsQuery.CountAsync();
             double averageRating = totalReviews > 0
-                ? await reviewsQuery.AverageAsync(r => r.Rating)
+                ? RatingHelper.Round(await reviewsQuery.AverageAsync(r => r.Rating))
                 : 0;
 
             var reviews = await reviewsQuery

@@ -19,6 +19,8 @@ public class ReservationService : IReservationService
 
         var expiredReservations = await _context.Reservations
             .Include(r => r.StatusLogs)
+            .Include(r => r.Items)
+                .ThenInclude(i => i.Offer)
             .Where(r =>
                 r.Status == ReservationStatus.Pending &&
                 EF.Functions.DateDiffMinute(r.CreatedAt, now) > 30)
@@ -45,6 +47,13 @@ public class ReservationService : IReservationService
             }
         }
 
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            _context.ChangeTracker.Clear();
+        }
     }
 }
